@@ -1,4 +1,5 @@
 import Constants from '~/constants';
+import GameScene from '~/scenes/game-scene';
 
 export default class HUD extends Phaser.Scene {
   private expTxt: Phaser.GameObjects.Text;
@@ -39,6 +40,9 @@ export default class HUD extends Phaser.Scene {
     const workoutCardio: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutCardio);
     const workoutAgilidad: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutAgilidad);
     const WorkoutFlexibilidad: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutFlexibilidad);
+
+    /**New congigame**/
+    const workoutGameConfig: Phaser.Scene = this.scene.get(Constants.SCENES.CONFIG)
 
     // Motivation audio
     this.audioCardio = this.sound.add(Constants.AUDIO.CARDIO, { volume: 0.95, loop: false });
@@ -93,6 +97,21 @@ export default class HUD extends Phaser.Scene {
             this.audioFlexibility.play();
           }
           this.workoutActive = 'flexibility';
+        },
+        loop: false
+      });
+    }
+    if (this.scene.isActive(Constants.SCENES.CONFIG)) {
+      workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
+      workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
+      workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
+      this.time.addEvent({
+        delay: 3000,
+        callback: () => {
+          if (this.stopAudioB === false) {
+            this.audioFlexibility.play();
+          }
+          this.workoutActive = 'workoutGameConfig';
         },
         loop: false
       });

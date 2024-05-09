@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 
 export default class CustomButtom extends Phaser.GameObjects.Container {
-  private upImage: Phaser.GameObjects.Image;
+  protected upImage: Phaser.GameObjects.Image;
   private overImage: Phaser.GameObjects.Rectangle;
-  private buttomText: Phaser.GameObjects.Text;
+  buttomText: Phaser.GameObjects.Text;
   private cancelAnimationEmpty: boolean;
   private barWidth: number;
   private initField: number;
@@ -15,7 +15,7 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
     x: number,
     y: number,
     upTexture: string,
-    inputText: string,
+    inputText?: string,
     barWidth?: number,
     initField?: number,
   ) {
@@ -26,7 +26,11 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
     this.initField = initField ? initField : -166.7;
     this.overImage = new Phaser.GameObjects.Rectangle(scene, this.initField, 0, 0, 95, 0x34495e);
     this.buttomText = scene.add
-      .text(0, 0, inputText, { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
+      .text(0,
+        0,
+        // @ts-ignore
+        inputText,
+        { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
       .setOrigin(0.5);
 
     this.add(this.upImage);
@@ -74,5 +78,8 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
 
   isEnabled(){
     return this.enabled;
+  }
+  setText(s: string) {
+    this.buttomText.text = s;
   }
 }

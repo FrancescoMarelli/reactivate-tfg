@@ -7,6 +7,8 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
+import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
+import { MovePoints } from '~/scenes/move-points';
 
 const sVi = [2, 8, 14, 20]; // Izquierda vertical
 const sVd = [5, 11, 17, 23]; // Derecha vertical
@@ -51,6 +53,7 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
     private prevMarker;
     private showNextSequence: boolean = true;
     private lastIdSequence = 0;
+  private movementSettings: any;
 
 
 
@@ -188,20 +191,6 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
         this.sound.pauseOnBlur = false;
     }
 
-    movePoints(coords: IPoseLandmark[] | undefined) {
-        if (this.bodyPoints && coords) {
-            for (var i = 0; i < this.bodyPoints.length; i++) {
-                if (i + 11 == 23) { // To extend hands points (improve accuracy)
-                    this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
-                } else if (i + 11 == 24) {
-                    this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
-                } else {
-                    this.bodyPoints[i]?.setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
-                }
-            }
-        }
-    }
-
     createLayout(): void {
         let width: number = 50;
         let height: number = 160;
@@ -332,7 +321,7 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
                 shouldDrawPoseLandmarks: true,
             },
             beforePaint: (poseTrackerResults, canvasTexture) => {
-                this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+                MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
             },
             afterPaint: (poseTrackerResults) => { },
         });

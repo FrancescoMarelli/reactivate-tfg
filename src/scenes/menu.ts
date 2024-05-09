@@ -8,6 +8,9 @@ import HUD from './hud';
 import WorkoutAgility from './workout-agilidad';
 import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
+import ConfigScene from '~/scenes/config-scene';
+import enable = Phaser.Display.Canvas.Smoothing.enable;
+import GameScene from '~/scenes/game-scene';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {
@@ -34,6 +37,8 @@ export default class Menu extends AbstractPoseTrackerScene {
   private statsOn;
   private videoTutorial;
   private audioTutorial;
+
+  private buttonConfigScene;
 
   private bodyPoints: any = [];
   private buttons: any[] = [];
@@ -92,11 +97,6 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.buttons.push(this.buttonNextHistorical);
 
 
-    this.tutorial = new CustomButtom(this, 250, 220, 'button', 'Tutorial')
-    this.tutorial.setVisible(false);
-    this.tutorial.setEnabled(false);
-    this.buttons.push(this.tutorial);
-
     this.buttonRanking = new CustomButtom(this, 645, 220, 'button', 'Historial')
     this.buttonRanking.setVisible(false);
     this.buttonRanking.setEnabled(false);
@@ -111,6 +111,12 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.buttonExitMarker.setVisible(false);
     this.buttonExitMarker.setEnabled(false);
     this.buttons.push(this.buttonExitMarker);
+
+    this.buttonConfigScene = new CustomButtom(this, 250, 220, 'button', 'gameConfig');
+    this.buttons.push(this.buttonConfigScene);
+    this.add.existing(this.buttonConfigScene);
+    this.physics.world.enable(this.buttonConfigScene);
+    this.buttonConfigScene.body.setAllowGravity(false);
 
 
     this.buttons.forEach((button) => {
@@ -192,6 +198,8 @@ export default class Menu extends AbstractPoseTrackerScene {
       this.scene.remove(Constants.SCENES.WorkoutAgilidad);
     if (this.scene.get(Constants.SCENES.WorkoutFlexibilidad))
       this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
+    if(this.scene.get(Constants.SCENES.CONFIG))
+      this.scene.remove(Constants.SCENES.CONFIG)
     if (this.scene.get(Constants.SCENES.HUD))
       this.scene.remove(Constants.SCENES.HUD);
   }
@@ -207,16 +215,18 @@ export default class Menu extends AbstractPoseTrackerScene {
       case 'Agilidad':
         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
         break;
-      case 'Tutorial':
-        this.videoTutorial = this.add.video(this.width / 2, this.height / 2, 'tutorial');
-        this.videoTutorial.play();
-        this.audioTutorial.play();
+      case 'gameConfig':
+        this.startNewSceneWorkout(Constants.SCENES.CONFIG, GameScene);
         this.buttonLeft.setVisible(false);
         this.buttonLeft.setEnabled(false);
         this.setScreen2(false);
         this.titleText.setVisible(false);
         this.buttonExitMarker.setVisible(true);
         this.buttonExitMarker.setEnabled(true);
+        this.buttonNextHistorical.setVisible(true);
+        this.buttonNextHistorical.setEnabled(true);
+        this.buttonPreviousHistorical.setVisible(true);
+        this.buttonPreviousHistorical.setEnabled(true);
         break;
       case 'Estadísticas':
         this.statsView = new Stats(this, this.width / 2, this.height / 2, "backgroundStats");
@@ -314,10 +324,10 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.agility.setEnabled(enable);
   }
   setScreen2(enable: boolean) {
-    this.tutorial.setVisible(enable);
+    this.buttonConfigScene.setEnabled(enable);
+    this.buttonConfigScene.setVisible(enable);
     this.buttonRanking.setVisible(enable);
     this.buttonStats.setVisible(enable);
-    this.tutorial.setEnabled(enable);
     this.buttonRanking.setEnabled(enable);
     this.buttonStats.setEnabled(enable);
   }

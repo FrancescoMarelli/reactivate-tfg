@@ -4,7 +4,7 @@ import Constants from '~/constants';
 export default class Marker extends Phaser.Physics.Arcade.Sprite {
   private ball: Phaser.GameObjects.Sprite;
   private tween!: Phaser.Tweens.Tween;
-  private id: number;
+  id: number;
   scene: Phaser.Scene;
   private coordx: number;
   private coordy: number;

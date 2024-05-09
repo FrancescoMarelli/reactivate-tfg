@@ -10,6 +10,7 @@ const Constants = {
     LEVEL: 'level',
   },
   SCENES: {
+    CONFIG: 'GameScene',
     LOADER: 'Loader',
     Menu: 'Menu',
     WorkoutCardio: 'WorkoutCardio',
@@ -56,6 +57,10 @@ const Constants = {
   DATA: {
     RANKING: 'ranking',
     STATS: 'stats'
+  },
+  CANVASMULTI: {
+    WIDTHMULTI: 1280,
+    HEIGHTMULTI: 720
   }
 };
 

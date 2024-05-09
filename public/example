@@ -1,0 +1,34 @@
+{
+  "gameSettings": { # seteo de juego
+    "markerLogic": {
+      "initialCount": 10, # cuantos marcadores hay al inicio
+      "destructionLogic": { # como destruir los marcadores, hay que ver la logica interna de creacion de marcadores < no implementado>
+        "onTouch": "destroy",
+        "timeLimit": 3000
+      }
+    }
+  },
+  "levelSettings": [ # seteo de nivel, esta configurado por cada nivel a vector pero lo voy a dejar general
+    {                # y cada nivel sea automatizado.
+      "level": 1, # < no implementado>
+      "levelTime": 0.3, # multiplicador de tiempo o algo asi
+      "timeLimit": 300, #
+      "markerCount": 10, # n de marcadores
+      "errorProbability": 0.15, # prob que el marcador creado sea un marcador roko
+      "probMultipleDiv": 10, # divisor de currentLevel para la dificultad y probabilidad
+      "multipleMarkers": true,
+      "markerTypes": ["blueBall", "errorBall"], # vector con lista acotada de marcadores, probar con otros.
+      "randomMarker": 3, # ni idea pero se ussa
+      "randomRange": 14 # rango de generación de marcadores.
+    }
+  ],
+  "audioSettings": {
+    "backgroundMusic": "trance",
+    "volume": 0.65,
+    "loop": true
+  },
+  "movementSettings": {
+    "activeJoints": [ "LeftIndex", "RightIndex"] # con que articulaciones se van a tocar los marcadores
+  }
+
+}

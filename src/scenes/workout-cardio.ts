@@ -2,19 +2,18 @@ import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracke
 import Phaser from 'phaser';
 import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
-import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
+import CustomButton from '~/gameobjects/custom-button';
 import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
+import { MovePoints } from '~/scenes/move-points';
 
 export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
-  private markers: any[] = [];
+  private markers: Marker[] = [];
   private triggerAction: boolean = true;
-  private exp: number = 0;
-  private levelTime: number;
-  private remainingTime: number;
+
   private audioScene: Phaser.Sound.BaseSound;
   private workoutStarted: boolean = false;
   private silhouetteImage: Phaser.GameObjects.Image;
@@ -23,14 +22,12 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private buttonReadyRight;
   private getReadyLeft: boolean = false;
   private getReadyRight: boolean = false;
-  private randomMarker: number = 3;
   private buttonExitMarker;
   private touchingButton: boolean = false;
-  /* multipleMarker y errorMarker son asignadas cada vez que es necesario crear marcadores nuevos teniendo en cuenta la probabilidad en el nivel */
   private multipleMarkerProb = false;
   private errorMakerProb = false;
   private currentMarkersAlive: number = 0;
-  private maxMarkers: number = 1; // Se empieza con al menos 1 marcador
+  private maxMarkers: number = 1;
   private currentLevel: number = 1;
   private width: number;
   private height: number;
@@ -38,6 +35,17 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private untouchedMarkers: number = 0;
   private totalTouchableMarkers: number = 0;
   private lastIdMarker = 0;
+
+  private config;
+  private exp: number = 0;
+  private levelTime: number;
+  private remainingTime: number;
+  private audioSettings;
+  private markerTypes;
+  private randomMarker: number = 3;
+  private levelConfig;
+  private movementSettings: any;
+
 
   constructor() {
     super(Constants.SCENES.WorkoutCardio);
@@ -48,19 +56,69 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
     this.height = this.cameras.main.height;
   }
 
-  create(): void {
+  async create() {
     super.create();
+    try {
+      this.config = await this.loadJsonConfig();
+      this.levelConfig = this.config.levelSettings[0];
+      this.levelTime = this.levelConfig.levelTime; // Tiempo por nivel, asumiendo que quieres el tiempo por nivel
+      this.randomMarker = this.levelConfig.randomMarker; // Acceder correctamente
+      this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
+      this.remainingTime = 120; // Tiempo restante predefinido
+      this.markerTypes = this.levelConfig.markerTypes;
+      this.movementSettings = this.config.movementSettings;
+      this.registry.set(Constants.REGISTER.EXP, this.exp);
+      /***************************************** */
 
-    /************** Buttons Init *********/
-    this.buttonExitMarker = new CustomButtom(this, 1200, 52, 'out', '[➔', 95, -48);
+      if (this.scene.get(Constants.SCENES.Menu))
+        this.scene.remove(Constants.SCENES.Menu);
+    } catch (error) {
+      console.error('Error loading configuration:', error);
+      this.scene.stop();
+    }
+    this.setupScene();
+  }
+
+  async loadJsonConfig() {
+    const jsonPath = 'game-config.json';
+    return new Promise((resolve, reject) => {
+      this.load.json('gameConfig', jsonPath);
+      this.load.once('complete', () => {
+        const config = this.cache.json.get('gameConfig');
+        resolve(config);
+      });
+      this.load.once('loaderror', () => {
+        reject(new Error('Failed to load JSON'));
+      });
+      this.load.start();
+    });
+  }
+
+  setupScene() {
+    this.setupAudio();
+    this.createButtons();
+  }
+
+  setupAudio() {
+    const audioSettings = this.config.audioSettings;
+    this.audioScene = this.sound.add(audioSettings.backgroundMusic,
+      {
+        volume: audioSettings.volume,
+        loop: audioSettings.loop
+      });
+  }
+
+  createButtons() {
+    // Button creation logic here
+    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', '[➔', 95, -48);
     this.buttonExitMarker.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonExitMarker);
 
-    this.buttonReadyLeft = new CustomButtom(this, 340, 230, 'getReady', 'I', 95, -48);
+    this.buttonReadyLeft = new CustomButton(this, 340, 230, 'getReady', 'I', 95, -48);
     this.buttonReadyLeft.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyLeft);
 
-    this.buttonReadyRight = new CustomButtom(this, 940, 230, 'getReady', 'D', 95, -48);
+    this.buttonReadyRight = new CustomButton(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonReadyRight.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyRight);
 
@@ -71,19 +129,14 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
     });
     this.silhouetteImage = this.add.image(640, 420, 'silhouette');
     this.silhouetteImage.setScale(0.7, 0.65);
-    // body points
-    for (var i = 0; i < 24; i++) {
+    // Body points creation logic here
+    for (let i = 0; i < 24; i++) {
       let point = this.physics.add.sprite(-20, -20, 'point');
       this.add.existing(point);
       point.setAlpha(0);
       this.bodyPoints.push(point);
     }
 
-    /*****************************************/
-
-    this.audioScene = this.sound.add(Constants.AUDIO.TRANCE, { volume: 0.65, loop: false });
-
-    /************** Get ready markers ******** */
     this.buttonsReady.forEach((button) => {
 
       this.bodyPoints.forEach((point) => {
@@ -126,18 +179,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
           });
       }
     });
-    /***************************************** */
-
-    /************** Time control ************** */
-    this.levelTime = 0.3;
-    this.remainingTime = 2 * 60;
-    this.registry.set(Constants.REGISTER.EXP, this.exp);
-    /***************************************** */
-
-    if (this.scene.get(Constants.SCENES.Menu))
-      this.scene.remove(Constants.SCENES.Menu);
   }
-
 
   menuSwitch(button: CustomButtom) {
     switch (button.getText()) {
@@ -171,20 +213,6 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
     this.getReadyLeft = false;
     this.getReadyRight = false;
     this.sound.pauseOnBlur = false;
-  }
-
-  movePoints(coords: IPoseLandmark[] | undefined) {
-    if (this.bodyPoints && coords) {
-      for (var i = 0; i < this.bodyPoints.length; i++) {
-        if (i + 11 == 23){ // To extend hands points (improve accuracy)
-          this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
-        }else if (i + 11 == 24){
-          this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
-        }else{
-          this.bodyPoints[i]?.setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
-        }
-      }
-    }
   }
 
   createLayout(): void {
@@ -327,7 +355,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
       },
       afterPaint: (poseTrackerResults) => { },
     });
@@ -346,7 +374,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
             if (this.errorMakerProb) {
               this.errorMakerProb = false;
             }
-            marker.createAnimation();
+            marker.createAnimation(this.currentLevel);
             this.currentMarkersAlive++;
             this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
             this.totalTouchableMarkers++;

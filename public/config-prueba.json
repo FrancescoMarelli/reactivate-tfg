@@ -1,0 +1,62 @@
+{
+  "gameSettings": {
+    "levelTime": 300,
+    "remainingTime": 1200,
+    "numLevels": 5,
+    "gameMode": "cardio",
+    "audioSettings": {
+      "backgroundMusic": {
+        "file": "trance.mp3",
+        "volume": 0.5,
+        "loop": true
+      },
+      "soundEffects": {
+        "markerTouched": "touch.wav",
+        "error": "error.wav"
+      }
+    },
+    "markerSettings": {
+      "markerTypes": ["blueBall", "errorBall"],
+      "markerAnimations": ["blink", "rotate"],
+      "errorProbability": 0.1,
+      "multipleMarkers": true,
+      "markerPositions": "random"
+    },
+    "buttonSettings": {
+      "buttonTypes": {
+        "start": {"x": 100, "y": 50},
+        "stop": {"x": 200, "y": 50}
+      }
+    },
+    "interactionSettings": {
+      "interactionType": "touch",
+      "responseTime": 500
+    },
+    "movementSettings": {
+      "movementScale": 1.2,
+      "activeJoints": ["hands", "feet"],
+      "jointMappings": {
+        "hands": {"x_scale": 1280, "y_scale": 720}
+      }
+    },
+    "sequenceSettings": {
+      "sequenceType": "simultaneous",
+      "levelSequence": "random"
+    },
+    "scoreSettings": {
+      "scoreSystem": "standard",
+      "levelUpConditions": {
+        "minimumScore": 100
+      }
+    },
+    "visualSettings": {
+      "theme": "dark"
+    },
+    "difficultySettings": {
+      "difficultyAdjustments": {
+        "eventSpeed": 1.5,
+        "requiredAccuracy": 0.9
+      }
+    }
+  }
+}
