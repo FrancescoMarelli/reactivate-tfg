@@ -2,12 +2,14 @@ const Constants = {
   EVENT: {
     UPDATEEXP: 'updateExp',
     CLOCK: 'clock',
-    STOPAUDIOINIT: 'stopAudioInit'
+    STOPAUDIOINIT: 'stopAudioInit',
+    COUNTER: 'updateCounter'
   },
   REGISTER: {
     EXP: 'exp',
     CLOCK: 'clock',
     LEVEL: 'level',
+    COUNTER: 'contador'
   },
   SCENES: {
     CONFIG: 'GameScene',
@@ -53,7 +55,6 @@ const Constants = {
     GO: 'vamos',
     AUDIOTUTORIAL: 'audioTutorial'
   },
-
   DATA: {
     RANKING: 'ranking',
     STATS: 'stats'

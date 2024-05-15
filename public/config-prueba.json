@@ -16,7 +16,7 @@
       }
     },
     "markerSettings": {
-      "markerTypes": ["blueBall", "errorBall"],
+      "markerTypes": ["blueBall", "errorBall","futureball","purpball"],
       "markerAnimations": ["blink", "rotate"],
       "errorProbability": 0.1,
       "multipleMarkers": true,

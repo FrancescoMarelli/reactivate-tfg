@@ -8,7 +8,7 @@ import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
-import { MovePoints } from '~/scenes/move-points';
+import { MovePoints } from '~/params/move-points';
 
 export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
@@ -356,7 +356,7 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints);
+        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
         // This function will be called before refreshing the canvas texture.
         // Anything you add to the canvas texture will be rendered.
       },
@@ -418,5 +418,9 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
       }
     }
   }
+
+  movementSettings(arg0: IPoseLandmark[] | undefined, bodyPoints: Phaser.Physics.Arcade.Sprite[], movementSettings: any) {
+        throw new Error('Method not implemented.');
+    }
 
 }

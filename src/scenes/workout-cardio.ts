@@ -7,7 +7,7 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/scenes/move-points';
+import { MovePoints } from '~/params/move-points';
 
 export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -64,7 +64,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
       this.levelTime = this.levelConfig.levelTime; // Tiempo por nivel, asumiendo que quieres el tiempo por nivel
       this.randomMarker = this.levelConfig.randomMarker; // Acceder correctamente
       this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
-      this.remainingTime = 120; // Tiempo restante predefinido
+      this.remainingTime = 7 * 60 + 7; // Tiempo restante predefinido
       this.markerTypes = this.levelConfig.markerTypes;
       this.movementSettings = this.config.movementSettings;
       this.registry.set(Constants.REGISTER.EXP, this.exp);

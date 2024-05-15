@@ -13,7 +13,7 @@ export default class Stats extends Phaser.GameObjects.Image {
     private myheight: number;
     private hsv;
     private timerEvent;
-    private barColor = [3];
+    private barColor = [4];
     private progress = [3];
     private tCircle = 0.0;
     private percentFailed = 0;
@@ -60,30 +60,34 @@ export default class Stats extends Phaser.GameObjects.Image {
 
     showStats(myMaxStat: JSON) {
         if (myMaxStat) {
-            var content = [
-                "Tipo de entrenamiento: " + myMaxStat["_workout"],
-                "Fecha del entrenamiento: " + myMaxStat["_date"],
-                "Máximo nivel alcanzado: " + myMaxStat["_maxLevel"],
-                "Marcadores alcanzados: " + myMaxStat["_touchedMarkers"],
-                "Marcadores no alcanzados: " + myMaxStat["_untouchedMarkers"],
-            ];
-            this.progress[0] = myMaxStat["_maxLevel"] * 25;
-            this.progress[1] = myMaxStat["_touchedMarkers"] * 7.5;
-            this.progress[2] = myMaxStat["_untouchedMarkers"] * 2.5;
-            // Set posible colors for level
-            if (myMaxStat["_maxLevel"] > 3 && myMaxStat["_maxLevel"] <= 8) {
-                this.setBarColor(1, 0);
-            } else if (myMaxStat["_maxLevel"] > 8) {
-                this.setBarColor(2, 0);
-            } else {
-                this.setBarColor(0, 0);
-            }
-            // Set posible colors for touchedMarkers
-            if (myMaxStat["_touchedMarkers"] > 10 && myMaxStat["_touchedMarkers"] <= 25) {
-                this.setBarColor(1, 1);
-            } else if (myMaxStat["_touchedMarkers"] > 25) {
-                this.setBarColor(2, 1);
-            } else {
+          var content = [
+            "Tipo de entrenamiento: " + myMaxStat["_workout"],
+            "Fecha del entrenamiento: " + myMaxStat["_date"],
+            "Máximo nivel alcanzado: " + myMaxStat["_maxLevel"],
+            "Marcadores alcanzados: " + myMaxStat["_touchedMarkers"],
+            "Marcadores no alcanzados: " + myMaxStat["_untouchedMarkers"],
+          ];
+          this.progress[0] = myMaxStat["_maxLevel"] * 25;
+          this.progress[1] = myMaxStat["_touchedMarkers"] * 7.5;
+          this.progress[2] = myMaxStat["_untouchedMarkers"] * 2.5;
+          // Set posible colors for level
+          if (myMaxStat["_maxLevel"] > 3 && myMaxStat["_maxLevel"] <= 8) {
+            this.setBarColor(1, 0);
+          } else if (myMaxStat["_maxLevel"] > 8) {
+            this.setBarColor(2, 0);
+          } else if (myMaxStat["_maxLevel"] > 15) {
+            this.setBarColor(3, 0);
+          } else {
+            this.setBarColor(0, 0);
+          }
+          // Set posible colors for touchedMarkers
+          if (myMaxStat["_touchedMarkers"] > 10 && myMaxStat["_touchedMarkers"] <= 25) {
+            this.setBarColor(1, 1);
+          } else if (myMaxStat["_touchedMarkers"] > 25) {
+            this.setBarColor(2, 1);
+          } else if (myMaxStat["_touchedmarkers"] < 10){
+            this.setBarColor(3, 1);
+          } else {
                 this.setBarColor(0, 1);
             }
             // Set posible colors for untouchedMarkers
@@ -142,6 +146,8 @@ export default class Stats extends Phaser.GameObjects.Image {
             this.barColor[i] = 60;
         } else if (status == 2) { // green
             this.barColor[i] = 120;
+        } else if (status == 3) { // blue
+          this.barColor[i] = 240;
         }
     }
 

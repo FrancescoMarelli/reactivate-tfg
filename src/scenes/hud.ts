@@ -23,9 +23,8 @@ export default class HUD extends Phaser.Scene {
   private workoutActive;
   private stopAudioB: boolean = false;
 
-
-
-
+  private counter: number = 0;
+  private counterText: Phaser.GameObjects.Text;
 
   constructor() {
     super(Constants.SCENES.HUD);
@@ -43,6 +42,8 @@ export default class HUD extends Phaser.Scene {
 
     /**New congigame**/
     const workoutGameConfig: Phaser.Scene = this.scene.get(Constants.SCENES.CONFIG)
+
+
 
     // Motivation audio
     this.audioCardio = this.sound.add(Constants.AUDIO.CARDIO, { volume: 0.95, loop: false });
@@ -103,8 +104,11 @@ export default class HUD extends Phaser.Scene {
     }
     if (this.scene.isActive(Constants.SCENES.CONFIG)) {
       workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
+      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this)
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
+
+
       this.time.addEvent({
         delay: 3000,
         callback: () => {
@@ -143,6 +147,13 @@ export default class HUD extends Phaser.Scene {
       color: '#FFFFFF',
       fontStyle: 'normal',
     });
+    this.counterText = this.add.text(this.width / 2 - 45, 27, '0', {
+      fontFamily: 'Russo One',
+      fontSize: '45px',
+      color: '#FFFFFF',
+      fontStyle: 'normal',
+    });
+
     this.expBarGraphic = this.add.graphics();
   }
 
@@ -218,6 +229,11 @@ export default class HUD extends Phaser.Scene {
           this.audioHalf.play();
         }
         break;
+        case 'workoutGameConfig':
+          if (this.clockTxt.text == Constants.AUDIO.DURATIONTRANCE3) {
+            this.audioHalf.play();
+          }
+          break;
       default:
         break;
     }
@@ -231,6 +247,12 @@ export default class HUD extends Phaser.Scene {
     this.audioFlexibility.stop();
     this.audioPosition.stop();
     this.audioGo.stop();
+  }
+
+  private updateCounter() {
+    this.counter++;
+    this.counterText.text = this.counter.toString();
+    this.setExpBar(this.counter % 100);
   }
 
 }

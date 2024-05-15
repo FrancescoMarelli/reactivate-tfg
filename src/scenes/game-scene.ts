@@ -7,7 +7,10 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/scenes/move-points';
+import { MovePoints } from '~/params/move-points';
+import {JumpinJackDetector} from '~/params/jumpin-jack-detector';
+import { GymDetector } from '~/params/gym-detector';
+import { PushUps } from '~/params/push-ups';
 
 export default class GameScene extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -46,6 +49,17 @@ export default class GameScene extends AbstractPoseTrackerScene {
   private levelConfig;
   private movementSettings: any;
   private randomRange: any;
+  private gymOpenThreshold: number;
+  private gymCloseThresold: number;
+
+  private counter: number = 0;
+  private jumpCounterText: Phaser.GameObjects.Text;
+  private detectorExercice;
+  private jjBottom: any;
+  private jjTop: any;
+  private bot: number;
+  private top: number;
+
 
 
   constructor() {
@@ -60,16 +74,32 @@ export default class GameScene extends AbstractPoseTrackerScene {
   async create() {
     super.create();
     try {
+      //json param reading
       this.config = await this.loadJsonConfig();
       this.levelConfig = this.config.levelSettings[0];
       this.levelTime = this.levelConfig.levelTime; // Tiempo por nivel, asumiendo que quieres el tiempo por nivel
+      this.remainingTime =  7*60 +7; // Tiempo restante predefinido
+
       this.randomMarker = this.levelConfig.randomMarker; // Acceder correctamente
-      this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
-      this.remainingTime = 120; // Tiempo restante predefinido
-      this.movementSettings = this.config.movementSettings;
       this.markerTypes = this.levelConfig.markerTypes;
       this.randomRange = this.levelConfig.randomRange;
-      this.registry.set(Constants.REGISTER.EXP, this.exp);
+      this.movementSettings = this.config.movementSettings;
+      // Depends by exercies
+      this.gymCloseThresold = this.config.gymCloseThresold; // 40 - 30
+      this.gymOpenThreshold = this.config.gymOpenThreshold; // 156
+      this.jjBottom = this.config.jjBottom; // [[175, 180], 172]
+      this.jjTop = this.config.jjTop; // [30, 40]
+      this.bot = 40;
+
+
+
+      this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
+
+      // detection
+      this.detectorExercice = new PushUps(this);  // Pass the current scene to the JumpinJackDetector
+      this.counter = 0;
+      this.events.on(Constants.EVENT.COUNTER, this.updateJumpCounter, this);
+
       /***************************************** */
 
       if (this.scene.get(Constants.SCENES.Menu))
@@ -204,7 +234,6 @@ export default class GameScene extends AbstractPoseTrackerScene {
   }
 
   startWorkout() {
-    this.createLayout();
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
     this.buttonsReady.forEach((button) => {
@@ -217,71 +246,6 @@ export default class GameScene extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
   }
 
-  createLayout(): void {
-    let width: number = 225;
-    let height: number = 150;
-    let shortRow: boolean = true;
-    let counterRow = 0;
-    let triggerChangeRow: boolean = false;
-    for (var i = 1; i < 15; i++) {
-      const marker = new Marker({
-        scene: this,
-        x: width,
-        y: height,
-        texture: Constants.MARKER.ID,
-        id: i,
-      });
-      counterRow++;
-      if (shortRow) {
-        if (counterRow == 2) {
-          height = height + 125;
-          width = 100;
-          triggerChangeRow = true;
-          counterRow = 0;
-        } else {
-          width = width + 830;
-        }
-      }
-      if (!shortRow) {
-        if (counterRow == 4) {
-          height = height + 125;
-          width = 225;
-          triggerChangeRow = true;
-          counterRow = 0;
-        } else {
-          if (i % 2 == 0) {
-            width = width + 580;
-          } else {
-            width = width + 250;
-          }
-        }
-      }
-      if (triggerChangeRow) {
-        shortRow = !shortRow;
-        triggerChangeRow = false;
-      }
-
-
-      this.markers.push(marker);
-      this.bodyPoints.forEach((point) => {
-        this.physics.add.overlap(
-          marker,
-          point,
-          (marker: any) => {
-            if (marker.getAnimationCreated()) {
-              marker.destroyMarkerAnimation(true);
-              this.destroyMarker(marker, true);
-            }
-          },
-          undefined,
-          this,
-        );
-      });
-    }
-
-
-
-  }
 
   stopScene() {
     this.saveData();
@@ -292,47 +256,6 @@ export default class GameScene extends AbstractPoseTrackerScene {
     this.scene.start(Constants.SCENES.Menu);
   }
 
-  destroyMarker(marker: any, touched: boolean): void {
-    this.currentMarkersAlive--;
-    this.exp = Number(this.registry.get(Constants.REGISTER.EXP));
-    if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
-      if (Number(this.registry.get(Constants.REGISTER.EXP)) > 0) {
-        this.exp = this.exp - 10;
-        if (!marker.getErrorMarker() && !touched) this.untouchedMarkers = this.untouchedMarkers + 1;
-      }
-    } else if ((marker.getErrorMarker() && !touched) || (!marker.getErrorMarker() && touched)) {
-      this.exp = this.exp + 10;
-      if (!marker.getErrorMarker() && touched) this.touchedMarkers = this.touchedMarkers + 1;
-    }
-    this.registry.set(Constants.REGISTER.EXP, this.exp);
-    this.events.emit(Constants.EVENT.UPDATEEXP);
-
-    // Update variables for next markers
-    this.randomMarker = Math.floor(Math.random() * (this.randomRange)) + 1;
-    while (this.randomMarker === this.lastIdMarker) {
-      this.randomMarker = Math.floor(Math.random() * (this.randomRange)) + 1;
-    }
-    this.lastIdMarker = this.randomMarker;
-    if (this.currentMarkersAlive === 0) {
-      this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
-      this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
-      if (this.multipleMarkerProb && this.currentLevel > 1) {
-        this.maxMarkers = 4;
-      } else if (this.multipleMarkerProb) {
-        this.maxMarkers = 3;
-      } else {
-        this.maxMarkers = 2;
-      }
-
-    }
-  }
-
-  probabilityTypesMarkers(probError: number, probMultiple: number) {
-    let rand = Math.random();
-    rand < probError ? (this.errorMakerProb = true) : (this.errorMakerProb = false);
-    rand < probMultiple ? (this.multipleMarkerProb = true) : (this.multipleMarkerProb = false);
-  }
-
   saveData() {
     var date: string = Utils.getActualDate();
     var statsData = new StatsData("cardio", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
@@ -341,16 +264,6 @@ export default class GameScene extends AbstractPoseTrackerScene {
 
   /* ***************************************************************************** */
   update(time: number, delta: number): void {
-    if (!this.touchingButton) {
-      this.buttonsReady.forEach((button) => {
-        this.bodyPoints.forEach((point) => {
-          if (point.body && point.body.touching.none) {
-            button.animateToEmpty(false);
-          }
-        });
-      });
-    }
-    this.touchingButton = false;
     super.update(time, delta, {
       renderElementsSettings: {
         shouldDrawFrame: true,
@@ -358,41 +271,23 @@ export default class GameScene extends AbstractPoseTrackerScene {
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
         MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
-      },
-      afterPaint: (poseTrackerResults) => { },
-    });
-    /****************************************************************************** */
-    if (this.workoutStarted) {
-      this.markers.forEach((marker) => {
-        if (marker.getAnimationCreated()) {
-          // Si tiene animación actualizala.
-          marker.update();
-        }
+        if(this.workoutStarted ) {
+          this.detectorExercice.isReady = true;
+          if (this.detectorExercice.update(poseTrackerResults)) {
+            this.counter++;
+            this.registry.set(Constants.REGISTER.COUNTER, this.counter);
+            this.events.emit(Constants.EVENT.UPDATEEXP, this.counter);
 
-        /* Lógica para crear los marcadores */
-        if (marker.id == this.randomMarker) {
-          if (!marker.getAnimationCreated() && this.triggerAction && this.currentMarkersAlive < this.maxMarkers) {
-            marker.setErrorMarker(this.errorMakerProb);
-            if (this.errorMakerProb) {
-              this.errorMakerProb = false;
-            }
-            marker.createAnimation(this.currentLevel);
-            this.currentMarkersAlive++;
-            this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
-            this.totalTouchableMarkers++;
           }
         }
-        if (marker.isInternalTimerConsumed() && marker.getAnimationCreated()) {
-          marker.destroyMarkerAnimation(false);
-          this.destroyMarker(marker, false);
-        }
-      });
+        },
+      afterPaint: (poseTrackerResults) => {
 
-      this.triggerAction = false;
-      if (this.currentMarkersAlive == 0) {
-        this.triggerAction = true;
-      }
+      },
+    });
 
+  /****************************************************************************** */
+    if (this.workoutStarted) {
       // Time Management
       if (this.levelTime != Math.floor(Math.abs(time / 1000))) {
         this.levelTime = Math.floor(Math.abs(time / 1000));
@@ -414,5 +309,13 @@ export default class GameScene extends AbstractPoseTrackerScene {
         }
       }
     }
+  }
+
+
+  updateJumpCounter() {
+    this.counter++;
+    this.exp = this.counter; // Incrementa la experiencia en base al contador de saltos
+    this.registry.set(Constants.REGISTER.EXP, this.exp); // Actualiza el registro de la experiencia
+    this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
   }
 }
