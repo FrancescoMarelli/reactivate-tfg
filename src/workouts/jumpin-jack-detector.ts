@@ -1,9 +1,10 @@
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
-import { AnglesUtils } from '~/params/angles-utils';
+import { AnglesUtils } from '~/workouts/angles-utils';
+import { IGymExercise } from '~/workouts/gym-exercise.interface';
 
-export class JumpinJackDetector {
+export class JumpinJackDetector implements IGymExercise {
 
   private scene: Phaser.Scene;  // Add a scene property
   private state: 'grounded' | 'ascending' | 'inAir' | 'descending';
@@ -36,7 +37,7 @@ export class JumpinJackDetector {
     }
   }
 
-  getJumpCounter() {
+  getCounter() {
     return this.jumpCounter;
   }
 

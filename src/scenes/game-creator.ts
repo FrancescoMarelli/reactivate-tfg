@@ -7,39 +7,44 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/params/move-points';
-import {JumpinJackDetector} from '~/params/jumpin-jack-detector';
-import { GymDetector } from '~/params/gym-detector';
-import { PushUps } from '~/params/push-ups';
+import { MovePoints } from '~/workouts/move-points';
+import { PushUps } from '~/workouts/push-ups';
+import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
+import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
+import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
+import { IButtonFactory } from '~/factories/interfaces/button-factory.interface';
+import { CustomButtonFactory } from '~/factories/buttons/custom-button-factory';
+import { StandardSilhouetteFactory } from '~/factories/silhouette/silhouette-standard-factory';
 
-export default class GameScene extends AbstractPoseTrackerScene {
+export default class GameCreator extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
-  private markers: Marker[] = [];
-  private triggerAction: boolean = true;
 
   private audioScene: Phaser.Sound.BaseSound;
-  private workoutStarted: boolean = false;
   private silhouetteImage: Phaser.GameObjects.Image;
+
+  // Buttons
   private buttonsReady: any[] = [];
   private buttonReadyLeft;
   private buttonReadyRight;
+  private buttonExitMarker;
+
+  private workoutStarted: boolean = false;
   private getReadyLeft: boolean = false;
   private getReadyRight: boolean = false;
-  private buttonExitMarker;
   private touchingButton: boolean = false;
-  private multipleMarkerProb = false;
-  private errorMakerProb = false;
-  private currentMarkersAlive: number = 0;
-  private maxMarkers: number = 1;
+
+  // Markers
+
   private currentLevel: number = 1;
-  private width: number;
-  private height: number;
   private touchedMarkers: number = 0;
   private untouchedMarkers: number = 0;
   private totalTouchableMarkers: number = 0;
-  private lastIdMarker = 0;
 
-  private config;
+  private width: number;
+  private height: number;
+
+  // Configuración por json
+  private config: any;
   private exp: number = 0;
   private levelTime: number;
   private remainingTime: number;
@@ -49,8 +54,8 @@ export default class GameScene extends AbstractPoseTrackerScene {
   private levelConfig;
   private movementSettings: any;
   private randomRange: any;
-  private gymOpenThreshold: number;
-  private gymCloseThresold: number;
+  private gymOpenAngleThreshold: number;
+  private gymCloseAngleThresold: number;
 
   private counter: number = 0;
   private jumpCounterText: Phaser.GameObjects.Text;
@@ -60,10 +65,21 @@ export default class GameScene extends AbstractPoseTrackerScene {
   private bot: number;
   private top: number;
 
+  // Factories
+  private soundFactory: ISoundFactory;
+  private buttonFactory: IButtonFactory;
+  private layoutFactory: ILayoutFactory;
+  private movementFactory: IMovementFactory;
+  private silhouetteFactory: ISilhouetteFactory;
+  private markerFactory: IMarkerFactory;
 
 
   constructor() {
     super(Constants.SCENES.CONFIG);
+    this.buttonFactory = new CustomButtonFactory();
+    this.soundFactory = new BackgroundSoundFactory();
+    this.silhouetteFactory = new StandardSilhouetteFactory();
+
   }
 
   init() {
@@ -84,14 +100,13 @@ export default class GameScene extends AbstractPoseTrackerScene {
       this.markerTypes = this.levelConfig.markerTypes;
       this.randomRange = this.levelConfig.randomRange;
       this.movementSettings = this.config.movementSettings;
+
       // Depends by exercies
-      this.gymCloseThresold = this.config.gymCloseThresold; // 40 - 30
-      this.gymOpenThreshold = this.config.gymOpenThreshold; // 156
+      this.gymCloseAngleThresold = this.config.gymCloseThresold; // 40 - 30
+      this.gymOpenAngleThreshold = this.config.gymOpenAngleThreshold; // 156
       this.jjBottom = this.config.jjBottom; // [[175, 180], 172]
       this.jjTop = this.config.jjTop; // [30, 40]
       this.bot = 40;
-
-
 
       this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
 
@@ -127,31 +142,19 @@ export default class GameScene extends AbstractPoseTrackerScene {
   }
 
   setupScene() {
-    this.setupAudio();
+    this.audioScene = this.soundFactory.create(this, this.config.audioSettings);
     this.createButtons();
-  }
-
-  setupAudio() {
-    const audioSettings = this.config.audioSettings;
-    this.audioScene = this.sound.add(audioSettings.backgroundMusic,
-      {
-        volume: audioSettings.volume,
-        loop: audioSettings.loop
-      });
   }
 
   createButtons() {
     // Button creation logic here
-    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', '[➔', 95, -48);
-    this.buttonExitMarker.setScale(0.9, 0.85);
+    this.buttonExitMarker = this.buttonFactory.create(this, 1200, 52, 'out', '[➔', 95, -48);
     this.buttonsReady.push(this.buttonExitMarker);
 
-    this.buttonReadyLeft = new CustomButton(this, 340, 230, 'getReady', 'I', 95, -48);
-    this.buttonReadyLeft.setScale(0.9, 0.85);
+    this.buttonReadyLeft = this.buttonFactory.create(this, 340, 230, 'getReady', 'I', 95, -48);
     this.buttonsReady.push(this.buttonReadyLeft);
 
-    this.buttonReadyRight = new CustomButton(this, 940, 230, 'getReady', 'D', 95, -48);
-    this.buttonReadyRight.setScale(0.9, 0.85);
+    this.buttonReadyRight = this.buttonFactory.create(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonsReady.push(this.buttonReadyRight);
 
     this.buttonsReady.forEach((button) => {
@@ -159,9 +162,9 @@ export default class GameScene extends AbstractPoseTrackerScene {
       this.physics.world.enable(button);
       button.body.setAllowGravity(false);
     });
-    this.silhouetteImage = this.add.image(640, 420, 'silhouette');
-    this.silhouetteImage.setScale(0.7, 0.65);
-    // Body points creation logic here
+
+    this.silhouetteImage = this.silhouetteFactory.create(this, 640, 360, 'silhouette');
+    // Body points creation logic /  detection here
     for (let i = 0; i < 24; i++) {
       let point = this.physics.add.sprite(-20, -20, 'point');
       this.add.existing(point);
@@ -258,7 +261,7 @@ export default class GameScene extends AbstractPoseTrackerScene {
 
   saveData() {
     var date: string = Utils.getActualDate();
-    var statsData = new StatsData("cardio", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
+    var statsData = new StatsData("game-creator", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
     Utils.setLocalStorageData(statsData);
   }
 

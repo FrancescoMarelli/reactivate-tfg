@@ -10,7 +10,7 @@ import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
 import ConfigScene from '~/scenes/config-scene';
 import enable = Phaser.Display.Canvas.Smoothing.enable;
-import GameScene from '~/scenes/game-scene';
+import GameCreator from '~/scenes/game-creator';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {
@@ -216,7 +216,7 @@ export default class Menu extends AbstractPoseTrackerScene {
         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
         break;
       case 'gameConfig':
-        this.startNewSceneWorkout(Constants.SCENES.CONFIG, GameScene);
+        this.startNewSceneWorkout(Constants.SCENES.CONFIG, GameCreator);
         this.buttonLeft.setVisible(false);
         this.buttonLeft.setEnabled(false);
         this.setScreen2(false);

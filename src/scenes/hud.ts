@@ -1,5 +1,5 @@
 import Constants from '~/constants';
-import GameScene from '~/scenes/game-scene';
+import GameCreator from '~/scenes/game-creator';
 
 export default class HUD extends Phaser.Scene {
   private expTxt: Phaser.GameObjects.Text;

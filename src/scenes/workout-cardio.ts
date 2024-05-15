@@ -7,7 +7,7 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/params/move-points';
+import { MovePoints } from '~/workouts/move-points';
 
 export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];

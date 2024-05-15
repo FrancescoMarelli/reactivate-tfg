@@ -1,9 +1,10 @@
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
-import { AnglesUtils } from '~/params/angles-utils';
+import { AnglesUtils } from '~/workouts/angles-utils';
+import { IGymExercise } from '~/workouts/gym-exercise.interface';
 
-export class GymDetector {
+export class WeigthLifting implements IGymExercise {
 
   private scene: Phaser.Scene;
   private rightState: 'down' | 'up';
@@ -13,6 +14,9 @@ export class GymDetector {
   private botAngle: number;
   private topAngle: number;
 
+  getCounter() {
+    return this.counter;
+  }
 
 
   constructor(scene: Phaser.Scene, top: number, bot: number) {

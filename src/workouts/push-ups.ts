@@ -1,9 +1,10 @@
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
-import { AnglesUtils } from '~/params/angles-utils';
+import { AnglesUtils } from '~/workouts/angles-utils';
+import { IGymExercise } from '~/workouts/gym-exercise.interface';
 
-export class PushUps {
+export class PushUps implements IGymExercise{
   private scene: Phaser.Scene;
   private state: 'up' | 'down';
   private counter: number = 0;
@@ -68,8 +69,6 @@ export class PushUps {
     this.rightBotAngleText.setText(`${rightArmAngle?.toFixed(0)}`);
     this.rightBotAngleText.setPosition(rightElbowPixel.x, rightElbowPixel.y);
 
-    console.log("angulo codo izquierdo " + leftArmAngle, "angulo codo drecho " + rightArmAngle,
-                "angulo spalla izquierda " + leftShoulderAngle, "angulos spalla derecha " + rightShoulderAngle)
 
     if (this.state == 'down') {
       if(leftArmAngle > 150 && rightArmAngle > 150 && Math.abs(leftShoulderAngle) > 15 && Math.abs(leftShoulderAngle) < 90 && Math.abs(rightShoulderAngle) > 15 && Math.abs(rightShoulderAngle) < 90) {
