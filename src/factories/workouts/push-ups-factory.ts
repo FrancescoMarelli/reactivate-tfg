@@ -2,17 +2,10 @@ import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-re
 import { PushUps } from '~/workouts/push-ups';
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import Constants from '~/constants';
+import { IGymExercise } from '~/workouts/gym-exercise.interface';
 
-class PushUpsFactory implements IMovementFactory {
-  create(scene: Phaser.Scene, config: any): void {
-    const pushUps = new PushUps(scene);
-
-    scene.events.on('POSE_UPDATE', (poseResults: IPoseTrackerResults) => {
-      pushUps.update(poseResults);
-    });
-
-    scene.events.on(Constants.EVENT.COUNTER, () => {
-      console.log(`Push-ups counter: ${pushUps.getCounter()}`);
-    });
+export class PushUpsFactory implements IMovementFactory {
+  create(scene: Phaser.Scene, config: any): IGymExercise {
+    return new PushUps(scene)
   }
 }

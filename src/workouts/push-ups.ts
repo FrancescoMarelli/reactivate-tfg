@@ -8,6 +8,8 @@ export class PushUps implements IGymExercise{
   private scene: Phaser.Scene;
   private state: 'up' | 'down';
   private counter: number = 0;
+  public isReady: boolean;
+
 
   private leftTopAngleText: Phaser.GameObjects.Text;
   private rightBotAngleText: Phaser.GameObjects.Text;
@@ -18,6 +20,7 @@ export class PushUps implements IGymExercise{
   constructor(scene: Phaser.Scene, ) {
     this.scene = scene;
     this.state = 'down';
+    this.isReady = false;
     this.leftBotAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
     this.leftTopAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
     this.rightTopAngleText = this.scene.add.text(0, 0, '', { color: 'green',fontStyle:'bold', fontSize: '40px' });
@@ -32,7 +35,11 @@ export class PushUps implements IGymExercise{
 
 
   update(poseResults: IPoseTrackerResults): boolean {
-    const landmarks = poseResults.poseLandmarks;
+    if(!this.isReady) {
+      return false;
+    }
+
+    const landmarks = poseResults.poseLandmarks
 
     if(!landmarks) return false;
 

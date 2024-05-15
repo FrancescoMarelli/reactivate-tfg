@@ -1,20 +1,18 @@
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import Phaser from 'phaser';
-import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
-import CustomButton from '~/gameobjects/custom-button';
 import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
 import { MovePoints } from '~/workouts/move-points';
-import { PushUps } from '~/workouts/push-ups';
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
 import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
 import { IButtonFactory } from '~/factories/interfaces/button-factory.interface';
 import { CustomButtonFactory } from '~/factories/buttons/custom-button-factory';
 import { StandardSilhouetteFactory } from '~/factories/silhouette/silhouette-standard-factory';
+import { PushUpsFactory } from '~/factories/workouts/push-ups-factory';
 
 export default class GameCreator extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -68,17 +66,16 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   // Factories
   private soundFactory: ISoundFactory;
   private buttonFactory: IButtonFactory;
-  private layoutFactory: ILayoutFactory;
   private movementFactory: IMovementFactory;
   private silhouetteFactory: ISilhouetteFactory;
-  private markerFactory: IMarkerFactory;
 
 
-  constructor() {
+  constructor() { // creo que las fabricas deberias de pasarse por parametro
     super(Constants.SCENES.CONFIG);
     this.buttonFactory = new CustomButtonFactory();
     this.soundFactory = new BackgroundSoundFactory();
     this.silhouetteFactory = new StandardSilhouetteFactory();
+    this.movementFactory = new PushUpsFactory();
 
   }
 
@@ -101,17 +98,17 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.randomRange = this.levelConfig.randomRange;
       this.movementSettings = this.config.movementSettings;
 
-      // Depends by exercies
+      // Depends on exercises
       this.gymCloseAngleThresold = this.config.gymCloseThresold; // 40 - 30
       this.gymOpenAngleThreshold = this.config.gymOpenAngleThreshold; // 156
       this.jjBottom = this.config.jjBottom; // [[175, 180], 172]
       this.jjTop = this.config.jjTop; // [30, 40]
       this.bot = 40;
 
-      this.audioSettings = this.config.audioSettings; // Configuraciones de audio son directas
+      this.audioSettings = this.config.audioSettings;
 
       // detection
-      this.detectorExercice = new PushUps(this);  // Pass the current scene to the JumpinJackDetector
+      this.detectorExercice = this.movementFactory.create(this, { top: this.gymOpenAngleThreshold, bot: this.gymCloseAngleThresold});
       this.counter = 0;
       this.events.on(Constants.EVENT.COUNTER, this.updateJumpCounter, this);
 
@@ -163,7 +160,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       button.body.setAllowGravity(false);
     });
 
-    this.silhouetteImage = this.silhouetteFactory.create(this, 640, 360, 'silhouette');
+    this.silhouetteImage = this.silhouetteFactory.create(this, 640, 420, 'silhouette');
     // Body points creation logic /  detection here
     for (let i = 0; i < 24; i++) {
       let point = this.physics.add.sprite(-20, -20, 'point');
@@ -317,7 +314,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   updateJumpCounter() {
     this.counter++;
-    this.exp = this.counter; // Incrementa la experiencia en base al contador de saltos
+    this.exp = this.counter;
     this.registry.set(Constants.REGISTER.EXP, this.exp); // Actualiza el registro de la experiencia
     this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
   }

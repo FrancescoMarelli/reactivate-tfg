@@ -13,11 +13,13 @@ export class JumpinJackDetector implements IGymExercise {
   private topMinAngle: number;
   private topMaxAngle : number;
   private jumpCounter = 0;
+  private isReady: boolean;
 
 
   constructor(scene: Phaser.Scene, bottomAngle: number, topAngle: number) {  // Add a scene parameter to the constructor
     this.scene = scene;
     this.state = 'grounded';
+    this.isReady = false;
     // Validate top angles
     if (Array.isArray(topAngle) && topAngle[0] < topAngle[1]) {
       this.topMinAngle = topAngle[0];
@@ -42,6 +44,10 @@ export class JumpinJackDetector implements IGymExercise {
   }
 
   update(poseResults: IPoseTrackerResults): boolean {
+    if(!this.isReady) {
+      return false;
+    }
+
     const landmarks = poseResults.poseLandmarks;
 
     // Existing jumping jack detection logic
