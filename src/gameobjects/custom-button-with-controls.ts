@@ -49,7 +49,7 @@ export default class CustomButtonWithControls extends CustomButton {
   private changeValue(delta: number) {
     this.currentIndex = Math.max(0, Math.min(this.currentIndex + delta, this.values.length - 1));
     this.buttonText.setText(this.values[this.currentIndex]);
-    this.scene.events.emit('valueChanged', this.configField, parseInt(this.values[this.currentIndex]));
+    this.scene.events.emit('valueChanged', this.configField, this.currentIndex);
   }
 
   getIndex(): number {

@@ -256,7 +256,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           });
       }
     });
-    // COmprobar si es necesario
+    // Comprobar si es necesario
   }
 
   toggleLandmarks() {

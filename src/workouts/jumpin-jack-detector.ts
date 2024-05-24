@@ -27,10 +27,10 @@ export class JumpinJackDetector implements IGymExercise {
     this.scene = scene;
     this.state = 'grounded';
     this.isReady = false;
-      this.topMinAngle = 30;
-      this.topMaxAngle = 140;
-      this.botMinRange = [175, 180];
-      this.botMax = 172;
+    this.topMinAngle = 20;
+    this.topMaxAngle = 160;
+    this.botMinRange = [175, 180];
+    this.botMax = 172;
 
     this.leftLegAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
     this.rightLegAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
@@ -94,7 +94,6 @@ export class JumpinJackDetector implements IGymExercise {
         this.leftArmAngleText.setText('');
         this.rightArmAngleText.setText('');
       }
-      // Jumping jack detection logic --- nivel de dificultad  1-2-3 angulos de brazos y piernas
       if (angleLeftArm <= this.topMinAngle && angleRightArm <= this.topMinAngle  && angleLeftLeg >= this.botMinRange[0] && angleLeftLeg <= this.botMinRange[1]
                                                                                   && angleRightLeg >= this.botMinRange[0] && angleRightLeg <= this.botMinRange[1]) {
         this.state = 'inAir';
@@ -103,7 +102,6 @@ export class JumpinJackDetector implements IGymExercise {
         this.state = 'grounded';
         this.scene.events.emit(Constants.EVENT.COUNTER);  // Emit the event using the scene property
         this.jumpCounter++;
-        console.log(this.jumpCounter + " JUMPS");  // Add this line
         return true;  // Jumping jack ends when returning to up state
       }
     } else {

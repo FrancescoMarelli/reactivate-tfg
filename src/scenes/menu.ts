@@ -337,7 +337,7 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.scene.stop();
     if (!this.scene.get(scene))
       this.scene.add(scene, nameClass, false, { x: 400, y: 300 });
-    if (!this.scene.get(Constants.SCENES.HUD))
+    if (!this.scene.get(Constants.SCENES.HUD) && scene != Constants.SCENES.CONFIG)
       this.scene.add(Constants.SCENES.HUD, HUD, false, { x: 400, y: 300 });
     this.scene.start(scene);
     this.scene.start(Constants.SCENES.HUD);
