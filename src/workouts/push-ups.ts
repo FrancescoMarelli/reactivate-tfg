@@ -3,12 +3,14 @@ import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
 import { AnglesUtils } from '~/workouts/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 export class PushUps implements IGymExercise{
   private scene: Phaser.Scene;
   private state: 'up' | 'down';
   private counter: number = 0;
   public isReady: boolean;
+  public show: boolean;
 
 
   private leftTopAngleText: Phaser.GameObjects.Text;
@@ -20,6 +22,7 @@ export class PushUps implements IGymExercise{
   constructor(scene: Phaser.Scene, ) {
     this.scene = scene;
     this.state = 'down';
+    this.show = false;
     this.isReady = false;
     this.leftBotAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
     this.leftTopAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
@@ -35,7 +38,6 @@ export class PushUps implements IGymExercise{
   getCounter() {
     return this.counter;
   }
-
 
 
   update(poseResults: IPoseTrackerResults): boolean {
@@ -69,17 +71,22 @@ export class PushUps implements IGymExercise{
     const rightElbowPixel = { x: rightElbow.x * this.scene.scale.width, y: rightElbow.y * this.scene.scale.height };
     const rightShoulderPixel = { x: rightShoulder.x * this.scene.scale.width, y: rightShoulder.y * this.scene.scale.height };
 
+    if(MediapipePoseDetector.showLandmarks) {
+      this.leftBotAngleText.setText(` ${leftShoulderAngle?.toFixed(0)}`);
+      this.leftBotAngleText.setPosition(leftShoulderPixel.x, leftShoulderPixel.y);
+      this.leftTopAngleText.setText(` ${leftArmAngle?.toFixed(0)}`);
+      this.leftTopAngleText.setPosition(leftElbowPixel.x, leftElbowPixel.y);
 
-    this.leftBotAngleText.setText(` ${leftShoulderAngle?.toFixed(0)}`);
-    this.leftBotAngleText.setPosition(leftShoulderPixel.x, leftShoulderPixel.y);
-    this.leftTopAngleText.setText(` ${leftArmAngle?.toFixed(0)}`);
-    this.leftTopAngleText.setPosition(leftElbowPixel.x, leftElbowPixel.y);
-
-    this.rightTopAngleText.setText(`${rightShoulderAngle?.toFixed(0)}`);
-    this.rightTopAngleText.setPosition(rightShoulderPixel.x, rightShoulderPixel.y);
-    this.rightBotAngleText.setText(`${rightArmAngle?.toFixed(0)}`);
-    this.rightBotAngleText.setPosition(rightElbowPixel.x, rightElbowPixel.y);
-
+      this.rightTopAngleText.setText(`${rightShoulderAngle?.toFixed(0)}`);
+      this.rightTopAngleText.setPosition(rightShoulderPixel.x, rightShoulderPixel.y);
+      this.rightBotAngleText.setText(`${rightArmAngle?.toFixed(0)}`);
+      this.rightBotAngleText.setPosition(rightElbowPixel.x, rightElbowPixel.y);
+    } else {
+      this.leftBotAngleText.setText('');
+      this.leftTopAngleText.setText('');
+      this.rightTopAngleText.setText('');
+      this.rightBotAngleText.setText('');
+    }
 
     if (this.state == 'down') {
       if(leftArmAngle > 150 && rightArmAngle > 150 && Math.abs(leftShoulderAngle) > 15 && Math.abs(leftShoulderAngle) < 90 && Math.abs(rightShoulderAngle) > 15 && Math.abs(rightShoulderAngle) < 90) {

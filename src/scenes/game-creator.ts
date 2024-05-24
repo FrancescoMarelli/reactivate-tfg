@@ -16,11 +16,10 @@ import { PushUpsFactory } from '~/factories/workouts/push-ups-factory';
 import { WeightLiftinFactory } from '~/factories/workouts/weight-liftin-factory';
 import { JumpingJackFactory } from '~/factories/workouts/jumping-jack-factory';
 import { CardioFactory } from '~/factories/workouts/cardio-factory';
-import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
-import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
 import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import Marker from '~/gameobjects/marker';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
@@ -74,12 +73,14 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private detectorExercice;
 
 
+
   // Factories
   private soundFactory: ISoundFactory;
   private buttonFactory: IButtonFactory;
   private movementFactory: IMovementFactory | AbstractPoseTrackerScene;
   private silhouetteFactory: ISilhouetteFactory;
   private layoutFactory : ILayoutFactory;
+  private buttonShowLandmarks: Phaser.GameObjects.Container;
 
 
   constructor() { // creo que las fabricas deberias de pasarse por parametro
@@ -192,6 +193,10 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.buttonReadyRight = this.buttonFactory.create(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonsReady.push(this.buttonReadyRight);
 
+    let text =
+    this.buttonShowLandmarks = this.buttonFactory.create(this, 1200 - 170, 52, 'out', 'Show', 95, -48);
+    this.buttonsReady.push(this.buttonShowLandmarks);
+
     this.buttonsReady.forEach((button) => {
       this.add.existing(button);
       this.physics.world.enable(button);
@@ -254,6 +259,11 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     // COmprobar si es necesario
   }
 
+  toggleLandmarks() {
+    MediapipePoseDetector.showLandmarks = !MediapipePoseDetector.showLandmarks;
+  }
+
+
   menuSwitch(button: CustomButtom) {
     switch (button.getText()) {
       case '[➔':
@@ -264,6 +274,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         break;
       case 'D':
         this.getReadyRight = true;
+        break;
+      case 'Show':
+        this.toggleLandmarks();
         break;
       default:
         break;
@@ -285,7 +298,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     }
 
     this.buttonsReady.forEach((button) => {
-      if (button.getText() != '[➔')
+      if (button.getText() != '[➔' && button.getText() != 'Show')
         button.destroy();
     });
     this.audioScene.play();
@@ -322,7 +335,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         if(this.workoutStarted ) {
           this.detectorExercice.isReady = true;
           if (this.detectorExercice.update(poseTrackerResults) && this.detectorExercice.getType() != 'Arcade') {
-            this.counter++;
+            this.updateCounter();
             this.registry.set(Constants.REGISTER.COUNTER, this.counter);
             this.events.emit(Constants.EVENT.UPDATEEXP, this.counter);
 

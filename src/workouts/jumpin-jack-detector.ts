@@ -4,6 +4,7 @@ import Constants from '~/constants';
 import { AnglesUtils } from '~/workouts/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import Phaser from 'phaser';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 export class JumpinJackDetector implements IGymExercise {
 
@@ -16,28 +17,26 @@ export class JumpinJackDetector implements IGymExercise {
   private jumpCounter = 0;
   private isReady: boolean;
 
+  private leftLegAngleText: Phaser.GameObjects.Text;
+  private rightLegAngleText: Phaser.GameObjects.Text;
+  private leftArmAngleText: Phaser.GameObjects.Text;
+  private rightArmAngleText: Phaser.GameObjects.Text;
+
 
   constructor(scene: Phaser.Scene, bottomAngle: number, topAngle: number) {  // Add a scene parameter to the constructor
     this.scene = scene;
     this.state = 'grounded';
     this.isReady = false;
-    // Validate top angles
-    if (Array.isArray(topAngle) && topAngle[0] < topAngle[1]) {
-      this.topMinAngle = topAngle[0];
-      this.topMaxAngle = topAngle[1];
-    } else {
       this.topMinAngle = 30;
       this.topMaxAngle = 140;
-    }
-
-    // Validate bottom angles
-    if (Array.isArray(bottomAngle) && bottomAngle[0] < bottomAngle[1]) {
-      this.botMinRange = bottomAngle[0];
-      this.botMax = bottomAngle[1];
-    } else {
       this.botMinRange = [175, 180];
       this.botMax = 172;
-    }
+
+    this.leftLegAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
+    this.rightLegAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
+    this.leftArmAngleText = this.scene.add.text(0, 0, '', { color: 'blue', fontStyle:'bold', fontSize: '40px' });
+    this.rightArmAngleText = this.scene.add.text(0, 0, '', { color: 'yellow', fontStyle:'bold', fontSize: '40px' });
+
   }
 
   getCounter() {
@@ -51,28 +50,50 @@ export class JumpinJackDetector implements IGymExercise {
 
     const landmarks = poseResults.poseLandmarks;
 
+    if(!landmarks) return false;
+
+
     // Existing jumping jack detection logic
     const leftShoulder = landmarks?.[EPoseLandmark.RightShoulder];
     const leftHip = landmarks?.[EPoseLandmark.RightHip];
     const leftWrist = landmarks?.[EPoseLandmark.RightWrist];
     const leftKnee = landmarks?.[EPoseLandmark.RightKnee]
-    const leftAnkle = landmarks?.[EPoseLandmark.RightAnkle];
 
     const rightShoulder = landmarks?.[EPoseLandmark.LeftShoulder];
     const rightHip = landmarks?.[EPoseLandmark.LeftHip];
     const rightKnee = landmarks?.[EPoseLandmark.LeftKnee];
     const rightWrist = landmarks?.[EPoseLandmark.LeftWrist];
-    const rightAnkle = landmarks?.[EPoseLandmark.LeftAnkle];
+
+    const leftLegPixel = {x: leftHip.x * this.scene.scale.width, y : leftHip.y * this.scene.scale.height};
+    const rightLegPixel = { x: rightHip.x * this.scene.scale.width, y : rightHip.y * this.scene.scale.height};
+    const leftArmPixel = {x: leftShoulder.x * this.scene.scale.width, y : leftShoulder.y * this.scene.scale.height};
+    const rightArmPixel = { x: rightShoulder.x * this.scene.scale.width, y : rightShoulder.y * this.scene.scale.height};
 
     // Check if coordinates exist before calculating angles
-    if (leftShoulder && leftHip && leftWrist && rightShoulder && rightHip  && rightWrist && leftKnee && rightKnee) {
+    if (leftShoulder && leftHip && leftWrist && rightShoulder && rightHip  && rightWrist && leftKnee && rightKnee
+    && leftShoulder.visibility > 0.5 && leftHip.visibility > 0.5 && leftWrist.visibility > 0.5 &&
+      rightShoulder.visibility > 0.5 && rightHip.visibility > 0.5 && rightWrist.visibility > 0.5 && leftKnee.visibility > 0.5 && rightKnee.visibility > 0.5) {
+
       const angleLeftArm = AnglesUtils.calculateAngle(leftHip, leftShoulder, leftWrist);
       const angleRightArm = AnglesUtils.calculateAngle(rightHip, rightShoulder, rightWrist);
       const angleLeftLeg = AnglesUtils.calculateAngle(leftShoulder,leftHip, leftKnee);
       const angleRightLeg = AnglesUtils.calculateAngle(rightShoulder, rightHip, rightKnee);
 
-      //console.log("Left Bot Angle: " + angleLeftLeg + " ----------------- Right Bot Angle: " + angleRightLeg);
-
+      if (MediapipePoseDetector.showLandmarks) {
+        this.leftLegAngleText.setText(` ${angleLeftLeg?.toFixed(0)}`);
+        this.leftLegAngleText.setPosition(leftLegPixel.x, leftLegPixel.y);
+        this.rightLegAngleText.setText(`${angleRightLeg?.toFixed(0)}`);
+        this.rightLegAngleText.setPosition(rightLegPixel.x, rightLegPixel.y);
+        this.leftArmAngleText.setText(` ${angleLeftArm?.toFixed(0)}`);
+        this.leftArmAngleText.setPosition(leftArmPixel.x, leftArmPixel.y);
+        this.rightArmAngleText.setText(`${angleRightArm?.toFixed(0)}`);
+        this.rightArmAngleText.setPosition(rightArmPixel.x, rightArmPixel.y);
+      } else {
+        this.leftLegAngleText.setText('');
+        this.rightLegAngleText.setText('');
+        this.leftArmAngleText.setText('');
+        this.rightArmAngleText.setText('');
+      }
       // Jumping jack detection logic --- nivel de dificultad  1-2-3 angulos de brazos y piernas
       if (angleLeftArm <= this.topMinAngle && angleRightArm <= this.topMinAngle  && angleLeftLeg >= this.botMinRange[0] && angleLeftLeg <= this.botMinRange[1]
                                                                                   && angleRightLeg >= this.botMinRange[0] && angleRightLeg <= this.botMinRange[1]) {

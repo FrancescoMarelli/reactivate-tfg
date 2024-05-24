@@ -8,6 +8,7 @@ import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detec
 
 export class MediapipePoseDetector implements PoseDetector {
   private pose: Pose;
+  public static showLandmarks: boolean = false;
 
   constructor() {
     this.pose = new Pose({
@@ -47,8 +48,10 @@ export class MediapipePoseDetector implements PoseDetector {
 
     if (renderElementsSettings?.shouldDrawPoseLandmarks && results.poseLandmarks) {
       ctx.save();
-      drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
-      drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });
+      if(MediapipePoseDetector.showLandmarks) {
+        drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
+        drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });
+      }
       ctx.restore();
     }
   }
