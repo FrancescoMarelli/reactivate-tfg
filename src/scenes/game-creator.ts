@@ -55,8 +55,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   // Configuración por json
   private config: any;
   private workoutConfig: any;
-  private specificWorkout: any;
-  private generalWorkout: any;
+
   private type : string;
   private exp: number = 0;
   private levelTime: number;
@@ -66,7 +65,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private randomMarker: number = 3;
   private levelConfig;
   private movementSettings: any;
-  private randomRange: any;
+  private randomRange = 14;
 
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
@@ -81,6 +80,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private silhouetteFactory: ISilhouetteFactory;
   private layoutFactory : ILayoutFactory;
   private buttonShowLandmarks: Phaser.GameObjects.Container;
+  private intensity: any;
+  private difficulty: any;
 
 
   constructor() { // creo que las fabricas deberias de pasarse por parametro
@@ -102,25 +103,21 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       //json param reading
       this.config = await this.loadJsonConfig();
 
-      this.levelConfig = this.config.levelSettings;
-      this.levelConfig = this.config.levelSettings[0];
 
-      this.workoutConfig = this.config.workoutConfig;
-      this.generalWorkout = this.workoutConfig.general;
 
       /***/
       const gameConfig  = this.registry.get('game-config');
       this.type = gameConfig.type;
       this.audioSettings = gameConfig.backgroundMusic;
       this.markerTypes = gameConfig.markerTypes;
+      this.intensity = gameConfig.intensity;
+      this.difficulty = gameConfig.difficulty;
+      this.workoutConfig = gameConfig.workoutConfig;
       console.log('Game Config:', gameConfig);
-
       this.levelTime = 0.3;
-      this.remainingTime =  (gameConfig.gameLength +1 )  * 60 + 7;
-
+      this.remainingTime = this.workoutConfig.time + 7;
 
       this.randomMarker = 3;
-      this.randomRange = this.levelConfig.randomRange;
 
       this.movementSettings = this.config.movementSettings;
 
@@ -366,9 +363,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         this.events.emit(Constants.EVENT.CLOCK);
 
         // End of workout
-          if (this.remainingTime == 0 || this.counter >= this.workoutConfig.general.target) {
+          if (this.remainingTime == 0 || this.counter >= this.workoutConfig.reps) {
             let message;
-            if (this.counter >= this.workoutConfig.general.target) {
+            if (this.counter >= this.workoutConfig.reps) {
               message = '¡Juego finalizado,\nobjetivo logrado!';
             } else {
               message = '¡Juego finalizado,\nno has podido con el workout!';
