@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Marker from '~/gameobjects/marker';
+import { IMarkerFactory } from '~/factories/interfaces/marker-factory.interface';
 
 export class MarkerFactory implements IMarkerFactory {
   create(scene: Phaser.Scene, config: any): Marker {

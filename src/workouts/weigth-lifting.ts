@@ -19,19 +19,13 @@ export class WeigthLifting implements IGymExercise {
   }
 
 
-  constructor(scene: Phaser.Scene, top: number, bot: number) {
+  constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.rightState = 'down';
     this.leftState = 'down';
     this.isReady = false;
-    if(bot < top) {
-      this.botAngle = bot || 40;
-      this.topAngle = top || 156;
-    } else {
-      this.botAngle = top || 40;
-      this.topAngle = bot || 156;
-    }
-
+      this.botAngle = 40;
+      this.topAngle =  156;
   }
   update(poseResults: IPoseTrackerResults): boolean {
     if(!this.isReady) {
@@ -77,5 +71,9 @@ export class WeigthLifting implements IGymExercise {
       console.error('Landmarks are missing');
     }
     return false;
+  }
+
+  getType(): string {
+    return 'Gym';
   }
 }

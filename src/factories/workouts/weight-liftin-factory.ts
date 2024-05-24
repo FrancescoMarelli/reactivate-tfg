@@ -7,6 +7,6 @@ import { IGymExercise } from '~/workouts/gym-exercise.interface';
 
 export class WeightLiftinFactory implements IMovementFactory {
   create(scene: Phaser.Scene, config: any): IGymExercise {
-    return  new WeigthLifting(scene, config.topAngle, config.bottomAngle);
+    return  new WeigthLifting(scene);
   }
 }

@@ -31,6 +31,27 @@
   },
   "movementSettings": {
     "activeJoints": [ "LeftIndex", "RightIndex"]
+  },
+  "workoutConfig": {
+    "general": {
+      "name": "push-ups",
+      "type": "gym",
+      "intensity": "medium",
+      "target": 14,
+      "ratio": {
+        "easy": {
+          "reps": 10,
+          "time": 60
+        },
+        "medium": {
+          "reps": 20,
+          "time": 60
+        },
+        "hard": {
+          "reps": 30,
+          "time": 60
+        }
+      }
+    }
   }
-
 }

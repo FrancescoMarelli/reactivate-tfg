@@ -3,6 +3,7 @@ import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
 import { AnglesUtils } from '~/workouts/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
+import Phaser from 'phaser';
 
 export class JumpinJackDetector implements IGymExercise {
 
@@ -89,6 +90,10 @@ export class JumpinJackDetector implements IGymExercise {
     }
 
     return false;
+  }
+
+  getType(): string {
+    return 'Gym';
   }
 }
 

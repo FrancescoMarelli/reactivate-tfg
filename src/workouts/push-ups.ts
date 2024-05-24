@@ -27,6 +27,10 @@ export class PushUps implements IGymExercise{
     this.rightBotAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
   }
 
+  getType(): string {
+    return 'Gym';
+    }
+
 
   getCounter() {
     return this.counter;

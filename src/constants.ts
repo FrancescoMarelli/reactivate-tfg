@@ -12,7 +12,7 @@ const Constants = {
     COUNTER: 'contador'
   },
   SCENES: {
-    CONFIG: 'GameScene',
+    CONFIG: 'GameConfig',
     LOADER: 'Loader',
     Menu: 'Menu',
     WorkoutCardio: 'WorkoutCardio',
@@ -20,6 +20,8 @@ const Constants = {
     WorkoutFlexibilidad: 'WorkoutFlexibilidad',
     HUD: 'HUD',
     STATS: 'STATS',
+    GAME_CREATOR: 'GameScene',
+
   },
   MARKER: {
     ID: 'marker',

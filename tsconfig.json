@@ -21,5 +21,8 @@
     "typeRoots": ["node_modules/@types", "node_module/phaser/types"],
     "types": ["phaser"]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "node_modules/@types/node/globals.d.ts"
+  ]
 }

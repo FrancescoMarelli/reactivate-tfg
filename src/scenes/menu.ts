@@ -191,7 +191,6 @@ export default class Menu extends AbstractPoseTrackerScene {
     });
 
 
-
     if (this.scene.get(Constants.SCENES.WorkoutCardio))
       this.scene.remove(Constants.SCENES.WorkoutCardio);
     if (this.scene.get(Constants.SCENES.WorkoutAgilidad))
@@ -200,6 +199,8 @@ export default class Menu extends AbstractPoseTrackerScene {
       this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
     if(this.scene.get(Constants.SCENES.CONFIG))
       this.scene.remove(Constants.SCENES.CONFIG)
+    if(this.scene.get(Constants.SCENES.GAME_CREATOR))
+      this.scene.remove(Constants.SCENES.GAME_CREATOR)
     if (this.scene.get(Constants.SCENES.HUD))
       this.scene.remove(Constants.SCENES.HUD);
   }
@@ -216,7 +217,7 @@ export default class Menu extends AbstractPoseTrackerScene {
         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
         break;
       case 'gameConfig':
-        this.startNewSceneWorkout(Constants.SCENES.CONFIG, GameCreator);
+        this.startNewSceneWorkout(Constants.SCENES.CONFIG, ConfigScene);
         this.buttonLeft.setVisible(false);
         this.buttonLeft.setEnabled(false);
         this.setScreen2(false);

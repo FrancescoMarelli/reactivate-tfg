@@ -13,9 +13,19 @@ import { IButtonFactory } from '~/factories/interfaces/button-factory.interface'
 import { CustomButtonFactory } from '~/factories/buttons/custom-button-factory';
 import { StandardSilhouetteFactory } from '~/factories/silhouette/silhouette-standard-factory';
 import { PushUpsFactory } from '~/factories/workouts/push-ups-factory';
+import { WeightLiftinFactory } from '~/factories/workouts/weight-liftin-factory';
+import { JumpingJackFactory } from '~/factories/workouts/jumping-jack-factory';
+import { CardioFactory } from '~/factories/workouts/cardio-factory';
+import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
+import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
+import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
+import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
+import Marker from '~/gameobjects/marker';
+
 
 export default class GameCreator extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+  private markers: Marker[] = [];
 
   private audioScene: Phaser.Sound.BaseSound;
   private silhouetteImage: Phaser.GameObjects.Image;
@@ -37,12 +47,18 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private touchedMarkers: number = 0;
   private untouchedMarkers: number = 0;
   private totalTouchableMarkers: number = 0;
+  private lastIdMarker = 0;
+  private currentMarkersAlive: number = 0;
 
   private width: number;
   private height: number;
 
   // Configuración por json
   private config: any;
+  private workoutConfig: any;
+  private specificWorkout: any;
+  private generalWorkout: any;
+  private type : string;
   private exp: number = 0;
   private levelTime: number;
   private remainingTime: number;
@@ -52,31 +68,26 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private levelConfig;
   private movementSettings: any;
   private randomRange: any;
-  private gymOpenAngleThreshold: number;
-  private gymCloseAngleThresold: number;
 
   private counter: number = 0;
-  private jumpCounterText: Phaser.GameObjects.Text;
+  private counterText: Phaser.GameObjects.Text;
   private detectorExercice;
-  private jjBottom: any;
-  private jjTop: any;
-  private bot: number;
-  private top: number;
+
 
   // Factories
   private soundFactory: ISoundFactory;
   private buttonFactory: IButtonFactory;
-  private movementFactory: IMovementFactory;
+  private movementFactory: IMovementFactory | AbstractPoseTrackerScene;
   private silhouetteFactory: ISilhouetteFactory;
+  private layoutFactory : ILayoutFactory;
 
 
   constructor() { // creo que las fabricas deberias de pasarse por parametro
-    super(Constants.SCENES.CONFIG);
+    super(Constants.SCENES.GAME_CREATOR);
+    this.silhouetteFactory = new StandardSilhouetteFactory();
     this.buttonFactory = new CustomButtonFactory();
     this.soundFactory = new BackgroundSoundFactory();
-    this.silhouetteFactory = new StandardSilhouetteFactory();
-    this.movementFactory = new PushUpsFactory();
-
+    this.layoutFactory = new StaticLayoutFactory();
   }
 
   init() {
@@ -89,38 +100,65 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     try {
       //json param reading
       this.config = await this.loadJsonConfig();
-      this.levelConfig = this.config.levelSettings[0];
-      this.levelTime = this.levelConfig.levelTime; // Tiempo por nivel, asumiendo que quieres el tiempo por nivel
-      this.remainingTime =  7*60 +7; // Tiempo restante predefinido
 
-      this.randomMarker = this.levelConfig.randomMarker; // Acceder correctamente
-      this.markerTypes = this.levelConfig.markerTypes;
+      this.levelConfig = this.config.levelSettings;
+      this.levelConfig = this.config.levelSettings[0];
+
+      this.workoutConfig = this.config.workoutConfig;
+      this.generalWorkout = this.workoutConfig.general;
+
+      /***/
+      const gameConfig  = this.registry.get('game-config');
+      this.type = gameConfig.type;
+      this.audioSettings = gameConfig.backgroundMusic;
+      this.markerTypes = gameConfig.markerTypes;
+      console.log('Game Config:', gameConfig);
+
+      this.levelTime = 0.3;
+      this.remainingTime =  (gameConfig.gameLength +1 )  * 60 + 7;
+
+
+      this.randomMarker = 3;
       this.randomRange = this.levelConfig.randomRange;
+
       this.movementSettings = this.config.movementSettings;
 
-      // Depends on exercises
-      this.gymCloseAngleThresold = this.config.gymCloseThresold; // 40 - 30
-      this.gymOpenAngleThreshold = this.config.gymOpenAngleThreshold; // 156
-      this.jjBottom = this.config.jjBottom; // [[175, 180], 172]
-      this.jjTop = this.config.jjTop; // [30, 40]
-      this.bot = 40;
 
-      this.audioSettings = this.config.audioSettings;
-
-      // detection
-      this.detectorExercice = this.movementFactory.create(this, { top: this.gymOpenAngleThreshold, bot: this.gymCloseAngleThresold});
       this.counter = 0;
-      this.events.on(Constants.EVENT.COUNTER, this.updateJumpCounter, this);
+      this.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
 
       /***************************************** */
 
-      if (this.scene.get(Constants.SCENES.Menu))
-        this.scene.remove(Constants.SCENES.Menu);
+      if (this.scene.get(Constants.SCENES.CONFIG))
+        this.scene.remove(Constants.SCENES.CONFIG);
+
     } catch (error) {
       console.error('Error loading configuration:', error);
       this.scene.stop();
     }
+
     this.setupScene();
+
+    this.workoutSwitch(this.type);
+    this.detectorExercice = this.movementFactory.create(this, { top: null, bot: null });
+  }
+
+  workoutSwitch(workout: string) {
+    switch (workout) {
+      case 'push-ups':
+        this.movementFactory = new PushUpsFactory();
+        break;
+      case 'weight-lifting':
+        this.movementFactory = new WeightLiftinFactory();
+        break;
+      case 'jumping-jacks':
+        this.movementFactory = new JumpingJackFactory();
+        break;
+      case 'cardio':
+        this.movementFactory = new CardioFactory();
+        break;
+
+    }
   }
 
   async loadJsonConfig() {
@@ -160,6 +198,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       button.body.setAllowGravity(false);
     });
 
+    // silhoutte creation
     this.silhouetteImage = this.silhouetteFactory.create(this, 640, 420, 'silhouette');
     // Body points creation logic /  detection here
     for (let i = 0; i < 24; i++) {
@@ -185,6 +224,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           undefined,
           this,
         );
+
       });
 
       if (button) {
@@ -211,6 +251,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           });
       }
     });
+    // COmprobar si es necesario
   }
 
   menuSwitch(button: CustomButtom) {
@@ -234,8 +275,15 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   }
 
   startWorkout() {
+
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
+    if(this.detectorExercice.getType() == 'Arcade') {
+      this.markers = this.layoutFactory.create(this, this.bodyPoints);
+      this.detectorExercice.setBodyPoints(this.bodyPoints);
+      this.detectorExercice.setMarkers(this.markers);
+    }
+
     this.buttonsReady.forEach((button) => {
       if (button.getText() != '[➔')
         button.destroy();
@@ -257,8 +305,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   }
 
   saveData() {
-    var date: string = Utils.getActualDate();
-    var statsData = new StatsData("game-creator", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
+    let date: string = Utils.getActualDate();
+    let statsData = new StatsData("game-creator", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
     Utils.setLocalStorageData(statsData);
   }
 
@@ -273,7 +321,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
         if(this.workoutStarted ) {
           this.detectorExercice.isReady = true;
-          if (this.detectorExercice.update(poseTrackerResults)) {
+          if (this.detectorExercice.update(poseTrackerResults) && this.detectorExercice.getType() != 'Arcade') {
             this.counter++;
             this.registry.set(Constants.REGISTER.COUNTER, this.counter);
             this.events.emit(Constants.EVENT.UPDATEEXP, this.counter);
@@ -281,12 +329,13 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           }
         }
         },
-      afterPaint: (poseTrackerResults) => {
+        afterPaint: (poseTrackerResults) => {
 
-      },
-    });
+        },
+      });
 
   /****************************************************************************** */
+    /****************************************************************************** */
     if (this.workoutStarted) {
       // Time Management
       if (this.levelTime != Math.floor(Math.abs(time / 1000))) {
@@ -304,15 +353,30 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         this.events.emit(Constants.EVENT.CLOCK);
 
         // End of workout
-        if (this.remainingTime == 0) {
-          this.stopScene();
+          if (this.remainingTime == 0 || this.counter >= this.workoutConfig.general.target) {
+            let message;
+            if (this.counter >= this.workoutConfig.general.target) {
+              message = '¡Juego finalizado,\nobjetivo logrado!';
+            } else {
+              message = '¡Juego finalizado,\nno has podido con el workout!';
+            }
+            let text = this.add.text(600, 300, message, {
+              fontSize: '52px',
+              color: '#fff',
+              fontFamily: 'Roboto',
+              fontStyle: 'bold'
+            });
+            text.setOrigin(0.5, 0.5);
+            setTimeout(() => {
+              this.stopScene();
+            }, 3000);
+          }
         }
-      }
     }
   }
 
 
-  updateJumpCounter() {
+  updateCounter() {
     this.counter++;
     this.exp = this.counter;
     this.registry.set(Constants.REGISTER.EXP, this.exp); // Actualiza el registro de la experiencia

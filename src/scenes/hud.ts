@@ -41,7 +41,7 @@ export default class HUD extends Phaser.Scene {
     const WorkoutFlexibilidad: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutFlexibilidad);
 
     /**New congigame**/
-    const workoutGameConfig: Phaser.Scene = this.scene.get(Constants.SCENES.CONFIG)
+    const workoutGameConfig: Phaser.Scene = this.scene.get(Constants.SCENES.GAME_CREATOR)
 
 
 
@@ -102,7 +102,7 @@ export default class HUD extends Phaser.Scene {
         loop: false
       });
     }
-    if (this.scene.isActive(Constants.SCENES.CONFIG)) {
+    if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
       workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
       workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this)
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
