@@ -22,25 +22,25 @@ interface GameConfig {
 
 const workoutConfigurations = {
   "push-ups": {
-    "Muy Fácil": { reps: 5 },
-    "Fácil": { reps: 7 },
-    "Medio": { reps: 10 },
-    "Difícil": { reps: 20 },
-    "Muy Difícil": { reps: 30 }
+    "Principiante": { reps: 5 },
+    "Esordiente": { reps: 7 },
+    "Experto": { reps: 10 },
+    "Avanzado": { reps: 20 },
+    "Pro": { reps: 30 }
   },
   "jumping-jacks": {
-    "Muy Fácil": { reps: 5 },
-    "Fácil": { reps: 7 },
-    "Medio": { reps: 10 },
-    "Difícil": { reps: 20 },
-    "Muy Difícil": { reps: 30 }
+    "Principiante": { reps: 5 },
+    "Esordiente": { reps: 7 },
+    "Experto": { reps: 10 },
+    "Avanzado": { reps: 20 },
+    "Pro": { reps: 30 }
   },
   "weight-lifting": {
-    "Muy Fácil": { reps: 10, },
-    "Fácil": { reps: 20 },
-    "Medio": { reps: 30 },
-    "Difícil": { reps: 40 },
-    "Muy Difícil": { reps: 50 }
+    "Principiante": { reps: 10, },
+    "Esordiente": { reps: 20 },
+    "Experto": { reps: 30 },
+    "Avanzado": { reps: 40 },
+    "Pro": { reps: 50 }
   }
 };
 
@@ -55,7 +55,7 @@ export default class ConfigScene extends Phaser.Scene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private buttons: { [key: string]: CustomButtonWithControls } = {};
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
-  private difficultyLabels = ["Muy Fácil", "Fácil", "Medio", "Difícil", "Muy Difícil"];
+  private difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
   private markerTypeLabels = ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink", "Brown", "Black", "White"];
   private backgroundMusicLabels = ["agilidad", "cardio", "contactError", "tutorial", "vamos"];
