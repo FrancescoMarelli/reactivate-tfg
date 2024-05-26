@@ -19,7 +19,7 @@
       "errorProbability": 0.15,
       "probMultipleDiv": 10,
       "multipleMarkers": true,
-      "markerTypes": ["blueBall", "errorBall"],
+      "markerTypes": ["blueFuture", "errorBall"],
       "randomMarker": 3,
       "randomRange": 14
     }

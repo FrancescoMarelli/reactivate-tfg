@@ -12,7 +12,7 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
   private errorMarker: boolean = false;
   private internalTimerConsumed: boolean = false;
   private timerEvent;
-  private defaultMarker: string = "blueBall";
+  private defaultMarker: string = "futureball";
   private defaultErrorMarker: string = "errorBall";
   private flexibilityGame: boolean;
   private agilityGame: boolean;
@@ -30,7 +30,7 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
     this.animationCreated = false;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.defaultMarker = config.defaultMarker || "blueFuture";
+    this.defaultMarker = config.defaultMarker || "futureball";
     this.defaultErrorMarker = config.defaultErrorMarker || "errorBall";
   }
 

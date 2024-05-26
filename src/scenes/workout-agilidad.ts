@@ -7,7 +7,6 @@ import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interfa
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/workouts/move-points';
 
 export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
@@ -241,6 +240,20 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
     }
   }
 
+  movePoints(coords: IPoseLandmark[] | undefined) {
+    if (this.bodyPoints && coords) {
+      for (var i = 0; i < this.bodyPoints.length; i++) {
+        if (i == 34) { // To extend hands points (improve accuracy)
+          this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
+        } else if (i == 35) {
+          this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
+        } else {
+          this.bodyPoints[i]?.setPosition(coords[i]?.x * 1280, coords[i]?.y * 720);
+        }
+      }
+    }
+  }
+
   createLayout(): void {
     let width: number = 50;
     let height: number = 150;
@@ -355,7 +368,7 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
+        this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
         // This function will be called before refreshing the canvas texture.
         // Anything you add to the canvas texture will be rendered.
       },
@@ -417,9 +430,5 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
       }
     }
   }
-
-  movementSettings(arg0: IPoseLandmark[] | undefined, bodyPoints: Phaser.Physics.Arcade.Sprite[], movementSettings: any) {
-        throw new Error('Method not implemented.');
-    }
 
 }
