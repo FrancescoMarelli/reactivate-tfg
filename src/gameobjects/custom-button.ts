@@ -2,10 +2,10 @@ import Phaser from 'phaser';
 
 export default class CustomButtom extends Phaser.GameObjects.Container {
   protected upImage: Phaser.GameObjects.Image;
-  private overImage: Phaser.GameObjects.Rectangle;
+  protected overImage: Phaser.GameObjects.Rectangle;
   buttomText: Phaser.GameObjects.Text;
-  private cancelAnimationEmpty: boolean;
-  private barWidth: number;
+  protected cancelAnimationEmpty: boolean;
+  protected barWidth: number;
   private initField: number;
   private enabled: boolean = true;
 
@@ -81,5 +81,9 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
   }
   setText(s: string) {
     this.buttomText.text = s;
+  }
+
+  getType() {
+    return 'CustomButton';
   }
 }

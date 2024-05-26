@@ -3,6 +3,9 @@ import Constants from '~/constants';
 import CustomButtonWithControls from '~/gameobjects/custom-button-with-controls';
 import GameCreator from '~/scenes/game-creator';
 import HUD from '~/scenes/hud';
+import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
+import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
+import CustomButtom from '~/gameobjects/custom-button';
 
 const baseStyle = {
   color: '#FFFFFF',
@@ -36,7 +39,7 @@ const workoutConfigurations = {
     "Pro": { reps: 30 }
   },
   "weight-lifting": {
-    "Principiante": { reps: 10, },
+    "Principiante": { reps: 10 },
     "Esordiente": { reps: 20 },
     "Experto": { reps: 30 },
     "Avanzado": { reps: 40 },
@@ -50,16 +53,18 @@ const IntensityConfig = {
   "intenso": { multiplier: 1.5, description: 'High intensity, shorter duration' }
 };
 
-export default class ConfigScene extends Phaser.Scene {
+export default class ConfigScene extends AbstractPoseTrackerScene {
   private config: GameConfig;
-  private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
-  private buttons: { [key: string]: CustomButtonWithControls } = {};
+  private bodyPoints: any[] = [];
+  private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
   private difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
   private markerTypeLabels = ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink", "Brown", "Black", "White"];
   private backgroundMusicLabels = ["agilidad", "cardio", "contactError", "tutorial", "vamos"];
   private intensityLabels = ["tranquilo", "normal", "intenso"];
+  private touchingButton: boolean = false;
+  private saveButton: any;
 
   constructor() {
     super({ key: Constants.SCENES.CONFIG });
@@ -67,14 +72,15 @@ export default class ConfigScene extends Phaser.Scene {
   }
 
   create() {
-    this.buttons['difficulty'] = this.createConfigControl(800, 100, 'button', 'Difficulty', 'difficulty', this.difficultyLabels);
-    this.buttons['intensity'] = this.createConfigControl(800, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
-    this.buttons['gameLength'] = this.createConfigControl(800, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
-    this.buttons['backgroundMusic'] = this.createConfigControl(800, 600, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
-    this.buttons['type'] = this.createConfigControl(800, 400, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
-    this.buttons['markerTypes'] = this.createConfigControl(800, 500, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
+    super.create();
 
-    // Call the visibility update function after all controls are created
+    this.buttons['difficulty'] = this.createConfigControl(750, 100, 'button', 'Difficulty', 'difficulty', this.difficultyLabels);
+    this.buttons['intensity'] = this.createConfigControl(750, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
+    this.buttons['gameLength'] = this.createConfigControl(750, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
+    this.buttons['backgroundMusic'] = this.createConfigControl(750, 400, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
+    this.buttons['type'] = this.createConfigControl(750, 500, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
+    this.buttons['markerTypes'] = this.createConfigControl(750, 600, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
+
     this.updateMarkerTypesVisibility();
 
     this.events.on('valueChanged', (field, newValue) => {
@@ -87,8 +93,63 @@ export default class ConfigScene extends Phaser.Scene {
       }
     });
 
-    const saveButton = this.add.text(1100, 630, 'Save', baseStyle).setInteractive(); // Cambia y de 1000 a 700
-    saveButton.on('pointerdown', () => this.saveConfig());
+    this.saveButton = new CustomButtom(
+      this,
+      1150,
+      680,
+      'button',
+      'SAVE'
+    );
+    this.saveButton.setScale(0.7, 0.65);
+    this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
+    this.addOverlapForSaveButton();
+
+
+    this.buttons.forEach((button) => {
+      this.add.existing(button);
+      this.physics.world.enable(button);
+      button.body.setAllowGravity(false);
+    });
+
+    // Initialize body points for pose detection
+    for (let i = 0; i < 22; i++) {
+      let point;
+      if (i === 9) {
+        point = this.physics.add.sprite(-50, -50, 'leftHand');
+        point.setScale(0.35);
+      } else if (i === 10) {
+        point = this.physics.add.sprite(-50, -50, 'rightHand');
+        point.setScale(0.35);
+      } else {
+        point = this.physics.add.sprite(-20, -20, 'point');
+        point.setAlpha(0);
+      }
+      this.add.existing(point);
+      this.bodyPoints.push(point);
+    }
+
+    this.setupButtonInteractions();
+    this.addOverlapForSaveButton();
+  }
+
+  addClickEventListener(button: Phaser.GameObjects.GameObject, callback: () => void) {
+    button.setInteractive()
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, callback);
+  }
+  addOverlapForSaveButton() {
+    this.add.existing(this.saveButton);
+    this.physics.world.enable(this.saveButton);
+    this.saveButton.body.setAllowGravity(false);
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.saveButton, point, () => {
+        this.saveButton.animateToFill(false);
+        this.touchingButton = true;
+        if (this.saveButton.buttonIsFull() && this.saveButton.isEnabled()) {
+          this.saveButton.emit('down', this.saveButton);
+          this.saveConfig();
+        }
+      }, undefined, this);
+    });
   }
 
   updateMarkerTypesVisibility() {
@@ -110,7 +171,66 @@ export default class ConfigScene extends Phaser.Scene {
     this.textLabels[configField] = text;
     const button = new CustomButtonWithControls(this, x, y, texture, this.config[configField], configField, values);
     this.add.existing(button);
+    this.physics.world.enable(button);
+
+    // Add overlap detection with body points (hand tracking)
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(button, point, () => {
+        button.animateToFill(false);
+        this.touchingButton = true;
+        if (button.buttonIsFull() && button.isEnabled()) {
+          button.emit('down', button);
+        }
+      }, undefined, this);
+    });
+
+    // Add overlap detection for plus and minus buttons
+    this.physics.add.overlap(button.plusButton, this.bodyPoints, () => {
+      this.touchingButton = true;
+      button.changeValue(1);
+    }, undefined, this);
+
+    this.physics.add.overlap(button.minusButton, this.bodyPoints, () => {
+      this.touchingButton = true;
+      button.changeValue(-1);
+    }, undefined, this);
+
     return button;
+  }
+
+  setupButtonInteractions() {
+    this.buttons.forEach(button => {
+      button.setInteractive()
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+          button.animateToFill(true);
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+          button.animateToEmpty(true);
+        })
+        .on('down', () => {
+          button.animateToFill(true);
+          if (button.buttonIsFull() && button.isEnabled()) {
+            this.handleButtonAction(button);
+          }
+        })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+          button.animateToFill(true);
+          if (button.buttonIsFull() && button.isEnabled()) {
+            this.handleButtonAction(button);
+          }
+        });
+    });
+  }
+
+  handleButtonAction(button: CustomButtonWithControls) {
+      const field = button.getField();
+      const currentIndex = button.getIndex();
+      const values = button.getValues();
+      const newValue = (currentIndex + 1) % values.length;
+      button.setIndex(newValue);
+      button.setText(values[newValue]);
+
+      this.events.emit('valueChanged', field, newValue);
   }
 
   saveConfig() {
@@ -123,13 +243,11 @@ export default class ConfigScene extends Phaser.Scene {
       backgroundMusic: this.backgroundMusicLabels[this.buttons['backgroundMusic'].getIndex()],
       workoutConfig: this.getWorkoutConfig()
     };
-    // Guarda los datos de configuración en el registro
     this.registry.set('game-config', configCopy);
     console.log('Configuración guardada:', configCopy);
 
     this.scene.stop();
 
-    // Check if the scene 'GAME_CREATOR' already exists
     if (!this.scene.get(Constants.SCENES.GAME_CREATOR)) {
       this.scene.add(Constants.SCENES.GAME_CREATOR, GameCreator, false, { x: 400, y: 300 });
     }
@@ -172,5 +290,45 @@ export default class ConfigScene extends Phaser.Scene {
     } else {
       console.error(`Workout configuration not found for type: ${workoutType}, difficulty: ${difficulty}`);
     }
+  }
+
+  movePoints(coords: IPoseLandmark[] | undefined) {
+    if (this.bodyPoints && coords) {
+      for (let i = 0; i < this.bodyPoints.length; i++) {
+        if (i === 9 || i === 10) {
+          this.bodyPoints[i].setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
+        }
+      }
+    }
+  }
+
+  update(time: number, delta: number): void {
+    if (!this.touchingButton) {
+      this.buttons.forEach(button => {
+        this.bodyPoints.forEach(point => {
+          if (point.body && point.body.touching.none) {
+            button.animateToEmpty(false);
+          }
+        });
+      });
+    }
+    super.update(time, delta, {
+      renderElementsSettings: {
+        shouldDrawFrame: false,
+        shouldDrawPoseLandmarks: false,
+      },
+      beforePaint: (poseTrackerResults, canvasTexture) => {
+        // This function will be called before refreshing the canvas texture.
+        // Anything you add to the canvas texture will be rendered.
+      },
+      afterPaint: (poseTrackerResults) => {
+        // This function will be called after refreshing the canvas texture.
+        this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+      },
+    });
+    this.touchingButton = false;
+
+    // Here you can do any other update related to the game.
+    // PoseTrackerResults are only available in the previous callbacks, though.
   }
 }

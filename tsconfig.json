@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strictPropertyInitialization": false,
     "target": "es2016",
+    "lib": ["es2017", "dom"],
     "module": "es6",
     "strict": true,
     "noImplicitAny": false,

@@ -191,7 +191,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.buttonsReady.push(this.buttonReadyRight);
 
     let text =
-    this.buttonShowLandmarks = this.buttonFactory.create(this, 1200 - 170, 52, 'out', 'Show', 95, -48);
+    this.buttonShowLandmarks = this.buttonFactory.create(this, 1200 - 170, 52, 'out', '🕺', 95, -48);
     this.buttonsReady.push(this.buttonShowLandmarks);
 
     this.buttonsReady.forEach((button) => {
@@ -272,7 +272,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       case 'D':
         this.getReadyRight = true;
         break;
-      case 'Show':
+      case '🕺':
         this.toggleLandmarks();
         break;
       default:
@@ -295,7 +295,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     }
 
     this.buttonsReady.forEach((button) => {
-      if (button.getText() != '[➔' && button.getText() != 'Show')
+      if (button.getText() != '[➔' && button.getText() != '🕺')
         button.destroy();
     });
     this.audioScene.play();
