@@ -28,8 +28,8 @@ export class WeigthLifting implements IGymExercise {
     this.rightState = 'down';
     this.leftState = 'down';
     this.isReady = false;
-      this.closeAngle = 40;
-      this.openAngle =  140;
+      this.closeAngle = 45;
+      this.openAngle =  125;
     this.leftAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
     this.rightAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
   }

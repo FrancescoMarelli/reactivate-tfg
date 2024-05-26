@@ -1,8 +1,7 @@
 import {
-  IPoseTrackerRenderElementsSettings
+  IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
-import { IDetectPose } from '~/pose-tracker-engine/types/adaptadores/detect-pose.interface';
 
 export interface PoseDetector {
   getPose(): any;

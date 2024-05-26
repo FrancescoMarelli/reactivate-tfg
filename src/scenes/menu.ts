@@ -9,8 +9,6 @@ import WorkoutAgility from './workout-agilidad';
 import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
 import ConfigScene from '~/scenes/config-scene';
-import enable = Phaser.Display.Canvas.Smoothing.enable;
-import GameCreator from '~/scenes/game-creator';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {

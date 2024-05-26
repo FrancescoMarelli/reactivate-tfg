@@ -23,7 +23,7 @@ export class JumpinJackDetector implements IGymExercise {
   private rightArmAngleText: Phaser.GameObjects.Text;
 
 
-  constructor(scene: Phaser.Scene, bottomAngle: number, topAngle: number) {  // Add a scene parameter to the constructor
+  constructor(scene: Phaser.Scene) {  // Add a scene parameter to the constructor
     this.scene = scene;
     this.state = 'grounded';
     this.isReady = false;
@@ -97,6 +97,7 @@ export class JumpinJackDetector implements IGymExercise {
       if (angleLeftArm <= this.topMinAngle && angleRightArm <= this.topMinAngle  && angleLeftLeg >= this.botMinRange[0] && angleLeftLeg <= this.botMinRange[1]
                                                                                   && angleRightLeg >= this.botMinRange[0] && angleRightLeg <= this.botMinRange[1]) {
         this.state = 'inAir';
+        this.scene.events.emit(Constants.EVENT.UPDATE_HALF);
       }
       if (angleLeftArm >= this.topMaxAngle && angleRightArm >= this.topMaxAngle && angleLeftLeg <= this.botMax && angleRightLeg <= this.botMax  && this.state == 'inAir') {
         this.state = 'grounded';

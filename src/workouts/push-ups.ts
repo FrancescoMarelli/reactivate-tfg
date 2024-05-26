@@ -97,6 +97,7 @@ export class PushUps implements IGymExercise {
 
     if (this.state === 'down' && isHorizontal && areArmsExtended) {
       this.state = 'up';
+      this.scene.events.emit(Constants.EVENT.UPDATE_HALF); // Emit event at halfway point
     } else if (this.state === 'up' && isHorizontal && areArmsBent) {
       this.state = 'down';
       this.counter++;

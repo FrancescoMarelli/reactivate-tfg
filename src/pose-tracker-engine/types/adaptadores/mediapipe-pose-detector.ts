@@ -2,7 +2,7 @@ import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose/pose';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_utils';
 import {
-  IPoseTrackerRenderElementsSettings
+  IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
 import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detector.interface';
 

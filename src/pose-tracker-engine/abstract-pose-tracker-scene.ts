@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import PoseTracker from '~/pose-tracker-engine/pose-tracker';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { IOnPoseTrackerResultsUpdate } from '~/pose-tracker-engine/types/on-pose-tracker-results-update.interface';
-import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 
 export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   private poseTrackerCanvasTexture!: Phaser.Textures.CanvasTexture;

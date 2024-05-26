@@ -1,6 +1,5 @@
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import Phaser from 'phaser';
-import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import WorkoutAgility from '~/scenes/workout-agilidad';
 

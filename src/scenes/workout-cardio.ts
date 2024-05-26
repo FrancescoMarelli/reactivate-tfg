@@ -1,15 +1,15 @@
-  import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
-  import Phaser from 'phaser';
-  import Marker from '~/gameobjects/marker';
-  import Constants from '~/constants';
-  import CustomButton from '~/gameobjects/custom-button';
-  import CustomButtom from '~/gameobjects/custom-button';
-  import StatsData from '~/statsData';
-  import Utils from '~/utils';
-  import Menu from './menu';
-  import { MovePoints } from '~/workouts/move-points';
+import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
+import Phaser from 'phaser';
+import Marker from '~/gameobjects/marker';
+import Constants from '~/constants';
+import CustomButton from '~/gameobjects/custom-button';
+import CustomButtom from '~/gameobjects/custom-button';
+import StatsData from '~/statsData';
+import Utils from '~/utils';
+import Menu from './menu';
+import { MovePoints } from '~/workouts/move-points';
 
-  export default class WorkoutCardio extends AbstractPoseTrackerScene {
+export default class WorkoutCardio extends AbstractPoseTrackerScene {
     private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
     private markers: Marker[] = [];
     private triggerAction: boolean = true;
@@ -203,8 +203,8 @@
 
     startWorkout() {
       this.createLayout();
-      this.workoutStarted = true;
       this.silhouetteImage.destroy();
+      this.workoutStarted = true;
       this.buttonsReady.forEach((button) => {
         if (button.getText() != '[➔')
           button.destroy();

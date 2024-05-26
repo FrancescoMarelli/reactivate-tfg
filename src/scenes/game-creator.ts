@@ -103,8 +103,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       //json param reading
       this.config = await this.loadJsonConfig();
 
-
-
       /***/
       const gameConfig  = this.registry.get('game-config');
       this.type = gameConfig.type;
@@ -115,7 +113,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.workoutConfig = gameConfig.workoutConfig;
       console.log('Game Config:', gameConfig);
       this.levelTime = 0.3;
-      this.remainingTime = this.workoutConfig.time + 7;
+      this.remainingTime = this.workoutConfig.time;
 
       this.randomMarker = 3;
 
@@ -138,7 +136,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.setupScene();
 
     this.workoutSwitch(this.type);
-    this.detectorExercice = this.movementFactory.create(this, { top: null, bot: null });
+    this.detectorExercice = this.movementFactory.create(this);
   }
 
   workoutSwitch(workout: string) {
@@ -155,7 +153,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       case 'cardio':
         this.movementFactory = new CardioFactory();
         break;
-
     }
   }
 
@@ -175,7 +172,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   }
 
   setupScene() {
-    this.audioScene = this.soundFactory.create(this, this.config.audioSettings);
+    this.audioScene = this.soundFactory.create(this, { key: this.audioSettings, volume: 1, loop: true });
     this.createButtons();
   }
 
@@ -390,6 +387,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.counter++;
     this.exp = this.counter;
     this.registry.set(Constants.REGISTER.EXP, this.exp); // Actualiza el registro de la experiencia
-    this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
+    //this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
   }
+
 }

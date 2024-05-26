@@ -2,7 +2,9 @@ import { IPoseSettings } from '~/pose-tracker-engine/types/pose-settings.interfa
 import { ISize } from '~/types/size.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import Camera from '~/pose-tracker-engine/camera';
-import { IPoseTrackerRenderElementsSettings } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
+import {
+  IPoseTrackerRenderElementsSettings,
+} from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
 import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detector.interface';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 

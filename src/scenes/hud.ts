@@ -1,5 +1,6 @@
 import Constants from '~/constants';
 import GameCreator from '~/scenes/game-creator';
+import ConfigScene from '~/scenes/config-scene';
 
 export default class HUD extends Phaser.Scene {
   private expTxt: Phaser.GameObjects.Text;
@@ -9,7 +10,7 @@ export default class HUD extends Phaser.Scene {
   private lastExp;
   private width: number;
   private height: number;
-  private level = 1;
+  private level: number = 1;
   private audioCardio: Phaser.Sound.BaseSound;
   private audioAgility: Phaser.Sound.BaseSound;
   private audioFlexibility: Phaser.Sound.BaseSound;
@@ -25,6 +26,7 @@ export default class HUD extends Phaser.Scene {
 
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
+  private difficultyIndex: number;
 
   constructor() {
     super(Constants.SCENES.HUD);
@@ -60,6 +62,7 @@ export default class HUD extends Phaser.Scene {
       workoutCardio.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
       workoutCardio.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutCardio.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
+
       this.time.addEvent({
         delay: 3000,
         callback: () => {
@@ -76,6 +79,7 @@ export default class HUD extends Phaser.Scene {
       workoutAgilidad.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
       workoutAgilidad.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutAgilidad.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
+
       this.time.addEvent({
         delay: 3000,
         callback: () => {
@@ -107,6 +111,12 @@ export default class HUD extends Phaser.Scene {
       workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this)
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
+      workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateCounter, this);
+      const gameConfig = this.registry.get('game-config');
+      if (gameConfig && gameConfig.difficulty) {
+        this.difficultyIndex = ConfigScene.difficultyLabels.indexOf(gameConfig.difficulty) + 1;
+      }
+      this.level = this.difficultyIndex;
 
 
       this.time.addEvent({
@@ -135,7 +145,9 @@ export default class HUD extends Phaser.Scene {
     this.hudImage = this.add.image(this.width / 3, 50, 'hud');
     this.hudImage.setScale(0.9, 0.85);
 
-    this.expTxt = this.add.text(76, 27, '1', {
+
+
+    this.expTxt = this.add.text(76, 27, this.level.toString(), {
       fontFamily: 'Russo One',
       fontSize: '45px',
       color: '#FFFFFF',
@@ -158,37 +170,55 @@ export default class HUD extends Phaser.Scene {
   }
 
   private updateExp(): void {
-    if (parseInt(this.expTxt.text) > 9) {
-      this.expTxt.x = 63;
-    }
-    if (this.registry.get(Constants.REGISTER.EXP) < this.lastExp) {
-      this.countHits = 0;
-      this.countFailures++;
-      if (this.countFailures == 30) {
-        this.audioFaults.play();
-        this.countFailures = 0;
-        this.countHits = 0;
+    if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
+      const expValue = this.registry.get(Constants.REGISTER.EXP);
+      this.expTxt.text = expValue.toString();
+
+      const newValue = 100; // La barra de experiencia se llena completamente
+      this.tweens.addCounter({
+        from: this.lastExp,
+        to: newValue,
+        duration: 200,
+        ease: Phaser.Math.Easing.Sine.InOut,
+        onUpdate: (tween) => {
+          const value = tween.getValue();
+          this.setExpBar(value);
+          this.lastExp = value;
+        },
+      });
+    } else {
+      if (parseInt(this.expTxt.text) > 9) {
+        this.expTxt.x = 63;
       }
-    } else if (this.registry.get(Constants.REGISTER.EXP) > this.lastExp) {
-      this.countFailures = 0;
-      this.countHits++;
-      if (this.countHits == 20) {
-        this.audioRhythm.play();
-        this.countFailures = 0;
+      if (this.registry.get(Constants.REGISTER.EXP) < this.lastExp) {
         this.countHits = 0;
+        this.countFailures++;
+        if (this.countFailures == 30) {
+          this.audioFaults.play();
+          this.countFailures = 0;
+          this.countHits = 0;
+        }
+      } else if (this.registry.get(Constants.REGISTER.EXP) > this.lastExp) {
+        this.countFailures = 0;
+        this.countHits++;
+        if (this.countHits == 20) {
+          this.audioRhythm.play();
+          this.countFailures = 0;
+          this.countHits = 0;
+        }
       }
+      this.tweens.addCounter({
+        from: this.lastExp,
+        to: this.registry.get(Constants.REGISTER.EXP),
+        duration: 200,
+        ease: Phaser.Math.Easing.Sine.InOut,
+        onUpdate: (tween) => {
+          const value = tween.getValue();
+          this.setExpBar(value);
+          this.lastExp = value;
+        },
+      });
     }
-    this.tweens.addCounter({
-      from: this.lastExp,
-      to: this.registry.get(Constants.REGISTER.EXP),
-      duration: 200,
-      ease: Phaser.Math.Easing.Sine.InOut,
-      onUpdate: (tween) => {
-        const value = tween.getValue();
-        this.setExpBar(value);
-        this.lastExp = value;
-      },
-    });
   }
 
   private setExpBar(value: number) {
@@ -250,9 +280,23 @@ export default class HUD extends Phaser.Scene {
   }
 
   private updateCounter() {
-    this.counter++;
-    this.counterText.text = this.counter.toString();
-    this.setExpBar(this.counter % 100);
+    if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
+      this.counter++;
+      this.counterText.text = this.counter.toString();
+
+      const newValue = 50; // La barra de experiencia se llena hasta la mitad
+      this.tweens.addCounter({
+        from: this.lastExp,
+        to: newValue,
+        duration: 200,
+        ease: Phaser.Math.Easing.Sine.InOut,
+        onUpdate: (tween) => {
+          const value = tween.getValue();
+          this.setExpBar(value);
+          this.lastExp = value;
+        },
+      });
+    }
   }
 
 }

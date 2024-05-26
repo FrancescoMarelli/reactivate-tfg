@@ -6,6 +6,7 @@ import HUD from '~/scenes/hud';
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import CustomButtom from '~/gameobjects/custom-button';
+import Menu from '~/scenes/menu';
 
 const baseStyle = {
   color: '#FFFFFF',
@@ -58,13 +59,14 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private bodyPoints: any[] = [];
   private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
-  private difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
+  public static difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
   private markerTypeLabels = ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink", "Brown", "Black", "White"];
-  private backgroundMusicLabels = ["agilidad", "cardio", "contactError", "tutorial", "vamos"];
+  private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
   private intensityLabels = ["tranquilo", "normal", "intenso"];
   private touchingButton: boolean = false;
   private saveButton: any;
+  private buttonExitMarker;
 
   constructor() {
     super({ key: Constants.SCENES.CONFIG });
@@ -74,12 +76,13 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   create() {
     super.create();
 
-    this.buttons['difficulty'] = this.createConfigControl(750, 100, 'button', 'Difficulty', 'difficulty', this.difficultyLabels);
+    this.buttons['difficulty'] = this.createConfigControl(750, 100, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
     this.buttons['intensity'] = this.createConfigControl(750, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
     this.buttons['gameLength'] = this.createConfigControl(750, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
     this.buttons['backgroundMusic'] = this.createConfigControl(750, 400, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
     this.buttons['type'] = this.createConfigControl(750, 500, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
     this.buttons['markerTypes'] = this.createConfigControl(750, 600, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
+
 
     this.updateMarkerTypesVisibility();
 
@@ -102,13 +105,36 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     );
     this.saveButton.setScale(0.7, 0.65);
     this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
-    this.addOverlapForSaveButton();
 
+    this.buttonExitMarker = new CustomButtom(this, 1140, 102, 'out', '[➔', 95, -48);
+    this.addClickEventListener(this.buttonExitMarker, this.goBack.bind(this));
 
-    this.buttons.forEach((button) => {
-      this.add.existing(button);
-      this.physics.world.enable(button);
-      button.body.setAllowGravity(false);
+    // Agregar los botones a la escena y habilitar la física
+    this.add.existing(this.saveButton);
+    this.physics.world.enable(this.saveButton);
+    this.saveButton.body.setAllowGravity(false);
+
+    this.add.existing(this.buttonExitMarker);
+    this.physics.world.enable(this.buttonExitMarker);
+    this.buttonExitMarker.body.setAllowGravity(false);
+
+    // Agregar detección de superposición para los botones con los puntos del cuerpo
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.saveButton, point, () => {
+        this.saveButton.animateToFill(false);
+        if (this.saveButton.buttonIsFull() && this.saveButton.isEnabled()) {
+          this.saveButton.emit('down', this.saveButton);
+          this.saveConfig();
+        }
+      }, undefined, this);
+
+      this.physics.add.overlap(this.buttonExitMarker, point, () => {
+        this.buttonExitMarker.animateToFill(false);
+        if (this.buttonExitMarker.buttonIsFull() && this.buttonExitMarker.isEnabled()) {
+          this.buttonExitMarker.emit('down', this.buttonExitMarker);
+          this.goBack();
+        }
+      }, undefined, this);
     });
 
     // Initialize body points for pose detection
@@ -129,14 +155,14 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     }
 
     this.setupButtonInteractions();
-    this.addOverlapForSaveButton();
+    this.addOverlapNavsButtons();
   }
 
   addClickEventListener(button: Phaser.GameObjects.GameObject, callback: () => void) {
     button.setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, callback);
   }
-  addOverlapForSaveButton() {
+  addOverlapNavsButtons() {
     this.add.existing(this.saveButton);
     this.physics.world.enable(this.saveButton);
     this.saveButton.body.setAllowGravity(false);
@@ -147,6 +173,20 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
         if (this.saveButton.buttonIsFull() && this.saveButton.isEnabled()) {
           this.saveButton.emit('down', this.saveButton);
           this.saveConfig();
+        }
+      }, undefined, this);
+    });
+
+    this.add.existing(this.buttonExitMarker);
+    this.physics.world.enable(this.buttonExitMarker);
+    this.buttonExitMarker.body.setAllowGravity(false);
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.buttonExitMarker, point, () => {
+        this.buttonExitMarker.animateToFill(false);
+        this.touchingButton = true;
+        if (this.buttonExitMarker.buttonIsFull() && this.buttonExitMarker.isEnabled()) {
+          this.buttonExitMarker.emit('down', this.buttonExitMarker);
+          this.goBack();
         }
       }, undefined, this);
     });
@@ -235,7 +275,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
   saveConfig() {
     const configCopy = {
-      difficulty: this.difficultyLabels[this.buttons['difficulty'].getIndex()],
+      difficulty: ConfigScene.difficultyLabels[this.buttons['difficulty'].getIndex()],
       intensity: this.buttons['intensity'].getIndex().toString(),
       gameLength: this.buttons['gameLength'].getIndex(),
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
@@ -260,7 +300,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   getWorkoutConfig() {
-    const difficulty = this.difficultyLabels[this.config.difficulty];
+    const difficulty = ConfigScene.difficultyLabels[this.config.difficulty];
     const workoutType = this.workoutTypeLabels[this.config.type];
     const intensity = this.intensityLabels[this.config.intensity];
     const intensityConfig = IntensityConfig[intensity];
@@ -276,7 +316,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   updateWorkoutConfig() {
-    const difficulty = this.difficultyLabels[this.config.difficulty];
+    const difficulty = ConfigScene.difficultyLabels[this.config.difficulty];
     const workoutType = this.workoutTypeLabels[this.config.type];
     const intensity = this.intensityLabels[this.config.intensity];
     const intensityConfig = IntensityConfig[intensity];
@@ -318,17 +358,18 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: false,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        // This function will be called before refreshing the canvas texture.
-        // Anything you add to the canvas texture will be rendered.
       },
       afterPaint: (poseTrackerResults) => {
-        // This function will be called after refreshing the canvas texture.
         this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
       },
     });
     this.touchingButton = false;
+  }
 
-    // Here you can do any other update related to the game.
-    // PoseTrackerResults are only available in the previous callbacks, though.
+  goBack() {
+    this.scene.stop();
+    if (!this.scene.get(Constants.SCENES.Menu))
+      this.scene.add(Constants.SCENES.Menu, Menu, false, { x: 400, y: 300 });
+    this.scene.start(Constants.SCENES.Menu);
   }
 }

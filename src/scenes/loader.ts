@@ -84,6 +84,11 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('trance', 'audio/trance.mp3');
     this.load.audio('trance2', 'audio/trance2.mp3');
     this.load.audio('trance3', 'audio/trance3.mp3');
+    this.load.audio('beat', 'audio/beat.mp3');
+    this.load.audio('sky', 'audio/sky.mp3');
+    this.load.audio('adrenaline', 'audio/adrenaline.mp3');
+    this.load.audio('rock/hiphop', 'audio/rockhiphop.mp3');
+    this.load.audio('workout', 'audio/workoutmot.mp3');
     this.load.audio('sfxDestroyMarkerTouched', 'audio/soundAnimation.mp3');
     this.load.audio('sfxDestroyMarkerUntouched', 'audio/sfxDestroyMarkerUntouched.wav');
     this.load.audio('contactError', 'audio/contactError.wav');

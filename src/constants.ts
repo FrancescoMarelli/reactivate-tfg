@@ -3,7 +3,8 @@ const Constants = {
     UPDATEEXP: 'updateExp',
     CLOCK: 'clock',
     STOPAUDIOINIT: 'stopAudioInit',
-    COUNTER: 'updateCounter'
+    COUNTER: 'updateCounter',
+    UPDATE_HALF: 'updateHalf',
   },
   REGISTER: {
     EXP: 'exp',

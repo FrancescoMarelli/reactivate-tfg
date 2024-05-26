@@ -7,7 +7,6 @@ import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interfa
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import { MovePoints } from '~/workouts/move-points';
 
 export default class WorkoutAgility extends AbstractPoseTrackerScene {
