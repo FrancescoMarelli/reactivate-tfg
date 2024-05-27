@@ -7,6 +7,9 @@ import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracke
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import CustomButtom from '~/gameobjects/custom-button';
 import Menu from '~/scenes/menu';
+import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
+import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 const baseStyle = {
   color: '#FFFFFF',
@@ -67,21 +70,32 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private touchingButton: boolean = false;
   private saveButton: any;
   private buttonExitMarker;
+  private audioScene: any;
+  private soundFactory: ISoundFactory;
+  private poseSelectionButton: any;
+  private navButtons: any[] = [];
 
   constructor() {
     super({ key: Constants.SCENES.CONFIG });
     this.config = { difficulty: 2, intensity: 1, gameLength: 5, type: 0, markerTypes: 0, backgroundMusic: 0 };
+    this.soundFactory = new BackgroundSoundFactory();
   }
 
   create() {
     super.create();
+    this.audioScene = this.soundFactory.create(this, { key: 'sky', volume: 0.8, loop: true });
+    this.add.image(640, 360, 'background').setScale(0.8);
+    const darkenOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000);
+    darkenOverlay.setOrigin(0, 0);
+    darkenOverlay.setAlpha(0.7);
 
-    this.buttons['difficulty'] = this.createConfigControl(700, 100, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
-    this.buttons['intensity'] = this.createConfigControl(750, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
-    this.buttons['gameLength'] = this.createConfigControl(700, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
-    this.buttons['backgroundMusic'] = this.createConfigControl(750, 400, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
-    this.buttons['type'] = this.createConfigControl(700, 500, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
-    this.buttons['markerTypes'] = this.createConfigControl(750, 600, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
+    // creación de botones de configuración
+    this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
+    this.buttons['intensity'] = this.createConfigControl(710, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
+    this.buttons['gameLength'] = this.createConfigControl(710, 310, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
+    this.buttons['backgroundMusic'] = this.createConfigControl(710, 420, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
+    this.buttons['type'] = this.createConfigControl(710, 530, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
+    this.buttons['markerTypes'] = this.createConfigControl(710, 640, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
 
 
     this.updateMarkerTypesVisibility();
@@ -96,27 +110,30 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       }
     });
 
-    this.saveButton = new CustomButtom(
-      this,
-      1150,
-      680,
-      'button',
-      'SAVE'
-    );
+    this.createNavButtons();
+
+    // Initialize body points for pose detection
+    this.initializeBodyPoints();
+    //this.setupButtonInteractions();
+    this.addOverlapNavsButtons(); //realiza animaciones de botones y eventos customs buttons
+  }
+
+  createNavButtons() {
+    this.saveButton = new CustomButtom(this, 1150, 680, 'button', 'SAVE');
     this.saveButton.setScale(0.7, 0.65);
-    this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
 
+    this.navButtons.push(this.saveButton);
     this.buttonExitMarker = new CustomButtom(this, 1140, 102, 'out', '[➔', 95, -48);
+    this.navButtons.push(this.buttonExitMarker);
+
+    this.poseSelectionButton = new CustomButtom(this, 1140, 222, 'out', '🕺', 95, -48);
+    this.navButtons.push(this.poseSelectionButton);
+
+    this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
     this.addClickEventListener(this.buttonExitMarker, this.goBack.bind(this));
+    this.addClickEventListener(this.poseSelectionButton, this.togglePoseSelection.bind(this));
 
-    // Agregar los botones a la escena y habilitar la física
-    this.add.existing(this.saveButton);
-    this.physics.world.enable(this.saveButton);
-    this.saveButton.body.setAllowGravity(false);
-
-    this.add.existing(this.buttonExitMarker);
-    this.physics.world.enable(this.buttonExitMarker);
-    this.buttonExitMarker.body.setAllowGravity(false);
+    this.addButtonsToScene(this.navButtons);
 
     // Agregar detección de superposición para los botones con los puntos del cuerpo
     this.bodyPoints.forEach(point => {
@@ -135,9 +152,26 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
           this.goBack();
         }
       }, undefined, this);
+      this.physics.add.overlap(this.poseSelectionButton, point, () => {
+        this.poseSelectionButton.animateToFill(false);
+        if (this.poseSelectionButton.buttonIsFull() && this.poseSelectionButton.isEnabled()) {
+          this.poseSelectionButton.emit('down', this.poseSelectionButton);
+          this.togglePoseSelection();
+        }
+      }, undefined, this);
     });
 
-    // Initialize body points for pose detection
+  }
+
+  addButtonsToScene(buttons: any[]) {
+    buttons.forEach(button => {
+      this.add.existing(button);
+      this.physics.world.enable(button);
+      button.body.setAllowGravity(false);
+    });
+  }
+
+  initializeBodyPoints() {
     for (let i = 0; i < 22; i++) {
       let point;
       if (i === 9) {
@@ -153,15 +187,17 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       this.add.existing(point);
       this.bodyPoints.push(point);
     }
+  }
 
-    this.setupButtonInteractions();
-    this.addOverlapNavsButtons();
+  togglePoseSelection() {
+    MediapipePoseDetector.showLandmarks = ! MediapipePoseDetector.showLandmarks;
   }
 
   addClickEventListener(button: Phaser.GameObjects.GameObject, callback: () => void) {
     button.setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, callback);
   }
+
   addOverlapNavsButtons() {
     this.add.existing(this.saveButton);
     this.physics.world.enable(this.saveButton);
@@ -187,6 +223,20 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
         if (this.buttonExitMarker.buttonIsFull() && this.buttonExitMarker.isEnabled()) {
           this.buttonExitMarker.emit('down', this.buttonExitMarker);
           this.goBack();
+        }
+      }, undefined, this);
+    });
+
+    this.add.existing(this.poseSelectionButton);
+    this.physics.world.enable(this.poseSelectionButton);
+    this.poseSelectionButton.body.setAllowGravity(false);
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.poseSelectionButton, point, () => {
+        this.poseSelectionButton.animateToFill(false);
+        this.touchingButton = true;
+        if (this.poseSelectionButton.buttonIsFull() && this.poseSelectionButton.isEnabled()) {
+          this.poseSelectionButton.emit('down', this.poseSelectionButton);
+          this.togglePoseSelection();
         }
       }, undefined, this);
     });
@@ -360,7 +410,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       beforePaint: (poseTrackerResults, canvasTexture) => {
       },
       afterPaint: (poseTrackerResults) => {
-        this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+          this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
       },
     });
     this.touchingButton = false;

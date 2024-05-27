@@ -77,6 +77,7 @@ export default class Loader extends Phaser.Scene {
     this.load.image('particle-green', 'particles/particle-green.png');
     this.load.image('triangle', 'img/triangle.png');
     this.load.image('redTriangle', 'img/redTriangle.png');
+    this.load.image('background', 'img/background.png');
 
     this.load.bitmapFont('gothic', 'fonts/bitmap/gothic.png', 'fonts/bitmap/gothic.xml');
 
@@ -101,6 +102,7 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('posicion', 'audio/posicion.wav');
     this.load.audio('vamos', 'audio/posicion.wav');
     this.load.audio('audioTutorial', 'audio/tutorial.mp3');
+    this.load.audio('drill', 'audio/drill.wav');
     this.load.video('tutorial','img/tutorial.mp4','tutorial',false, true)
 
   }
