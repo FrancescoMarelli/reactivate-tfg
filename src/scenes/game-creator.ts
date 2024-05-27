@@ -70,7 +70,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
   private detectorExercice;
-
+  static  typeFlag : string;
 
 
   // Factories

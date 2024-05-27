@@ -28,10 +28,10 @@ export class WeigthLifting implements IGymExercise {
     this.rightState = 'down';
     this.leftState = 'down';
     this.isReady = false;
-      this.closeAngle = 45;
+      this.closeAngle = 60;
       this.openAngle =  125;
     this.leftAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
-    this.rightAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
+    this.rightAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
   }
   update(poseResults: IPoseTrackerResults): boolean {
     if(!this.isReady) {
@@ -74,6 +74,7 @@ export class WeigthLifting implements IGymExercise {
       // Gym detection logic for left arm
       if (angleLeftArm >= this.openAngle && this.leftState == 'down') {
         this.leftState = 'up';
+        this.scene.events.emit(Constants.EVENT.UPDATE_HALF);
       }
       if (angleLeftArm <= this.closeAngle && this.leftState == 'up') {
         this.leftState = 'down';
@@ -85,6 +86,7 @@ export class WeigthLifting implements IGymExercise {
       // Gym detection logic for right arm
       if (angleRightArm >= this.openAngle && this.rightState == 'down') {
         this.rightState = 'up';
+        this.scene.events.emit(Constants.EVENT.UPDATE_HALF);
       }
       if (angleRightArm <= this.closeAngle && this.rightState == 'up') {
         this.rightState = 'down';

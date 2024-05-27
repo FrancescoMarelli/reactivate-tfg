@@ -33,9 +33,9 @@ export class JumpinJackDetector implements IGymExercise {
     this.botMax = 172;
 
     this.leftLegAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
-    this.rightLegAngleText = this.scene.add.text(0, 0, '', { color: 'green', fontStyle:'bold', fontSize: '40px' });
-    this.leftArmAngleText = this.scene.add.text(0, 0, '', { color: 'blue', fontStyle:'bold', fontSize: '40px' });
-    this.rightArmAngleText = this.scene.add.text(0, 0, '', { color: 'yellow', fontStyle:'bold', fontSize: '40px' });
+    this.rightLegAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
+    this.leftArmAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
+    this.rightArmAngleText = this.scene.add.text(0, 0, '', { color: 'red', fontStyle:'bold', fontSize: '40px' });
 
   }
 

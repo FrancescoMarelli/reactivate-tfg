@@ -76,11 +76,11 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   create() {
     super.create();
 
-    this.buttons['difficulty'] = this.createConfigControl(750, 100, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
+    this.buttons['difficulty'] = this.createConfigControl(700, 100, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
     this.buttons['intensity'] = this.createConfigControl(750, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
-    this.buttons['gameLength'] = this.createConfigControl(750, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
+    this.buttons['gameLength'] = this.createConfigControl(700, 300, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
     this.buttons['backgroundMusic'] = this.createConfigControl(750, 400, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
-    this.buttons['type'] = this.createConfigControl(750, 500, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
+    this.buttons['type'] = this.createConfigControl(700, 500, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
     this.buttons['markerTypes'] = this.createConfigControl(750, 600, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
 
 
@@ -142,10 +142,10 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       let point;
       if (i === 9) {
         point = this.physics.add.sprite(-50, -50, 'leftHand');
-        point.setScale(0.35);
+        point.setScale(0.2);
       } else if (i === 10) {
         point = this.physics.add.sprite(-50, -50, 'rightHand');
-        point.setScale(0.35);
+        point.setScale(0.2);
       } else {
         point = this.physics.add.sprite(-20, -20, 'point');
         point.setAlpha(0);

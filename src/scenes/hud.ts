@@ -27,6 +27,7 @@ export default class HUD extends Phaser.Scene {
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
   private difficultyIndex: number;
+  private expState: 'half' | 'full' | 'start' = 'start';
 
   constructor() {
     super(Constants.SCENES.HUD);
@@ -107,11 +108,14 @@ export default class HUD extends Phaser.Scene {
       });
     }
     if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
-      workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
-      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this)
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
-      workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateCounter, this);
+
+      workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateHalf, this);
+      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateFull, this);
+      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
+
+
       const gameConfig = this.registry.get('game-config');
       if (gameConfig && gameConfig.difficulty) {
         this.difficultyIndex = ConfigScene.difficultyLabels.indexOf(gameConfig.difficulty) + 1;
@@ -170,23 +174,6 @@ export default class HUD extends Phaser.Scene {
   }
 
   private updateExp(): void {
-    if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
-      const expValue = this.registry.get(Constants.REGISTER.EXP);
-      this.expTxt.text = expValue.toString();
-
-      const newValue = 100; // La barra de experiencia se llena completamente
-      this.tweens.addCounter({
-        from: this.lastExp,
-        to: newValue,
-        duration: 200,
-        ease: Phaser.Math.Easing.Sine.InOut,
-        onUpdate: (tween) => {
-          const value = tween.getValue();
-          this.setExpBar(value);
-          this.lastExp = value;
-        },
-      });
-    } else {
       if (parseInt(this.expTxt.text) > 9) {
         this.expTxt.x = 63;
       }
@@ -218,7 +205,6 @@ export default class HUD extends Phaser.Scene {
           this.lastExp = value;
         },
       });
-    }
   }
 
   private setExpBar(value: number) {
@@ -299,4 +285,40 @@ export default class HUD extends Phaser.Scene {
     }
   }
 
-}
+  private updateHalf(): void {
+    if (this.expState === 'half' || this.expState === 'start') {
+      this.expState = 'full';
+      const newValue = 100; // La barra de experiencia se llena completamente
+      this.tweens.add({
+        targets: this,
+        lastExp: newValue,
+        duration: 200,
+        ease: Phaser.Math.Easing.Sine.InOut,
+        onUpdate: (tween) => {
+          const value = tween.getValue();
+          this.setExpBar(value);
+        },
+      });
+    }
+  }
+
+  private updateFull(): void {
+    if (this.expState === 'full' || this.expState === 'start') {
+      this.expState = 'half';
+      const newValue = 50; // La barra de experiencia se llena hasta la mitad
+      this.tweens.add({
+        targets: this,
+        lastExp: newValue,
+        duration: 200,
+        ease: Phaser.Math.Easing.Sine.InOut,
+        onUpdate: (tween) => {
+          const value = tween.getValue();
+          this.setExpBar(value);
+        },
+      });
+    }
+  }
+
+
+
+  }

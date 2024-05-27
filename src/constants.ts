@@ -22,7 +22,11 @@ const Constants = {
     HUD: 'HUD',
     STATS: 'STATS',
     GAME_CREATOR: 'GameScene',
-
+    GAME: 'Gym',
+    ARCADE: 'Arcade',
+    PUSHUPS: 'PushUps',
+    JUMPINGJACKS: 'JumpingJacks',
+    WEIGTHLIFTING: 'WeigthLifting'
   },
   MARKER: {
     ID: 'marker',
