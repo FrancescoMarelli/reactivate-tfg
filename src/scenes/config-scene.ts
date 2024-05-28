@@ -93,7 +93,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     // creación de botones de configuración
     this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
     this.buttons['intensity'] = this.createConfigControl(710, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
-    this.buttons['gameLength'] = this.createConfigControl(710, 310, 'button', 'Game Length', 'gameLength', Array.from({ length: 9 }, (_, i) => i));
+    this.buttons['gameLength'] = this.createConfigControl(710, 310, 'button', 'Game Length', 'gameLength', Array.from({ length: 10 }, (_, i) => i + 1));
     this.buttons['backgroundMusic'] = this.createConfigControl(710, 420, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
     this.buttons['type'] = this.createConfigControl(710, 530, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
     this.buttons['markerTypes'] = this.createConfigControl(710, 640, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
@@ -215,7 +215,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.add.existing(button);
     this.physics.world.enable(button);
 
-    // Add overlap detection with body points (hand tracking)
+    // Central  button overlap animation (la dejo o no?)
     this.bodyPoints.forEach(point => {
       this.physics.add.overlap(button, point, () => {
         button.animateToFill(false);

@@ -113,8 +113,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.workoutConfig = gameConfig.workoutConfig;
       console.log('Game Config:', gameConfig);
       this.levelTime = 0.3;
-      this.remainingTime = this.workoutConfig.time;
-
+      this.remainingTime = this.workoutConfig.time  + 60;
       this.randomMarker = 3;
 
       this.movementSettings = this.config.movementSettings;
@@ -347,8 +346,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       // Time Management
       if (this.levelTime != Math.floor(Math.abs(time / 1000))) {
         this.levelTime = Math.floor(Math.abs(time / 1000));
-        this.remainingTime--;
-
+        if (this.remainingTime > 0) {
+          this.remainingTime--;
+        }
         let minutes: number = Math.floor(this.remainingTime / 60);
         let seconds: number = Math.floor(this.remainingTime - minutes * 60);
 
@@ -363,20 +363,10 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           if (this.remainingTime == 0 || this.counter >= this.workoutConfig.reps) {
             let message;
             if (this.counter >= this.workoutConfig.reps) {
-              message = '¡Juego finalizado,\nobjetivo logrado!';
+              this.showEndAnimation(true);
             } else {
-              message = '¡Juego finalizado,\nno has podido con el workout!';
+              this.showEndAnimation(false);
             }
-            let text = this.add.text(600, 300, message, {
-              fontSize: '52px',
-              color: '#fff',
-              fontFamily: 'Roboto',
-              fontStyle: 'bold'
-            });
-            text.setOrigin(0.5, 0.5);
-            setTimeout(() => {
-              this.stopScene();
-            }, 3000);
           }
         }
     }
@@ -388,6 +378,78 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.exp = this.counter;
     this.registry.set(Constants.REGISTER.EXP, this.exp); // Actualiza el registro de la experiencia
     //this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
+  }
+
+
+  showMessage(message: string) {
+    const text = this.add.text(this.width / 2, this.height / 2, message, {
+      fontSize: '52px',
+      color: '#fff',
+      fontFamily: 'Roboto',
+      fontStyle: 'bold',
+      align: 'center',
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      padding: {
+        x: 20,
+        y: 10,
+      },
+    });
+    text.setOrigin(0.5);
+    text.setAlpha(0);
+
+    this.tweens.add({
+      targets: text,
+      alpha: 1,
+      duration: 500,
+      ease: 'Power2',
+      yoyo: true,
+      onComplete: () => {
+        setTimeout(() => {
+          this.tweens.add({
+            targets: text,
+            alpha: 0,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => text.destroy(),
+          });
+        }, 2000);
+      },
+    });
+  }
+
+  showEndAnimation(success: boolean) {
+    const message = success ? '¡Ejercicio completado con éxito!' : '¡Ejercicio no completado!';
+
+
+    if (success) {
+      this.showMessage(message);
+      this.showFireworks();
+    } else {
+      let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
+      gameOverImage.setDisplaySize(this.width, this.height);
+    }
+
+    setTimeout(() => {
+      this.stopScene();
+    }, 3000);
+  }
+
+  showFireworks() {
+    const particles = this.add.particles('firework');
+
+    const emitter = particles.createEmitter({
+      speed: 90,
+      scale: { start: 1, end: 0 },
+      blendMode: 'ADD',
+    });
+
+    // Hacer que los fuegos artificiales exploten en diferentes lugares de la pantalla
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        emitter.setPosition(Math.random() * this.width, Math.random() * this.height);
+        emitter.explode(50, Math.random() * this.width, Math.random() * this.height);
+      }, i * 200);
+    }
   }
 
 }
