@@ -102,7 +102,6 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('posicion', 'audio/posicion.wav');
     this.load.audio('vamos', 'audio/posicion.wav');
     this.load.audio('audioTutorial', 'audio/tutorial.mp3');
-    this.load.audio('drill', 'audio/drill.wav');
     this.load.video('tutorial','img/tutorial.mp4','tutorial',false, true)
 
   }

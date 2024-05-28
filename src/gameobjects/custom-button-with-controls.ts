@@ -42,8 +42,8 @@ export default class CustomButtonWithControls extends CustomButton {
     this.minusButton.on('pointerdown', () => this.changeValue(-1));
 
     this.buttonText = scene.add.text(0, 0, values[this.currentIndex], {
-      fontFamily: 'Arial',
-      fontSize: '24px',
+      fontFamily: 'Russo One',
+      fontSize: '40px',
       color: '#FFFFFF'
     }).setOrigin(0.5);
     this.add(this.buttonText);

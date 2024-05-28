@@ -13,8 +13,8 @@ import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/m
 
 const baseStyle = {
   color: '#FFFFFF',
-  fontFamily: 'Roboto',
-  fontSize: '30px',
+  fontFamily: 'Russo One',
+  fontSize: '40px',
   fontStyle: 'bold'
 };
 
@@ -52,9 +52,9 @@ const workoutConfigurations = {
 };
 
 const IntensityConfig = {
-  "tranquilo": { multiplier: 0.5, description: 'Low intensity, longer duration' },
-  "normal": { multiplier: 1, description: 'Moderate intensity and duration' },
-  "intenso": { multiplier: 1.5, description: 'High intensity, shorter duration' }
+  "Tranquilo": { multiplier: 0.5, description: 'Low intensity, longer duration' },
+  "Normal": { multiplier: 1, description: 'Moderate intensity and duration' },
+  "Intenso": { multiplier: 1.5, description: 'High intensity, shorter duration' }
 };
 
 export default class ConfigScene extends AbstractPoseTrackerScene {
@@ -66,7 +66,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
   private markerTypeLabels = ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink", "Brown", "Black", "White"];
   private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
-  private intensityLabels = ["tranquilo", "normal", "intenso"];
+  private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private touchingButton: boolean = false;
   private saveButton: any;
   private buttonExitMarker;
@@ -79,6 +79,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     super({ key: Constants.SCENES.CONFIG });
     this.config = { difficulty: 2, intensity: 1, gameLength: 5, type: 0, markerTypes: 0, backgroundMusic: 0 };
     this.soundFactory = new BackgroundSoundFactory();
+    MediapipePoseDetector.showLandmarks = false;
   }
 
   create() {
@@ -114,15 +115,15 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
     // Initialize body points for pose detection
     this.initializeBodyPoints();
-    //this.setupButtonInteractions();
-    this.addOverlapNavsButtons(); //realiza animaciones de botones y eventos customs buttons
+    this.setParamButtonsMouseInteractions();
+    this.overlapMenuButtons(); //realiza animaciones de botones y eventos customs buttons
   }
 
   createNavButtons() {
     this.saveButton = new CustomButtom(this, 1150, 680, 'button', 'SAVE');
     this.saveButton.setScale(0.7, 0.65);
-
     this.navButtons.push(this.saveButton);
+
     this.buttonExitMarker = new CustomButtom(this, 1140, 102, 'out', '[➔', 95, -48);
     this.navButtons.push(this.buttonExitMarker);
 
@@ -133,7 +134,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.addClickEventListener(this.buttonExitMarker, this.goBack.bind(this));
     this.addClickEventListener(this.poseSelectionButton, this.togglePoseSelection.bind(this));
 
-    this.addButtonsToScene(this.navButtons);
+    this.enableButtons(this.navButtons);
 
     // Agregar detección de superposición para los botones con los puntos del cuerpo
     this.bodyPoints.forEach(point => {
@@ -163,7 +164,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
   }
 
-  addButtonsToScene(buttons: any[]) {
+  enableButtons(buttons: any[]) {
     buttons.forEach(button => {
       this.add.existing(button);
       this.physics.world.enable(button);
@@ -172,6 +173,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   initializeBodyPoints() {
+
     for (let i = 0; i < 22; i++) {
       let point;
       if (i === 9) {
@@ -191,6 +193,51 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
   togglePoseSelection() {
     MediapipePoseDetector.showLandmarks = ! MediapipePoseDetector.showLandmarks;
+    if (MediapipePoseDetector.showLandmarks) {
+      this.initializeBodyPoints();
+      this.enableButtons(this.buttons);
+      this.enableButtons(this.navButtons);
+
+      // Asegurarse de que se configuren las superposiciones
+      Object.values(this.buttons).forEach(button => {
+        this.overlapParamsButtons(button);
+      });
+
+      this.overlapMenuButtons();
+      this.setParamButtonsMouseInteractions();
+    } else {
+      this.bodyPoints.forEach(point => point.destroy());
+      this.bodyPoints = [];
+      }
+  }
+
+  overlapParamsButtons(button: CustomButtonWithControls): CustomButtonWithControls {
+    this.add.existing(button);
+    this.physics.world.enable(button);
+
+    // Add overlap detection with body points (hand tracking)
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(button, point, () => {
+        button.animateToFill(false);
+        this.touchingButton = true;
+        if (button.buttonIsFull() && button.isEnabled()) {
+          button.emit('down', button);
+        }
+      }, undefined, this);
+    });
+
+    // Add overlap detection for plus and minus buttons
+    this.physics.add.overlap(button.plusButton, this.bodyPoints, () => {
+      this.touchingButton = true;
+      button.changeValue(1);
+    }, undefined, this);
+
+    this.physics.add.overlap(button.minusButton, this.bodyPoints, () => {
+      this.touchingButton = true;
+      button.changeValue(-1);
+    }, undefined, this);
+
+    return button;
   }
 
   addClickEventListener(button: Phaser.GameObjects.GameObject, callback: () => void) {
@@ -198,7 +245,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, callback);
   }
 
-  addOverlapNavsButtons() {
+  overlapMenuButtons() {
     this.add.existing(this.saveButton);
     this.physics.world.enable(this.saveButton);
     this.saveButton.body.setAllowGravity(false);
@@ -253,42 +300,17 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   createConfigControl(x: number, y: number, texture: string, label: string, configField: string, values: any[]): CustomButtonWithControls {
-    const text = this.add.text(200, y, `${label}: `, {
+    const text = this.add.text(90, y, `${label} `, {
       ...baseStyle,
       align: 'left'
     }).setOrigin(0, 0.5);
 
     this.textLabels[configField] = text;
     const button = new CustomButtonWithControls(this, x, y, texture, this.config[configField], configField, values);
-    this.add.existing(button);
-    this.physics.world.enable(button);
-
-    // Add overlap detection with body points (hand tracking)
-    this.bodyPoints.forEach(point => {
-      this.physics.add.overlap(button, point, () => {
-        button.animateToFill(false);
-        this.touchingButton = true;
-        if (button.buttonIsFull() && button.isEnabled()) {
-          button.emit('down', button);
-        }
-      }, undefined, this);
-    });
-
-    // Add overlap detection for plus and minus buttons
-    this.physics.add.overlap(button.plusButton, this.bodyPoints, () => {
-      this.touchingButton = true;
-      button.changeValue(1);
-    }, undefined, this);
-
-    this.physics.add.overlap(button.minusButton, this.bodyPoints, () => {
-      this.touchingButton = true;
-      button.changeValue(-1);
-    }, undefined, this);
-
-    return button;
+    return this.overlapParamsButtons(button);
   }
 
-  setupButtonInteractions() {
+  setParamButtonsMouseInteractions() {
     this.buttons.forEach(button => {
       button.setInteractive()
         .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
@@ -404,13 +426,13 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     }
     super.update(time, delta, {
       renderElementsSettings: {
-        shouldDrawFrame: false,
-        shouldDrawPoseLandmarks: false,
+        shouldDrawFrame: true,
+        shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
       },
       afterPaint: (poseTrackerResults) => {
-          this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+        this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
       },
     });
     this.touchingButton = false;
