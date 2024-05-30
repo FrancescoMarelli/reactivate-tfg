@@ -70,7 +70,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
   private detectorExercice;
-  static  typeFlag : string;
+  private workoutEnded: boolean = false;
 
 
   // Factories
@@ -326,11 +326,13 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
         if(this.workoutStarted ) {
           this.detectorExercice.isReady = true;
+          if (this.workoutEnded) {
+            return;
+          }
           if (this.detectorExercice.update(poseTrackerResults) && this.detectorExercice.getType() != 'Arcade') {
             this.updateCounter();
             this.registry.set(Constants.REGISTER.COUNTER, this.counter);
             this.events.emit(Constants.EVENT.UPDATEEXP, this.counter);
-
           }
         }
         },
@@ -360,12 +362,12 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
         // End of workout
           if (this.remainingTime == 0 || this.counter >= this.workoutConfig.reps) {
+            this.workoutEnded = true;
             if (this.counter >= this.workoutConfig.reps) {
               this.showEndAnimation(true);
             } else {
               this.showEndAnimation(false);
             }
-            this.stopScene();
           }
         }
     }
@@ -379,6 +381,26 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     //this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
   }
 
+
+  showEndAnimation(success: boolean) {
+    const message = success ? '¡Ejercicio completado con éxito!' : '¡Ejercicio no completado!';
+
+    console.log('showEndAnimation called, success:', success);
+
+    if (success) {
+      this.showMessage(message);
+      this.showFireworks();
+    } else {
+      let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
+      gameOverImage.setDisplaySize(this.width, this.height);
+    }
+
+    // Aumentar el tiempo de espera para asegurarnos de que las animaciones y mensajes se completen
+    setTimeout(() => {
+      console.log('setTimeout completed, calling stopScene');
+      this.stopScene();
+    }, 5000); // 5000 ms = 5 segundos
+  }
 
   showMessage(message: string) {
     const text = this.add.text(this.width / 2, this.height / 2, message, {
@@ -411,26 +433,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
             ease: 'Power2',
             onComplete: () => text.destroy(),
           });
-        }, 2000);
+        }, 2000); // Asegurar que el mensaje se mantenga visible por al menos 2 segundos
       },
     });
-  }
-
-  showEndAnimation(success: boolean) {
-    const message = success ? '¡Ejercicio completado con éxito!' : '¡Ejercicio no completado!';
-
-
-    if (success) {
-      this.showMessage(message);
-      this.showFireworks();
-    } else {
-      let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
-      gameOverImage.setDisplaySize(this.width, this.height);
-    }
-
-    setTimeout(() => {
-      this.stopScene();
-    }, 3000);
   }
 
   showFireworks() {
@@ -447,8 +452,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       setTimeout(() => {
         emitter.setPosition(Math.random() * this.width, Math.random() * this.height);
         emitter.explode(50, Math.random() * this.width, Math.random() * this.height);
-      }, i * 200);
+      }, i * 200); // Explosiones con una separación de 200 ms
     }
   }
+
 
 }

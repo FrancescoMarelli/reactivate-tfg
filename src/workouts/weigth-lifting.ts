@@ -35,12 +35,16 @@ export class WeigthLifting implements IGymExercise {
   }
   update(poseResults: IPoseTrackerResults): boolean {
     if(!this.isReady) {
+      this.clearTexts();
       return false;
     }
 
     const landmarks = poseResults.poseLandmarks;
 
-    if(!landmarks) return false;
+    if(!landmarks) {
+      this.clearTexts();
+      return false;
+    }
 
 
     const leftShoulder = landmarks?.[EPoseLandmark.RightShoulder];
@@ -66,9 +70,7 @@ export class WeigthLifting implements IGymExercise {
         this.rightAngleText.setText(`${angleRightArm?.toFixed(0)}`)
         this.rightAngleText.setPosition(rightArmPixel.x, rightArmPixel.y);
       } else {
-        // Clear the angle text when Show Landmarks is off
-        this.leftAngleText.setText('');
-        this.rightAngleText.setText('');
+        this.clearTexts();
       }
 
       // Gym detection logic for left arm
@@ -102,5 +104,10 @@ export class WeigthLifting implements IGymExercise {
 
   getType(): string {
     return 'Gym';
+  }
+
+  clearTexts() {
+    this.leftAngleText.setText('');
+    this.rightAngleText.setText('');
   }
 }
