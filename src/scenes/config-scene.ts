@@ -48,6 +48,27 @@ const workoutConfigurations = {
     "Experto": { reps: 30 },
     "Avanzado": { reps: 40 },
     "Pro": { reps: 50 }
+  },
+  "agilidad": {
+    "Principiante": { reps: 20 },
+    "Esordiente": { reps: 30 },
+    "Experto": { reps: 40 },
+    "Avanzado": { reps: 50 },
+    "Pro": { reps: 60 }
+  },
+  "flexibilidad": {
+    "Principiante": { reps: 40 },
+    "Esordiente": { reps: 50 },
+    "Experto": { reps: 60 },
+    "Avanzado": { reps: 70 },
+    "Pro": { reps: 80 }
+  },
+  "cardio": {
+    "Principiante": { reps: 20 },
+    "Esordiente": { reps: 30 },
+    "Experto": { reps: 40 },
+    "Avanzado": { reps: 50 },
+    "Pro": { reps: 60 }
   }
 };
 

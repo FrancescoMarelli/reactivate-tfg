@@ -4,7 +4,7 @@ import Constants from '~/constants';
 import { AnglesUtils } from '~/workouts/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
-import { NormalizedLandmark, NormalizedLandmarkList } from '@mediapipe/pose';
+import { NormalizedLandmark } from '@mediapipe/pose';
 
 export class PushUps implements IGymExercise {
   private scene: Phaser.Scene;
@@ -115,6 +115,7 @@ export class PushUps implements IGymExercise {
         this.state = 'down';
         this.counter++;
         this.scene.events.emit(Constants.EVENT.COUNTER); // Emit the event using the scene property
+        this.scene.events.emit(Constants.EVENT.FULL)
         console.log(`${this.counter} PushUps`);
       }
     } else {

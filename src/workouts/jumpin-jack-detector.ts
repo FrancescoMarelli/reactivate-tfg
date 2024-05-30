@@ -102,6 +102,7 @@ export class JumpinJackDetector implements IGymExercise {
       if (angleLeftArm >= this.topMaxAngle && angleRightArm >= this.topMaxAngle && angleLeftLeg <= this.botMax && angleRightLeg <= this.botMax  && this.state == 'inAir') {
         this.state = 'grounded';
         this.scene.events.emit(Constants.EVENT.COUNTER);  // Emit the event using the scene property
+        this.scene.events.emit(Constants.EVENT.FULL)
         this.jumpCounter++;
         return true;  // Jumping jack ends when returning to up state
       }

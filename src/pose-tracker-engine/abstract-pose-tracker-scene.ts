@@ -12,6 +12,8 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   private poseTrackerResults: IPoseTrackerResults | undefined;
   private poseBuffer: IPoseTrackerResults[] = [];
   private static readonly BUFFER_SIZE = 2;  // Tamaño del buffer reducido para menos retraso
+  private count : number = 0;
+  private lastUpdateTime: number = 0;
 
   protected constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
     super(config);
@@ -49,6 +51,13 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number, onPoseTrackerResultsUpdate?: IOnPoseTrackerResultsUpdate): void {
+  /*  this.count++;
+    if (time - this.lastUpdateTime > 1000) {
+      console.log(`El método update se ha llamado ${this.count} veces en el último segundo.`);
+      this.count = 0;
+      this.lastUpdateTime = time;
+    }*/
+
     if (!this.poseTrackerResults) {
       return;
     }

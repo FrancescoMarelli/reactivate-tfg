@@ -27,6 +27,7 @@ export default class CardioWorkout implements IGymExercise {
   private layoutFactory: ILayoutFactory;
 
   constructor(scene: Phaser.Scene) {
+
     this.scene = scene;
   }
 
@@ -39,6 +40,7 @@ export default class CardioWorkout implements IGymExercise {
         if (!marker.getErrorMarker() && !touched) this.untouchedMarkers++;
       }
     } else if ((marker.getErrorMarker() && !touched) || (!marker.getErrorMarker() && touched)) {
+      this.scene.events.emit(Constants.EVENT.COUNTER);
       exp += 10;
       if (!marker.getErrorMarker() && touched) this.touchedMarkers++;
     }

@@ -4,8 +4,6 @@ import WorkoutAgility from '~/scenes/workout-agilidad';
 import Loader from './scenes/loader';
 import HUD from './scenes/hud';
 import WorkoutCardio from './scenes/workout-cardio';
-import GameCreator from '~/scenes/game-creator';
-import ConfigScene from '~/scenes/config-scene';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js').then((r) => console.info('Service worker registered!'));

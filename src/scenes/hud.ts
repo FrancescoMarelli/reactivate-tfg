@@ -1,5 +1,4 @@
 import Constants from '~/constants';
-import GameCreator from '~/scenes/game-creator';
 import ConfigScene from '~/scenes/config-scene';
 
 export default class HUD extends Phaser.Scene {
@@ -111,16 +110,20 @@ export default class HUD extends Phaser.Scene {
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
 
-      workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateHalf, this);
-      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateFull, this);
       workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
 
-
       const gameConfig = this.registry.get('game-config');
-      if (gameConfig && gameConfig.difficulty) {
+      if (gameConfig.type === 'push-ups' || gameConfig.type === 'jumping-jacks' || gameConfig.type === 'weight-lifting') {
+        workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateHalf, this);
+        workoutGameConfig.events.on(Constants.EVENT.FULL, this.updateFull, this);
         this.difficultyIndex = ConfigScene.difficultyLabels.indexOf(gameConfig.difficulty) + 1;
+        this.level = this.difficultyIndex
+      } else {
+        workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
+        this.difficultyIndex = 0;
+        this.level = 1;
+
       }
-      this.level = this.difficultyIndex;
 
 
       this.time.addEvent({

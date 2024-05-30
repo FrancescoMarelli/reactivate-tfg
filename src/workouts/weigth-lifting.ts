@@ -93,6 +93,7 @@ export class WeigthLifting implements IGymExercise {
       if (angleRightArm <= this.closeAngle && this.rightState == 'up') {
         this.rightState = 'down';
         this.scene.events.emit(Constants.EVENT.COUNTER);  // Emit the event using the scene property
+        this.scene.events.emit(Constants.EVENT.FULL)
         this.counter++;
         console.log(this.counter + " Right Arm REPS");
       }

@@ -54,7 +54,7 @@ export class StaticLayoutFactory implements ILayoutFactory {
           if (marker.getAnimationCreated()) {
             marker.destroyMarkerAnimation(true);
             // Llamar a destroyMarker si es necesario
-            const cardioWorkout = scene.registry.get('cardioWorkout');
+            const cardioWorkout = scene.registry.get(Constants.SCENES.GAME_CREATOR);
             if (cardioWorkout) {
               cardioWorkout.destroyMarker(marker, true);
             }

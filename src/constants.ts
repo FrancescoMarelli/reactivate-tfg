@@ -4,7 +4,8 @@ const Constants = {
     CLOCK: 'clock',
     STOPAUDIOINIT: 'stopAudioInit',
     COUNTER: 'updateCounter',
-    UPDATE_HALF: 'updateHalf',
+    UPDATE_HALF: 'updateHalf', FULL: 'full',
+
   },
   REGISTER: {
     EXP: 'exp',

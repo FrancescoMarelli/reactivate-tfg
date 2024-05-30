@@ -9,7 +9,6 @@ import WorkoutAgility from './workout-agilidad';
 import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
 import ConfigScene from '~/scenes/config-scene';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {

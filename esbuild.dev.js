@@ -17,7 +17,7 @@ bs.watch('src/**/*.ts', (event, file) => {
     .rebuild()
     .then(() => bs.reload())
     .catch((err) => {
-      console.err(err);
+      console.log(err);
       process.exit(1);
     });
 });
