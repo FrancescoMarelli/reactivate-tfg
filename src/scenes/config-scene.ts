@@ -70,7 +70,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private touchingButton: boolean = false;
   private saveButton: any;
   private buttonExitMarker;
-  private audioScene: any;
+  private audioScene: Phaser.Sound.BaseSound; // Correct type for audio
   private soundFactory: ISoundFactory;
   private poseSelectionButton: any;
   private navButtons: any[] = [];
@@ -79,7 +79,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     super({ key: Constants.SCENES.CONFIG });
     this.config = { difficulty: 2, intensity: 1, gameLength: 5, type: 0, markerTypes: 0, backgroundMusic: 0 };
     this.soundFactory = new BackgroundSoundFactory();
-    MediapipePoseDetector.showLandmarks = false;
   }
 
   create() {
@@ -112,8 +111,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     });
 
     this.createNavButtons();
-
-    // Initialize body points for pose detection
     this.initializeBodyPoints();
     this.setParamButtonsMouseInteractions();
     this.overlapMenuButtons(); //realiza animaciones de botones y eventos customs buttons
@@ -206,9 +203,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       this.overlapMenuButtons();
       this.setParamButtonsMouseInteractions();
     } else {
-      this.bodyPoints.forEach(point => point.destroy());
-      this.bodyPoints = [];
-      }
+    }
   }
 
   overlapParamsButtons(button: CustomButtonWithControls): CustomButtonWithControls {
@@ -357,7 +352,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     };
     this.registry.set('game-config', configCopy);
     console.log('Configuración guardada:', configCopy);
-
+    this.audioScene.stop();
     this.scene.stop();
 
     if (!this.scene.get(Constants.SCENES.GAME_CREATOR)) {
@@ -408,7 +403,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     if (this.bodyPoints && coords) {
       for (let i = 0; i < this.bodyPoints.length; i++) {
         if (i === 9 || i === 10) {
-          this.bodyPoints[i].setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
+          this.bodyPoints[i].setPosition(coords[i + 11]?.x * Constants.CANVASMULTI.WIDTHMULTI, coords[i + 11]?.y * Constants.CANVASMULTI.HEIGHTMULTI);
         }
       }
     }
@@ -439,9 +434,11 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   goBack() {
+    this.audioScene.stop();
     this.scene.stop();
-    if (!this.scene.get(Constants.SCENES.Menu))
-      this.scene.add(Constants.SCENES.Menu, Menu, false, { x: 400, y: 300 });
+    if (!this.scene.get(Constants.SCENES.Menu)) {
+        this.scene.add(Constants.SCENES.Menu, Menu, false, { x: 400, y: 300 });
+    }
     this.scene.start(Constants.SCENES.Menu);
   }
 }

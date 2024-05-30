@@ -186,7 +186,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.buttonReadyRight = this.buttonFactory.create(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonsReady.push(this.buttonReadyRight);
 
-    let text =
     this.buttonShowLandmarks = this.buttonFactory.create(this, 1200 - 170, 52, 'out', '🕺', 95, -48);
     this.buttonsReady.push(this.buttonShowLandmarks);
 
@@ -303,7 +302,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   stopScene() {
     this.saveData();
-    this.audioScene.stop();
+    this.sound.stopAll();
     this.scene.stop();
     if (!this.scene.get(Constants.SCENES.Menu))
       this.scene.add(Constants.SCENES.Menu, Menu, false, { x: 400, y: 300 });
@@ -361,12 +360,12 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
         // End of workout
           if (this.remainingTime == 0 || this.counter >= this.workoutConfig.reps) {
-            let message;
             if (this.counter >= this.workoutConfig.reps) {
               this.showEndAnimation(true);
             } else {
               this.showEndAnimation(false);
             }
+            this.stopScene();
           }
         }
     }

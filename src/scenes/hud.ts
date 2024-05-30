@@ -127,7 +127,7 @@ export default class HUD extends Phaser.Scene {
         delay: 3000,
         callback: () => {
           if (this.stopAudioB === false) {
-            this.audioFlexibility.play();
+
           }
           this.workoutActive = 'workoutGameConfig';
         },
@@ -246,9 +246,9 @@ export default class HUD extends Phaser.Scene {
         }
         break;
         case 'workoutGameConfig':
-          if (this.clockTxt.text == Constants.AUDIO.DURATIONTRANCE3) {
+/*          if (this.clockTxt.text == Constants.AUDIO.DURATIONTRANCE3) {
             this.audioHalf.play();
-          }
+          }*/
           break;
       default:
         break;
@@ -288,7 +288,7 @@ export default class HUD extends Phaser.Scene {
   private updateHalf(): void {
     if (this.expState === 'half' || this.expState === 'start') {
       this.expState = 'full';
-      const newValue = 100; // La barra de experiencia se llena completamente
+      const newValue = 100;
       this.tweens.add({
         targets: this,
         lastExp: newValue,
@@ -305,7 +305,7 @@ export default class HUD extends Phaser.Scene {
   private updateFull(): void {
     if (this.expState === 'full' || this.expState === 'start') {
       this.expState = 'half';
-      const newValue = 50; // La barra de experiencia se llena hasta la mitad
+      const newValue = 50;
       this.tweens.add({
         targets: this,
         lastExp: newValue,

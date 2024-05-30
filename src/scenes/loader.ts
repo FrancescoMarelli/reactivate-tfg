@@ -26,7 +26,7 @@ export default class Loader extends Phaser.Scene {
       fontFamily: 'Russo One',
       fontSize: '45px',
       color: '#FFFFFF',
-      fontStyle: 'normal',
+      fontStyle: 'bold',
     });
 
     //Listener mientras se cargan los assets
@@ -80,6 +80,8 @@ export default class Loader extends Phaser.Scene {
     this.load.image('triangle', 'img/triangle.png');
     this.load.image('redTriangle', 'img/redTriangle.png');
     this.load.image('background', 'img/background.png');
+    this.load.image('up', 'img/uppushup.png');
+    this.load.image('down', 'img/downpushup.png');
 
     this.load.bitmapFont('gothic', 'fonts/bitmap/gothic.png', 'fonts/bitmap/gothic.xml');
 

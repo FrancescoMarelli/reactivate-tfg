@@ -9,6 +9,7 @@ import WorkoutAgility from './workout-agilidad';
 import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
 import ConfigScene from '~/scenes/config-scene';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {
@@ -45,6 +46,7 @@ export default class Menu extends AbstractPoseTrackerScene {
   init() {
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
+    //this.initiBodyPoints();
   }
 
   create(): void {
@@ -123,6 +125,25 @@ export default class Menu extends AbstractPoseTrackerScene {
       button.body.setAllowGravity(false);
     });
 
+    this.initiBodyPoints();
+
+
+    if (this.scene.get(Constants.SCENES.WorkoutCardio))
+      this.scene.remove(Constants.SCENES.WorkoutCardio);
+    if (this.scene.get(Constants.SCENES.WorkoutAgilidad))
+      this.scene.remove(Constants.SCENES.WorkoutAgilidad);
+    if (this.scene.get(Constants.SCENES.WorkoutFlexibilidad))
+      this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
+    if(this.scene.get(Constants.SCENES.CONFIG))
+      this.scene.remove(Constants.SCENES.CONFIG)
+    if(this.scene.get(Constants.SCENES.GAME_CREATOR))
+      this.scene.remove(Constants.SCENES.GAME_CREATOR)
+    if (this.scene.get(Constants.SCENES.HUD))
+      this.scene.remove(Constants.SCENES.HUD);
+  }
+
+  initiBodyPoints() {
+
     for (var i = 0; i < 22; i++) {
       let point;
       if (i === 9) {
@@ -187,20 +208,6 @@ export default class Menu extends AbstractPoseTrackerScene {
       } catch (error) {
       }
     });
-
-
-    if (this.scene.get(Constants.SCENES.WorkoutCardio))
-      this.scene.remove(Constants.SCENES.WorkoutCardio);
-    if (this.scene.get(Constants.SCENES.WorkoutAgilidad))
-      this.scene.remove(Constants.SCENES.WorkoutAgilidad);
-    if (this.scene.get(Constants.SCENES.WorkoutFlexibilidad))
-      this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
-    if(this.scene.get(Constants.SCENES.CONFIG))
-      this.scene.remove(Constants.SCENES.CONFIG)
-    if(this.scene.get(Constants.SCENES.GAME_CREATOR))
-      this.scene.remove(Constants.SCENES.GAME_CREATOR)
-    if (this.scene.get(Constants.SCENES.HUD))
-      this.scene.remove(Constants.SCENES.HUD);
   }
 
   menuSwitch(button: CustomButtom) {
