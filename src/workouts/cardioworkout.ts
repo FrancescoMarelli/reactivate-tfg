@@ -111,6 +111,6 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
       this.triggerAction = true;
     }
 
-    return true; // Return true to indicate that the workout is active
+    return false; // Return true to indicate that the workout is active
   }
 }

@@ -121,7 +121,7 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
     if (this.currentMarkersAlive == 0) {
       this.triggerAction = true;
     }
-    return true;
+    return false;
   }
 
   destroyMarker(marker: any, touched: boolean): void {

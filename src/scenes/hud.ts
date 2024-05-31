@@ -42,7 +42,6 @@ export default class HUD extends Phaser.Scene {
     const workoutAgilidad: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutAgilidad);
     const WorkoutFlexibilidad: Phaser.Scene = this.scene.get(Constants.SCENES.WorkoutFlexibilidad);
 
-    /**New congigame**/
     const workoutGameConfig: Phaser.Scene = this.scene.get(Constants.SCENES.GAME_CREATOR)
 
 
@@ -109,19 +108,19 @@ export default class HUD extends Phaser.Scene {
     if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
-      workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
+      workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
+
 
       const gameConfig = this.registry.get('game-config');
       if (gameConfig.type === 'push-ups' || gameConfig.type === 'jumping-jacks' || gameConfig.type === 'weight-lifting') {
         workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateHalf, this);
         workoutGameConfig.events.on(Constants.EVENT.FULL, this.updateFull, this);
+        workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
         this.difficultyIndex = ConfigScene.difficultyLabels.indexOf(gameConfig.difficulty) + 1;
         this.level = this.difficultyIndex
       } else {
-        workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
         this.difficultyIndex = 0;
         this.level = 1;
-
       }
 
 
@@ -129,7 +128,6 @@ export default class HUD extends Phaser.Scene {
         delay: 3000,
         callback: () => {
           if (this.stopAudioB === false) {
-
           }
           this.workoutActive = 'workoutGameConfig';
         },

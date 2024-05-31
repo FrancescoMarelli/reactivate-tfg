@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 
 
 /**
- * Esta clase abstracta con este metodo estatico sirve para poder lees por json la articulacion con la que se quiere jugar
+ * Esta clase abstracta con este metodo estatico sirve para poder leer la articulacion con la que se quiere jugar
  * sin tener que hardcodearla.
  */
 export abstract class MovePoints {

@@ -180,6 +180,6 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
 
     this.ball.angle += 0.7;
 
-    return true;
+    return false;
   }
 }
