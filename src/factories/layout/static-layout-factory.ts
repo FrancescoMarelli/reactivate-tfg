@@ -4,15 +4,14 @@ import Constants from '~/constants';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 
 export class StaticLayoutFactory implements ILayoutFactory {
-  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[]): Marker[] {
-    let markers: Marker[] = [];
+  markers: Marker[] = [];
+  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[], detectorExercise: any): Marker[] {
     let width: number = 225;
     let height: number = 150;
     let shortRow: boolean = true;
     let counterRow = 0;
     let triggerChangeRow: boolean = false;
-
-    for (let i = 1; i < 15; i++) {
+    for (var i = 1; i < 15; i++) {
       const marker = new Marker({
         scene: scene,
         x: width,
@@ -20,25 +19,29 @@ export class StaticLayoutFactory implements ILayoutFactory {
         texture: Constants.MARKER.ID,
         id: i,
       });
-
       counterRow++;
       if (shortRow) {
-        if (counterRow === 2) {
-          height += 125;
+        if (counterRow == 2) {
+          height = height + 125;
           width = 100;
           triggerChangeRow = true;
           counterRow = 0;
         } else {
-          width += 830;
+          width = width + 830;
         }
-      } else {
-        if (counterRow === 4) {
-          height += 125;
+      }
+      if (!shortRow) {
+        if (counterRow == 4) {
+          height = height + 125;
           width = 225;
           triggerChangeRow = true;
           counterRow = 0;
         } else {
-          width += i % 2 === 0 ? 580 : 250;
+          if (i % 2 == 0) {
+            width = width + 580;
+          } else {
+            width = width + 250;
+          }
         }
       }
       if (triggerChangeRow) {
@@ -46,24 +49,23 @@ export class StaticLayoutFactory implements ILayoutFactory {
         triggerChangeRow = false;
       }
 
-      markers.push(marker);
-      scene.physics.add.overlap(
-        marker,
-        bodyPoints,
-        (marker: any, point: any) => {
-          if (marker.getAnimationCreated()) {
-            marker.destroyMarkerAnimation(true);
-            // Llamar a destroyMarker si es necesario
-            const cardioWorkout = scene.registry.get(Constants.SCENES.GAME_CREATOR);
-            if (cardioWorkout) {
-              cardioWorkout.destroyMarker(marker, true);
+
+      this.markers.push(marker);
+      bodyPoints.forEach((point) => {
+        scene.physics.add.overlap(
+          marker,
+          point,
+          (marker: any) => {
+            if (marker.getAnimationCreated()) {
+              marker.destroyMarkerAnimation(true);
+              detectorExercise.destroyMarker(marker, true);
             }
-          }
-        },
-        undefined,
-        scene
-      );
+          },
+          undefined,
+          scene,
+        );
+      });
     }
-    return markers;
+    return this.markers;
   }
 }

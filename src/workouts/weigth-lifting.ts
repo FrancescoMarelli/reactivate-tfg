@@ -7,11 +7,11 @@ import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/m
 
 export class WeigthLifting implements IGymExercise {
 
-  private scene: Phaser.Scene;
+  scene: Phaser.Scene;
   private rightState: 'down' | 'up';
   private leftState: 'down' | 'up';
   private counter = 0;
-  public isReady: boolean;
+  isReady: boolean = false;
   private closeAngle: number;
   private openAngle: number;
 

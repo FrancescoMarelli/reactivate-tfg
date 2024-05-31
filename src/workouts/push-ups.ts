@@ -7,10 +7,10 @@ import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/m
 import { NormalizedLandmark } from '@mediapipe/pose';
 
 export class PushUps implements IGymExercise {
-  private scene: Phaser.Scene;
+  scene: Phaser.Scene;
   private state: 'up' | 'down';
   private counter: number = 0;
-  public isReady: boolean;
+  isReady: boolean = false;
   public show: boolean;
 
   private leftTopAngleText: Phaser.GameObjects.Text;

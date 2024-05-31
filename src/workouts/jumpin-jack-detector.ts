@@ -8,14 +8,14 @@ import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/m
 
 export class JumpinJackDetector implements IGymExercise {
 
-  private scene: Phaser.Scene;  // Add a scene property
+  scene: Phaser.Scene;  // Add a scene property
   private state: 'grounded' | 'ascending' | 'inAir' | 'descending';
   private botMinRange : [number, number];
   private botMax : number;
   private topMinAngle: number;
   private topMaxAngle : number;
   private jumpCounter = 0;
-  private isReady: boolean;
+  isReady: boolean =  false;
 
   private leftLegAngleText: Phaser.GameObjects.Text;
   private rightLegAngleText: Phaser.GameObjects.Text;

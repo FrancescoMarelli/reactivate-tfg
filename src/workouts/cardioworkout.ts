@@ -4,10 +4,12 @@ import Constants from '~/constants';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
+import { IArcadeExercise } from '~/workouts/arcade-exercice';
 
-export default class CardioWorkout implements IGymExercise {
-  private markers: Marker[] = [];
-  private scene: Phaser.Scene;
+export default class CardioWorkout implements IGymExercise, IArcadeExercise {
+  markers: Marker[] = [];
+  scene: Phaser.Scene;
+
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private triggerAction: boolean = true;
 
@@ -22,12 +24,11 @@ export default class CardioWorkout implements IGymExercise {
   private totalTouchableMarkers: number = 0;
   private lastIdMarker = 0;
   private randomMarker: number = 3;
-  private isReady: boolean = false;
 
   private layoutFactory: ILayoutFactory;
+  isReady: boolean = false;
 
   constructor(scene: Phaser.Scene) {
-
     this.scene = scene;
   }
 
@@ -71,12 +72,6 @@ export default class CardioWorkout implements IGymExercise {
 
   getType(): string {
     return 'Arcade';
-  }
-
-  setLayout(layoutFactory: ILayoutFactory) {
-    this.layoutFactory = layoutFactory;
-    this.markers = this.layoutFactory.create(this.scene, this.bodyPoints);
-    this.isReady = true;
   }
 
   setMarkers(markers: Marker[]) {

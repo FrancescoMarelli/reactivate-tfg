@@ -20,8 +20,12 @@ import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface'
 import Marker from '~/gameobjects/marker';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 import { ArcadeFactory } from '~/factories/interfaces/ArcadeFactory';
-import WorkoutAgility from '~/scenes/workout-agilidad';
-import WorkoutFlexibilidad from '~/scenes/workout-flexibility';
+import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
+import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
+import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
+import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
+import { AgilityLayoutFactory } from '~/factories/layout/agility-layout-factory';
+import { FlexibilityLayoutFactory } from '~/factories/layout/flexibility-layout-factory';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
@@ -68,7 +72,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
-  private detectorExercice;
+  private detectorExercise;
   private workoutEnded: boolean = false;
 
 
@@ -88,7 +92,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.silhouetteFactory = new StandardSilhouetteFactory();
     this.buttonFactory = new CustomButtonFactory();
     this.soundFactory = new BackgroundSoundFactory();
-    //this.layoutFactory = new StaticLayoutFactory();
   }
 
   init() {
@@ -125,7 +128,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     }
     this.setupScene();
     this.workoutSwitch(this.type);
-    this.detectorExercice = this.movementFactory.create(this);
+    this.detectorExercise = this.movementFactory.create(this);
 
 
   }
@@ -147,14 +150,19 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         break;
       case 'cardio':
         this.movementFactory = new CardioFactory();
+        this.layoutFactory = new StaticLayoutFactory();
         break;
       // this.startNewSceneWorkout(Constants.SCENES.WorkoutCardio, WorkoutCardio)
         break;
         case 'agilidad':
-         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
+          this.movementFactory = new AgilidadFactory();
+          this.layoutFactory = new AgilityLayoutFactory();
+          // this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
           break;
       case 'flexibilidad':
-        this.startNewSceneWorkout(Constants.SCENES.WorkoutFlexibilidad, WorkoutFlexibilidad);
+        this.movementFactory = new FlexibilidadFactory();
+        this.layoutFactory = new FlexibilityLayoutFactory();
+        //this.startNewSceneWorkout(Constants.SCENES.WorkoutFlexibilidad, WorkoutFlexibilidad);
         break;
     }
   }
@@ -281,10 +289,13 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   startWorkout() {
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
-    if(this.detectorExercice.getType() == 'Arcade') {
-      this.createLayout();
-      this.detectorExercice.setBodyPoints(this.bodyPoints);
-      this.detectorExercice.setMarkers(this.markers);
+    if(this.detectorExercise.getType() == 'Arcade') {
+      this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise);
+      if(this.type == 'agilidad') {
+        this.detectorExercise.createContactBall();
+      }
+      this.detectorExercise.setBodyPoints(this.bodyPoints);
+      this.detectorExercise.setMarkers(this.markers);
     }
 
     this.buttonsReady.forEach((button) => {
@@ -297,7 +308,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
   }
 
-  createLayout(): void {
+  createLayoutStatic(): void {
     let width: number = 225;
     let height: number = 150;
     let shortRow: boolean = true;
@@ -350,7 +361,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           (marker: any) => {
             if (marker.getAnimationCreated()) {
               marker.destroyMarkerAnimation(true);
-              this.detectorExercice.destroyMarker(marker, true);
+              this.detectorExercise.destroyMarker(marker, true);
             }
           },
           undefined,
@@ -358,9 +369,109 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         );
       });
     }
+  }
+
+  createLayoutAgilidad(): void {
+    let width: number = 50;
+    let height: number = 150;
+
+    for (var i = 1; i < 26; i++) {
+      const marker = new Marker({
+        scene: this,
+        x: width,
+        y: height,
+        texture: Constants.TRANSPARENTMARKER.ID,
+        id: i,
+      });
+      marker.setAgilityGame(true);
+      if (i % 6 == 0) {
+        height = height + 170;
+        width = 50;
+      } else {
+        if (i % 3 == 0) {
+          width = width + 660;
+        } else {
+          width = width + 130; // 50 + 130 * 3 = 440
+        }
+      }
+
+      this.markers.push(marker);
+      this.bodyPoints.forEach((point) => {
+        this.physics.add.overlap(
+          marker,
+          point,
+          (marker: any) => {
+            if (marker.getAnimationCreated()) {
+              marker.destroyMarkerAnimation(true);
+              this.detectorExercise.destroyMarker(marker, true);
+            }
+          },
+          undefined,
+          this,
+        );
+      });
+    }
+  }
+
+  createLayoutFlexibilidad(): void {
+    let width: number = 50;
+    let height: number = 160;
+
+    for (var i = 1; i < 25; i++) {
+      const marker = new Marker({
+        scene: this,
+        x: width,
+        y: height,
+        texture: Constants.TRANSPARENTMARKER.ID,
+        id: i,
+      });
+      marker.setDefaultBall("triangle", "redTriangle");
+      if (i % 6 == 0) {
+        if (i > 17) {
+          height = height + 140;
+        } else {
+          height = height + 170;
+        }
+        width = 50;
+      } else {
+        if (i % 3 == 0) {
+          width = width + 660;
+        } else {
+          width = width + 130; // 50 + 130 * 3 = 440
+        }
+      }
+
+      this.markers.push(marker);
+      this.bodyPoints.forEach((point) => {
+        this.physics.add.overlap(
+          marker,
+          point,
+          (marker: any) => {
+            if (marker.getAnimationCreated()) {
+              marker.destroyMarkerAnimation(true);
+              this.detectorExercise.destroyMarker(marker, true);
+            }
+          },
+          undefined,
+          this,
+        );
+      });
+    }
+  }
 
 
-
+  movePointsAgilidad(coords: IPoseLandmark[] | undefined) {
+    if (this.bodyPoints && coords) {
+      for (var i = 0; i < this.bodyPoints.length; i++) {
+        if (i == 34) { // To extend hands points (improve accuracy)
+          this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
+        } else if (i == 35) {
+          this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
+        } else {
+          this.bodyPoints[i]?.setPosition(coords[i]?.x * 1280, coords[i]?.y * 720);
+        }
+      }
+    }
   }
 
 
@@ -388,13 +499,17 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
+        if(this.detectorExercise.getType() == 'agilidad' || this.detectorExercise.getType() == 'flexibilidad') {
+          this.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+        } else {
+          MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
+        }
         if(this.workoutStarted ) {
-          this.detectorExercice.isReady = true;
+          this.detectorExercise.isReady = true;
           if (this.workoutEnded) {
             return;
           }
-          if (this.detectorExercice.update(poseTrackerResults)) {
+          if (this.detectorExercise.update(poseTrackerResults)) {
             this.updateCounter();
             this.registry.set(Constants.REGISTER.COUNTER, this.counter);
             this.events.emit(Constants.EVENT.UPDATEEXP, this.counter);
@@ -443,9 +558,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   updateCounter() {
     this.counter++;
     this.exp = this.counter;
-    if(this.detectorExercice.getType() != 'Arcade') {
-      this.registry.set(Constants.REGISTER.EXP, this.exp);
-    } // Actualiza el registro de la experiencia
+    this.registry.set(Constants.REGISTER.EXP, this.exp);
+    // Actualiza el registro de la experiencia
     this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
   }
 

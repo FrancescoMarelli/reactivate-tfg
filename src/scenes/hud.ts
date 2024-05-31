@@ -109,7 +109,6 @@ export default class HUD extends Phaser.Scene {
     if (this.scene.isActive(Constants.SCENES.GAME_CREATOR)) {
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
-
       workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
 
       const gameConfig = this.registry.get('game-config');
