@@ -112,17 +112,28 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
     }*/
   }
 
+  getUntouchedMarkers(): number {
+    return this.untouchedMarkers;
+  }
+
+
   destroyMarker(marker: any, touched: boolean): void {
     this.currentMarkersAlive--;
     this.exp = Number(this.scene.registry.get(Constants.REGISTER.EXP));
     if (!touched) {
       if (Number(this.scene.registry.get(Constants.REGISTER.EXP)) > 0) {
         this.exp = this.exp - 10;
-        if (!marker.getErrorMarker() && !touched) this.untouchedMarkers++;
+        if (!marker.getErrorMarker() && !touched) {
+          this.untouchedMarkers++;
+        }
       }
+      this.scene.events.emit(Constants.EVENT.UNTOUCHED); // Emite el evento solo si el marcador fue tocado
     } else if (touched) {
       this.exp = this.exp + 10;
-      if (!marker.getErrorMarker() && touched) this.touchedMarkers++;
+      if (!marker.getErrorMarker() && touched) {
+        this.touchedMarkers++;
+        this.scene.events.emit(Constants.EVENT.MARKER_COUNT); // Emite el evento solo si el marcador fue tocado
+      }
     }
 
     this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
@@ -165,6 +176,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
           this.currentMarkersAlive++;
           this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
           this.totalTouchableMarkers++;
+          this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL))
         }
       }
       if (marker.isInternalTimerConsumed() && marker.getAnimationCreated()) {
@@ -181,5 +193,13 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
     this.ball.angle += 0.7;
 
     return false;
+  }
+
+  getTouchedMarkers(): number {
+    return this.touchedMarkers;
+  }
+
+  getLevel(): number {
+    return this.currentLevel;
   }
 }

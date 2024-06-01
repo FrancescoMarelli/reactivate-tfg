@@ -13,6 +13,7 @@ export default class StatsData {
         this._touchedMarkers = touchedMarkers;
         this._untouchedMarkers = untouchedMarkers;
         this._totalTouchableMarkers = totalTouchableMarkers;
+
     }
 
     public get workout(): string {

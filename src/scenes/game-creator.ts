@@ -64,7 +64,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   private type : string;
   private exp: number = 0;
-  private levelTime: number;
+  private levelTime: number = 0.3;
   private remainingTime: number;
   private audioSettings;
   private markerTypes;
@@ -113,7 +113,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.intensity = gameConfig.intensity;
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
-      this.levelTime = 0.3;
       this.remainingTime = this.workoutConfig.time  + 60;
       this.randomMarker = 3;
 
@@ -155,14 +154,20 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       case 'cardio':
         this.movementFactory = new CardioFactory();
         this.layoutFactory = new StaticLayoutFactory();
+        this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
+        this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
         break;
         case 'agilidad':
           this.movementFactory = new AgilidadFactory();
           this.layoutFactory = new AgilityLayoutFactory();
+          this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
+          this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
           break;
       case 'flexibilidad':
         this.movementFactory = new FlexibilidadFactory();
         this.layoutFactory = new FlexibilityLayoutFactory();
+        this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
+        this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
         break;
     }
   }
@@ -170,7 +175,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
 
   setupScene() {
-    this.audioScene = this.soundFactory.create(this, { key: this.audioSettings, volume: 1, loop: true });
+    this.audioScene = this.soundFactory.create(this, { key: this.audioSettings, volume: 0.95, loop: true });
     this.createButtons();
     }
 
@@ -289,6 +294,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       if(this.type == 'agilidad') {
         this.detectorExercise.createContactBall();
       }
+      //this.events.emit(Constants.EVENT.MARKER_CREATED);
     }
 
     this.buttonsReady.forEach((button) => {
@@ -312,6 +318,17 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   saveData() {
     let date: string = Utils.getActualDate();
+    if(this.detectorExercise.getType() == 'Arcade') {
+      this.untouchedMarkers = this.detectorExercise.getUntouchedMarkers();
+      this.counter = this.detectorExercise.getTouchedMarkers();
+      this.totalTouchableMarkers = this.untouchedMarkers + this.counter;
+      this.currentLevel = this.detectorExercise.getLevel();
+    } else {
+      this.untouchedMarkers = 0;
+      this.totalTouchableMarkers = 0;
+      this.currentLevel = this.difficulty;
+    }
+
     let statsData = new StatsData(this.type, date, this.currentLevel, this.counter, this.untouchedMarkers, this.totalTouchableMarkers);
     Utils.setLocalStorageData(statsData);
   }

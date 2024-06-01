@@ -3,4 +3,7 @@ export interface IArcadeExercise {
   setBodyPoints(bodyPoints: Phaser.Physics.Arcade.Sprite[]): void;
   setMarkers(markers: any[]): void;
   destroyMarker(marker: any, isTouched: boolean): void;
+  getUntouchedMarkers() : number;
+  getTouchedMarkers() : number;
+  getLevel(): number;
 }

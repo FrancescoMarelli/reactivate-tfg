@@ -27,6 +27,8 @@ export default class HUD extends Phaser.Scene {
   private counterText: Phaser.GameObjects.Text;
   private difficultyIndex: number;
   private expState: 'half' | 'full' | 'start' = 'start';
+  private markerCountText: any;
+  private markerCount: number = 0;
 
   constructor() {
     super(Constants.SCENES.HUD);
@@ -109,6 +111,7 @@ export default class HUD extends Phaser.Scene {
       workoutGameConfig.events.on(Constants.EVENT.CLOCK, this.updateClock, this);
       workoutGameConfig.events.on(Constants.EVENT.STOPAUDIOINIT, this.stopAudio, this);
       workoutGameConfig.events.on(Constants.EVENT.UPDATEEXP, this.updateExp, this);
+      workoutGameConfig.events.on(Constants.EVENT.MARKER_COUNT, this.updateMarkerCount, this); // Escuchar el evento MARKER_COUNT
 
 
       const gameConfig = this.registry.get('game-config');
@@ -263,6 +266,11 @@ export default class HUD extends Phaser.Scene {
     this.audioFlexibility.stop();
     this.audioPosition.stop();
     this.audioGo.stop();
+  }
+
+  updateMarkerCount() {
+    this.markerCount++;
+    this.counterText.setText(this.markerCount.toString());
   }
 
   private updateCounter() {

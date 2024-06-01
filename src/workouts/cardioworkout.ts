@@ -32,18 +32,29 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
     this.scene = scene;
   }
 
+  getUntouchedMarkers(): number {
+    return this.untouchedMarkers;
+  }
+
   destroyMarker(marker: NewMarker, touched: boolean): void {
     this.currentMarkersAlive--;
     let exp = Number(this.scene.registry.get(Constants.REGISTER.EXP));
     if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
       if (exp > 0) {
         exp -= 10;
-        if (!marker.getErrorMarker() && !touched) this.untouchedMarkers++;
+        if (!marker.getErrorMarker() && !touched) {
+          this.untouchedMarkers++;
+        }
       }
+      this.scene.events.emit(Constants.EVENT.UNTOUCHED); // Emite el evento solo si el marcador fue tocado
     } else if ((marker.getErrorMarker() && !touched) || (!marker.getErrorMarker() && touched)) {
-      this.scene.events.emit(Constants.EVENT.COUNTER);
+      //this.scene.events.emit(Constants.EVENT.COUNTER);
       exp += 10;
-      if (!marker.getErrorMarker() && touched) this.touchedMarkers++;
+      if (!marker.getErrorMarker() && touched) {
+        this.touchedMarkers++;
+        this.scene.events.emit(Constants.EVENT.MARKER_COUNT); // Emite el evento solo si el marcador fue tocado
+      }
+
     }
     this.scene.registry.set(Constants.REGISTER.EXP, exp);
     this.scene.events.emit(Constants.EVENT.UPDATEEXP);
@@ -112,5 +123,13 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
     }
 
     return false; // Return true to indicate that the workout is active
+  }
+
+  getTouchedMarkers(): number {
+    return this.touchedMarkers;
+  }
+
+  getLevel(): number {
+    return this.currentLevel;
   }
 }

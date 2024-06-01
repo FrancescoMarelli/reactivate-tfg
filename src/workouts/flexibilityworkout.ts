@@ -124,6 +124,14 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
     return false;
   }
 
+  getUntouchedMarkers(): number {
+    return this.untouchedMarkers;
+  }
+
+  getTouchedMarkers(): number {
+    return this.touchedMarkers;
+  }
+
   destroyMarker(marker: any, touched: boolean): void {
     this.currentMarkersAlive--;
     this.showNextSequence = false;
@@ -131,8 +139,11 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
     if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
       if (Number(this.scene.registry.get(Constants.REGISTER.EXP)) > 0) {
         this.exp = this.exp - 10;
-        if (!marker.getErrorMarker() && !touched) this.untouchedMarkers = this.untouchedMarkers + 1;
+        if (!marker.getErrorMarker() && !touched) {
+          this.untouchedMarkers = this.untouchedMarkers + 1;
+        }
       }
+      this.scene.events.emit(Constants.EVENT.UNTOUCHED); // Emite el evento solo si el marcador fue tocado
       this.nextSequenceDirectionCopy = this.nextSequenceDirectionCopy.filter(id => id !== marker.id)
     } else if (!marker.getErrorMarker() && touched) {
       this.exp = this.exp + 10;
@@ -145,7 +156,10 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
           }
         })
       }
-      if (!marker.getErrorMarker() && touched) this.touchedMarkers = this.touchedMarkers + 1;
+      if (!marker.getErrorMarker() && touched) {
+        this.touchedMarkers = this.touchedMarkers + 1;
+        this.scene.events.emit(Constants.EVENT.MARKER_COUNT); // Emite el evento solo si el marcador fue tocado
+      }
     }
     this.scene.registry.set(Constants.REGISTER.EXP, this.exp);
     this.scene.events.emit(Constants.EVENT.UPDATEEXP);
@@ -175,4 +189,7 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
     this.nextSequence = Utils.random(0, sequences.length - 1);
   }
 
+  getLevel(): number {
+    return this.currentLevel;
+  }
 }

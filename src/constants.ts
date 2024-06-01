@@ -4,14 +4,19 @@ const Constants = {
     CLOCK: 'clock',
     STOPAUDIOINIT: 'stopAudioInit',
     COUNTER: 'updateCounter',
-    UPDATE_HALF: 'updateHalf', FULL: 'full',
-
+    UPDATE_HALF: 'updateHalf',
+    FULL: 'full',
+    MARKER_CREATED: 'markerCreated',
+    MARKER_COUNT: 'markerCount',
+    UNTOUCHED: 'untouched',
   },
   REGISTER: {
     EXP: 'exp',
     CLOCK: 'clock',
     LEVEL: 'level',
-    COUNTER: 'contador'
+    COUNTER: 'contador',
+    MARKER_COUNT: 'markerCount',
+    UNTOUCHED: 'untouched',
   },
   SCENES: {
     CONFIG: 'GameConfig',
