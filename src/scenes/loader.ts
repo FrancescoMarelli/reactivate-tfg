@@ -63,7 +63,7 @@ export default class Loader extends Phaser.Scene {
     this.load.image('getReady', 'img/out.png');
     this.load.image('blueFuture', 'img/blueFuture.png');
     this.load.image('blueBall', 'img/blueBall.png');
-    this.load.image('purpball', 'img/purpball.png');
+    this.load.image('purpleball', 'img/purpball.png');
     this.load.image('futureball', 'img/futureball.png');
     this.load.image('errorBall', 'img/errorBall.png');
     this.load.image('marker', 'img/marker.png');

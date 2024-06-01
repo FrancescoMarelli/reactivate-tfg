@@ -12,8 +12,8 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
   private errorMarker: boolean = false;
   private internalTimerConsumed: boolean = false;
   private timerEvent;
-  private defaultMarker: string = "futureball";
-  private defaultErrorMarker: string = "errorBall";
+  private defaultMarker: string;
+  private defaultErrorMarker: string;
   private flexibilityGame: boolean;
   private agilityGame: boolean;
   private directionAngle: number = 0;

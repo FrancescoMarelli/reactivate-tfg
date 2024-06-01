@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Constants from '~/constants';
 
-export default class Marker extends Phaser.Physics.Arcade.Sprite {
+export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
   private ball: Phaser.GameObjects.Sprite;
   private tween!: Phaser.Tweens.Tween;
   id: number;
@@ -32,12 +32,8 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
 
     // Use the provided marker images, or default to "blueBall" and "errorBall"
-    this.defaultMarker = config.defaultMarker || "futureball";
-    this.defaultErrorMarker = config.defaultErrorMarker || "errorBall";
-
-    // Use the provided game types, or default to false
-    this.flexibilityGame = config.flexibilityGame || false;
-    this.agilityGame = config.agilityGame || false;
+    this.defaultMarker = config.texture || "blueBall";
+    this.defaultErrorMarker =  "errorBall";
   }
 
 
@@ -180,7 +176,8 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
     return this.errorMarker;
   }
 
-  setAgilityGame(agility: boolean) {
+  setAgilityGame(agility: boolean, markerType: string) {
+    this.defaultMarker = markerType;
     this.agilityGame = agility;
   }
 

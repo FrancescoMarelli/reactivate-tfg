@@ -1,24 +1,29 @@
 import Phaser from 'phaser';
-import Marker from '~/gameobjects/marker';
-import Constants from '~/constants';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
+import NewMarker from '~/gameobjects/new-marker';
+import { MarkerFactory } from '~/factories/markers/marker-factory';
+
 
 export class StaticLayoutFactory implements ILayoutFactory {
-  markers: Marker[] = [];
-  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[], detectorExercise: any): Marker[] {
+  markers: NewMarker[] = [];
+  markerFactory: MarkerFactory = new MarkerFactory();
+
+  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[], detectorExercise: any, markerType: string): NewMarker[] {
     let width: number = 225;
     let height: number = 150;
     let shortRow: boolean = true;
     let counterRow = 0;
     let triggerChangeRow: boolean = false;
     for (var i = 1; i < 15; i++) {
-      const marker = new Marker({
-        scene: scene,
+      const marker = this.markerFactory.create(
+        scene,
+        {
         x: width,
         y: height,
-        texture: Constants.MARKER.ID,
-        id: i,
+        texture: markerType,
+        id: i
       });
+
       counterRow++;
       if (shortRow) {
         if (counterRow == 2) {

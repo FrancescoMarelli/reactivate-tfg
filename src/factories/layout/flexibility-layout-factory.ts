@@ -1,22 +1,26 @@
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import Phaser from 'phaser';
-import Marker from '~/gameobjects/marker';
+import NewMarker from '~/gameobjects/new-marker';
+import { MarkerFactory } from '~/factories/markers/marker-factory';
 import Constants from '~/constants';
 
+
 export class FlexibilityLayoutFactory implements ILayoutFactory {
-  markers: Marker[] = [];
-  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[], detectorExercise: any): Marker[] {
+  markers: NewMarker[] = [];
+  markerFactory: MarkerFactory = new MarkerFactory();
+
+  create(scene: Phaser.Scene, bodyPoints: Phaser.Physics.Arcade.Sprite[], detectorExercise: any, markerType: string): NewMarker[] {
     let width: number = 50;
     let height: number = 160;
 
     for (var i = 1; i < 25; i++) {
-      const marker = new Marker({
-        scene: scene,
-        x: width,
-        y: height,
-        texture: Constants.TRANSPARENTMARKER.ID,
-        id: i,
-      });
+      const marker = this.markerFactory.create(
+        scene,
+        {
+          x: width,
+          y: height,
+          texture:  Constants.TRANSPARENTMARKER.ID,
+          id: i});
       marker.setDefaultBall("triangle", "redTriangle");
       if (i % 6 == 0) {
         if (i > 17) {

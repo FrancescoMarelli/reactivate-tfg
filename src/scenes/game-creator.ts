@@ -17,7 +17,6 @@ import { WeightLiftinFactory } from '~/factories/workouts/weight-liftin-factory'
 import { JumpingJackFactory } from '~/factories/workouts/jumping-jack-factory';
 import { CardioFactory } from '~/factories/workouts/cardio-factory';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
-import Marker from '~/gameobjects/marker';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 import { ArcadeFactory } from '~/factories/interfaces/ArcadeFactory';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
@@ -26,11 +25,14 @@ import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
 import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
 import { AgilityLayoutFactory } from '~/factories/layout/agility-layout-factory';
 import { FlexibilityLayoutFactory } from '~/factories/layout/flexibility-layout-factory';
+import { MarkerFactory } from '~/factories/markers/marker-factory';
+import { IMarkerFactory } from '~/factories/interfaces/marker-factory.interface';
+import NewMarker from '~/gameobjects/new-marker';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
-  private markers: Marker[] = [];
+  private markers:NewMarker[] = [];
 
   private audioScene: Phaser.Sound.BaseSound;
   private silhouetteImage: Phaser.GameObjects.Image;
@@ -85,6 +87,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private buttonShowLandmarks: Phaser.GameObjects.Container;
   private intensity: any;
   private difficulty: any;
+  markerFactory: IMarkerFactory;
 
 
   constructor() { // creo que las fabricas deberias de pasarse por parametro
@@ -92,6 +95,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.silhouetteFactory = new StandardSilhouetteFactory();
     this.buttonFactory = new CustomButtonFactory();
     this.soundFactory = new BackgroundSoundFactory();
+    this.markerFactory = new MarkerFactory();
   }
 
   init() {
@@ -131,7 +135,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.workoutSwitch(this.type);
     this.detectorExercise = this.movementFactory.create(this);
 
-
   }
 
   getType(): string {
@@ -165,10 +168,12 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   }
 
 
+
   setupScene() {
     this.audioScene = this.soundFactory.create(this, { key: this.audioSettings, volume: 1, loop: true });
     this.createButtons();
-  }
+    }
+
 
   createButtons() {
     // Button creation logic here
@@ -193,7 +198,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     // silhoutte creation
     this.silhouetteImage = this.silhouetteFactory.create(this, 640, 420, 'silhouette');
     // Body points creation logic /  detection here
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 35; i++) {
       let point = this.physics.add.sprite(-20, -20, 'point');
       this.add.existing(point);
       point.setAlpha(0);
@@ -278,12 +283,12 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
     if(this.detectorExercise.getType() == 'Arcade') {
-      this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise);
+      this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.markerTypes);
+      this.detectorExercise.setBodyPoints(this.bodyPoints);
+      this.detectorExercise.setMarkers(this.markers);
       if(this.type == 'agilidad') {
         this.detectorExercise.createContactBall();
       }
-      this.detectorExercise.setBodyPoints(this.bodyPoints);
-      this.detectorExercise.setMarkers(this.markers);
     }
 
     this.buttonsReady.forEach((button) => {
@@ -298,7 +303,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   movePointsAgilidad(coords: IPoseLandmark[] | undefined) {
     if (this.bodyPoints && coords) {
-      for (var i = 0; i < this.bodyPoints.length; i++) {
+      for (let i = 0; i < this.bodyPoints.length; i++) {
         if (i == 34) { // To extend hands points (improve accuracy)
           this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
         } else if (i == 35) {
@@ -335,7 +340,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        if(this.detectorExercise.getType() == 'agilidad' || this.detectorExercise.getType() == 'flexibilidad') {
+        if (this.type == 'agilidad' || this.type == 'flexibilidad') {
           this.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
         } else {
           MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);

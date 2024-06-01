@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
-import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';
+import NewMarker from '~/gameobjects/new-marker';
 
 export default class CardioWorkout implements IGymExercise, IArcadeExercise {
-  markers: Marker[] = [];
+  markers: NewMarker[] = [];
   scene: Phaser.Scene;
 
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -32,7 +32,7 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
     this.scene = scene;
   }
 
-  destroyMarker(marker: Marker, touched: boolean): void {
+  destroyMarker(marker: NewMarker, touched: boolean): void {
     this.currentMarkersAlive--;
     let exp = Number(this.scene.registry.get(Constants.REGISTER.EXP));
     if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
@@ -74,7 +74,7 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
     return 'Arcade';
   }
 
-  setMarkers(markers: Marker[]) {
+  setMarkers(markers: NewMarker[]) {
     this.markers = markers;
   }
 

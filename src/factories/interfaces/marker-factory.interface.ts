@@ -1,5 +1,5 @@
-import Marker from '~/gameobjects/marker';
+import NewMarker from '~/gameobjects/new-marker';
 
 export interface IMarkerFactory {
-  create(scene: Phaser.Scene, config: any): Marker;
+  create(scene: Phaser.Scene, config: any): NewMarker;
 }

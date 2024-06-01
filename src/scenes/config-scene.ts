@@ -83,9 +83,9 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private bodyPoints: any[] = [];
   private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
-  public static difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
+  public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
-  private markerTypeLabels = ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink", "Brown", "Black", "White"];
+  private markerTypeLabels = ["blueBall", "futureball", "default", "purpleball"];
   private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private touchingButton: boolean = false;
@@ -224,6 +224,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       this.overlapMenuButtons();
       this.setParamButtonsMouseInteractions();
     } else {
+      // do nothing
     }
   }
 
