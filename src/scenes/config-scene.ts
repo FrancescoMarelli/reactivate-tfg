@@ -84,8 +84,8 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
   public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
-  private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "agilidad", "flexibilidad", "cardio"];
-  private markerTypeLabels = ["blueBall", "futureball", "default", "purpleball"];
+  private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "flexibilidad", "agilidad", "cardio"];
+  private markerTypeLabels = ["blueBall", "futureball", "blueFuture", "purpleball"];
   private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private touchingButton: boolean = false;
@@ -307,7 +307,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   updateMarkerTypesVisibility() {
-    const isVisible = [3, 4, 5].includes(this.config.type);
+    const isVisible = [4, 5].includes(this.config.type);
     if (this.buttons['markerTypes']) {
       this.buttons['markerTypes'].setVisible(isVisible);
     }
