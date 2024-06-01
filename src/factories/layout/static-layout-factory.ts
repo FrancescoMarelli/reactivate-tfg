@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import NewMarker from '~/gameobjects/new-marker';
 import { MarkerFactory } from '~/factories/markers/marker-factory';
+import Constants  from 'constants';
 
 
 export class StaticLayoutFactory implements ILayoutFactory {
@@ -20,8 +21,9 @@ export class StaticLayoutFactory implements ILayoutFactory {
         {
         x: width,
         y: height,
-        texture: markerType,
-        id: i
+        texture: Constants.MARKER.ID,
+        id: i,
+        defaultMarker: markerType,
       });
 
       counterRow++;

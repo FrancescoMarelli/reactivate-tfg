@@ -32,7 +32,7 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
 
     // Use the provided marker images, or default to "blueBall" and "errorBall"
-    this.defaultMarker = config.texture || "blueBall";
+    this.defaultMarker = config.defaultMarker || config.texture || "blueBall";
     this.defaultErrorMarker =  "errorBall";
   }
 
