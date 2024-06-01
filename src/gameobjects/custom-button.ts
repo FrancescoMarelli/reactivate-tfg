@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-export default class CustomButtom extends Phaser.GameObjects.Container {
+export default class CustomButton extends Phaser.GameObjects.Container {
   protected upImage: Phaser.GameObjects.Image;
   protected overImage: Phaser.GameObjects.Rectangle;
   buttomText: Phaser.GameObjects.Text;

@@ -1,5 +1,5 @@
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
-import CustomButtom from '~/gameobjects/custom-button';
+import CustomButton from '~/gameobjects/custom-button';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import Stats from '../modals/stats';
@@ -68,50 +68,50 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
 
 
-    this.flexibility = new CustomButtom(this, 250, 220, 'button', 'Flexibilidad');
+    this.flexibility = new CustomButton(this, 250, 220, 'button', 'Flexibilidad');
     this.buttons.push(this.flexibility);
 
-    this.cardio = new CustomButtom(this, 645, 220, 'button', 'Cardio');
+    this.cardio = new CustomButton(this, 645, 220, 'button', 'Cardio');
     this.buttons.push(this.cardio);
 
-    this.agility = new CustomButtom(this, 1042, 220, 'button', 'Agilidad');
+    this.agility = new CustomButton(this, 1042, 220, 'button', 'Agilidad');
     this.buttons.push(this.agility);
 
-    this.buttonRight = new CustomButtom(this, 1150, 100, 'out', '►', 95, -48);
+    this.buttonRight = new CustomButton(this, 1150, 100, 'out', '►', 95, -48);
     this.buttons.push(this.buttonRight);
 
-    this.buttonLeft = new CustomButtom(this, 90, 100, 'out', '◄', 95, -48);
+    this.buttonLeft = new CustomButton(this, 90, 100, 'out', '◄', 95, -48);
     this.buttonLeft.setVisible(false);
     this.buttons.push(this.buttonLeft);
 
 
-    this.buttonPreviousHistorical = new CustomButtom(this, 80, this.height / 2, 'out', '＜', 95, -48);
+    this.buttonPreviousHistorical = new CustomButton(this, 80, this.height / 2, 'out', '＜', 95, -48);
     this.buttonPreviousHistorical.setVisible(false);
     this.buttonPreviousHistorical.setEnabled(false);
     this.buttons.push(this.buttonPreviousHistorical);
 
-    this.buttonNextHistorical = new CustomButtom(this, 1200, this.height / 2, 'out', '＞', 95, -48);
+    this.buttonNextHistorical = new CustomButton(this, 1200, this.height / 2, 'out', '＞', 95, -48);
     this.buttonNextHistorical.setVisible(false);
     this.buttonNextHistorical.setEnabled(false);
     this.buttons.push(this.buttonNextHistorical);
 
 
-    this.buttonRanking = new CustomButtom(this, 645, 220, 'button', 'Historial')
+    this.buttonRanking = new CustomButton(this, 645, 220, 'button', 'Historial')
     this.buttonRanking.setVisible(false);
     this.buttonRanking.setEnabled(false);
     this.buttons.push(this.buttonRanking);
 
-    this.buttonStats = new CustomButtom(this, 1042, 220, 'button', 'Estadísticas')
+    this.buttonStats = new CustomButton(this, 1042, 220, 'button', 'Estadísticas')
     this.buttonStats.setVisible(false);
     this.buttonStats.setEnabled(false);
     this.buttons.push(this.buttonStats);
 
-    this.buttonExitMarker = new CustomButtom(this, 1200, 52, 'out', 'X', 95, -48);
+    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', 'X', 95, -48);
     this.buttonExitMarker.setVisible(false);
     this.buttonExitMarker.setEnabled(false);
     this.buttons.push(this.buttonExitMarker);
 
-    this.buttonConfigScene = new CustomButtom(this, 250, 220, 'button', 'gameConfig');
+    this.buttonConfigScene = new CustomButton(this, 250, 220, 'button', 'gameConfig');
     this.buttons.push(this.buttonConfigScene);
     this.add.existing(this.buttonConfigScene);
     this.physics.world.enable(this.buttonConfigScene);
@@ -209,7 +209,7 @@ export default class Menu extends AbstractPoseTrackerScene {
     });
   }
 
-  menuSwitch(button: CustomButtom) {
+  menuSwitch(button: CustomButton) {
     switch (button.getText()) {
       case 'Flexibilidad':
         this.startNewSceneWorkout(Constants.SCENES.WorkoutFlexibilidad, WorkoutFlexibilidad);

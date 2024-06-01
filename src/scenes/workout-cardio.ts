@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
 import CustomButton from '~/gameobjects/custom-button';
-import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
@@ -181,7 +180,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
       });
     }
 
-    menuSwitch(button: CustomButtom) {
+    menuSwitch(button: CustomButton) {
       switch (button.getText()) {
         case '[➔':
           this.stopScene();
@@ -221,7 +220,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
       let shortRow: boolean = true;
       let counterRow = 0;
       let triggerChangeRow: boolean = false;
-      for (var i = 1; i < 15; i++) {
+      for (let i = 1; i < 15; i++) {
         const marker = new Marker({
           scene: this,
           x: width,

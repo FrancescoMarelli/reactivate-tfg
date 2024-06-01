@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Constants from '~/constants';
-import CustomButtom from '~/gameobjects/custom-button';
+import CustomButton from '~/gameobjects/custom-button';
 import Marker from '~/gameobjects/marker';
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
@@ -58,15 +58,15 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
     super.create();
 
     /************** Buttons Init *********/
-    this.buttonExitMarker = new CustomButtom(this, 1200, 52, 'out', '[➔', 95, -48);
+    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', '[➔', 95, -48);
     this.buttonExitMarker.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonExitMarker);
 
-    this.buttonReadyLeft = new CustomButtom(this, 340, 230, 'getReady', 'I', 95, -48);
+    this.buttonReadyLeft = new CustomButton(this, 340, 230, 'getReady', 'I', 95, -48);
     this.buttonReadyLeft.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyLeft);
 
-    this.buttonReadyRight = new CustomButtom(this, 940, 230, 'getReady', 'D', 95, -48);
+    this.buttonReadyRight = new CustomButton(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonReadyRight.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyRight);
 
@@ -147,7 +147,7 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
   }
 
-  menuSwitch(button: CustomButtom) {
+  menuSwitch(button: CustomButton) {
     switch (button.getText()) {
       case '[➔':
         this.stopScene();

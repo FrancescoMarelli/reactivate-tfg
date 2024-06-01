@@ -1,7 +1,7 @@
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import Phaser from 'phaser';
 import Constants from '~/constants';
-import CustomButtom from '~/gameobjects/custom-button';
+import CustomButton from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
@@ -19,7 +19,6 @@ import { CardioFactory } from '~/factories/workouts/cardio-factory';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 import { ArcadeFactory } from '~/factories/interfaces/ArcadeFactory';
-import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
 import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
 import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
@@ -117,9 +116,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.levelTime = 0.3;
       this.remainingTime = this.workoutConfig.time  + 60;
       this.randomMarker = 3;
-      this.movementSettings = {
-        activeJoints: ["LeftIndex", "RightIndex"]
-      } ;
+
       this.counter = 0;
 
       this.registry.set(Constants.REGISTER.EXP, this.exp);
@@ -133,6 +130,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     }
     this.setupScene();
     this.workoutSwitch(this.type);
+     this.movementSettings = {
+       activeJoints: ["LeftIndex", "RightIndex"]
+     };
     this.detectorExercise = this.movementFactory.create(this);
 
   }
@@ -256,7 +256,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   }
 
 
-  menuSwitch(button: CustomButtom) {
+  menuSwitch(button: CustomButton) {
     switch (button.getText()) {
       case '[➔':
         this.stopScene();
@@ -301,22 +301,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
   }
 
-  movePointsAgilidad(coords: IPoseLandmark[] | undefined) {
-    if (this.bodyPoints && coords) {
-      for (let i = 0; i < this.bodyPoints.length; i++) {
-        if (i == 34) { // To extend hands points (improve accuracy)
-          this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
-        } else if (i == 35) {
-          this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
-        } else {
-          this.bodyPoints[i]?.setPosition(coords[i]?.x * 1280, coords[i]?.y * 720);
-        }
-      }
-    }
-  }
-
-
-
   stopScene() {
     this.saveData();
     this.sound.stopAll();
@@ -340,8 +324,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        if (this.type == 'agilidad' || this.type == 'flexibilidad') {
-          this.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
+        if(this.type == 'agilidad') {
+          MovePoints.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints);
         } else {
           MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
         }

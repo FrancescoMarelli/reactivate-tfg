@@ -5,7 +5,7 @@ import GameCreator from '~/scenes/game-creator';
 import HUD from '~/scenes/hud';
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
-import CustomButtom from '~/gameobjects/custom-button';
+import CustomButton from '~/gameobjects/custom-button';
 import Menu from '~/scenes/menu';
 import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
 import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
@@ -138,14 +138,14 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   createNavButtons() {
-    this.saveButton = new CustomButtom(this, 1150, 680, 'button', 'SAVE');
+    this.saveButton = new CustomButton(this, 1150, 680, 'button', 'SAVE');
     this.saveButton.setScale(0.7, 0.65);
     this.navButtons.push(this.saveButton);
 
-    this.buttonExitMarker = new CustomButtom(this, 1140, 102, 'out', '[➔', 95, -48);
+    this.buttonExitMarker = new CustomButton(this, 1140, 102, 'out', '[➔', 95, -48);
     this.navButtons.push(this.buttonExitMarker);
 
-    this.poseSelectionButton = new CustomButtom(this, 1140, 222, 'out', '🕺', 95, -48);
+    this.poseSelectionButton = new CustomButton(this, 1140, 222, 'out', '🕺', 95, -48);
     this.navButtons.push(this.poseSelectionButton);
 
     this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));

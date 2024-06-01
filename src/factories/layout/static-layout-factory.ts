@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import NewMarker from '~/gameobjects/new-marker';
 import { MarkerFactory } from '~/factories/markers/marker-factory';
-import Constants  from 'constants';
+import Constants from 'constants';
 
 
 export class StaticLayoutFactory implements ILayoutFactory {
