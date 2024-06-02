@@ -117,7 +117,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.randomMarker = 3;
 
       this.counter = 0;
-
+      this.registry.set(Constants.REGISTER.LEVEL, this.currentLevel);
       this.registry.set(Constants.REGISTER.EXP, this.exp);
       this.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
       /***************************************** */
@@ -133,6 +133,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
        activeJoints: ["LeftIndex", "RightIndex"]
      };
     this.detectorExercise = this.movementFactory.create(this);
+    this.detectorExercise.setDifficulty(this.difficulty);
+    this.detectorExercise.setIntensity(this.intensity);
 
   }
 
@@ -291,9 +293,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.markerTypes);
       this.detectorExercise.setBodyPoints(this.bodyPoints);
       this.detectorExercise.setMarkers(this.markers);
-      if(this.type == 'agilidad') {
-        this.detectorExercise.createContactBall();
-      }
+
       //this.events.emit(Constants.EVENT.MARKER_CREATED);
     }
 
@@ -305,6 +305,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.getReadyLeft = false;
     this.getReadyRight = false;
     this.sound.pauseOnBlur = false;
+    if(this.type == 'agilidad') {
+      this.detectorExercise.createContactBall();
+    }
   }
 
   stopScene() {
@@ -320,9 +323,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     let date: string = Utils.getActualDate();
     if(this.detectorExercise.getType() == 'Arcade') {
       this.untouchedMarkers = this.detectorExercise.getUntouchedMarkers();
-      this.counter = this.detectorExercise.getTouchedMarkers();
       this.totalTouchableMarkers = this.untouchedMarkers + this.counter;
-      this.currentLevel = this.detectorExercise.getLevel();
+      this.currentLevel = this.detectorExercise.getLevel() ;
     } else {
       this.untouchedMarkers = 0;
       this.totalTouchableMarkers = 0;
@@ -380,6 +382,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         this.registry.set(Constants.REGISTER.CLOCK, clockText);
         // Send to HUD
         this.events.emit(Constants.EVENT.CLOCK);
+
+        this.counter = this.detectorExercise.getTouchedMarkers();
 
         // End of workout
         if (this.remainingTime == 0) {

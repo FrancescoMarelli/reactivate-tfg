@@ -9,6 +9,9 @@ import { IArcadeExercise } from '~/workouts/arcade-exercice';
 export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   markers: any[] = [];
   scene: Phaser.Scene;
+  difficulty: number;
+  intensity: number;
+
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private triggerAction: boolean = true;
 
@@ -74,7 +77,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
       this.ballAppearanceTop = !this.ballAppearanceTop;
     }
 
-    this.ball.setVelocity(100, 200);
+    this.ball.setVelocity(100*this.intensity, 200*this.intensity);
     this.ball.setBounce(1, 1);
     this.ball.setCollideWorldBounds(true);
     this.ball.setRotation(360);
@@ -201,5 +204,13 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
 
   getLevel(): number {
     return this.currentLevel;
+  }
+
+  setDifficulty(difficulty: number) {
+    this.difficulty = difficulty;
+  }
+
+  setIntensity(intensity: number) {
+    this.intensity = intensity;
   }
 }

@@ -53,7 +53,5 @@ export default class StatsData {
     public set totalTouchableMarkers(value: number) {
         this._untouchedMarkers = value;
     }
-
-
 }
 

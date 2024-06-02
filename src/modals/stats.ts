@@ -69,7 +69,7 @@ export default class Stats extends Phaser.GameObjects.Image {
         "Tipo de entrenamiento: " + myMaxStat["_workout"],
         "Fecha del entrenamiento: " + myMaxStat["_date"],
         "Máximo nivel alcanzado: " + myMaxStat["_maxLevel"],
-        "Marcadores alcanzados: " + myMaxStat["_touchedMarkers"],
+        "Marcadores alcanzados / Reps: " + myMaxStat["_touchedMarkers"],
         "Marcadores no alcanzados: " + myMaxStat["_untouchedMarkers"],
       ];
       this.progress[0] = myMaxStat["_maxLevel"] * 25;

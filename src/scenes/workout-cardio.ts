@@ -312,6 +312,7 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
       this.lastIdMarker = this.randomMarker;
       if (this.currentMarkersAlive === 0) {
         this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
+        console.log(this.currentLevel)
         this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
         if (this.multipleMarkerProb && this.currentLevel > 1) {
           this.maxMarkers = 4;

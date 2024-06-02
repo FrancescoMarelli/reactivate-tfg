@@ -9,6 +9,8 @@ import NewMarker from '~/gameobjects/new-marker';
 export default class CardioWorkout implements IGymExercise, IArcadeExercise {
   markers: NewMarker[] = [];
   scene: Phaser.Scene;
+  difficulty: number;
+  intensity: number;
 
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private triggerAction: boolean = true;
@@ -65,13 +67,22 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
     }
     this.lastIdMarker = this.randomMarker;
     if (this.currentMarkersAlive === 0) {
-      this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL));
+      this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL))
       this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
-      this.maxMarkers = this.multipleMarkerProb ? (this.currentLevel > 1 ? 4 : 3) : 2;
+      if (this.multipleMarkerProb && this.currentLevel > 5) {
+        this.maxMarkers = 3;
+      } else if (this.multipleMarkerProb) {
+        this.maxMarkers = 2;
+      } else {
+        this.maxMarkers = 1;
+      }
     }
   }
 
   probabilityTypesMarkers(probError: number, probMultiple: number) {
+    probError *= this.intensity;
+    probMultiple *= this.intensity;
+
     const rand = Math.random();
     this.errorMakerProb = rand < probError;
     this.multipleMarkerProb = rand < probMultiple;
@@ -131,5 +142,13 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
 
   getLevel(): number {
     return this.currentLevel;
+  }
+
+  setDifficulty(difficulty: number) {
+    this.difficulty = difficulty;
+  }
+
+  setIntensity(intensity: number) {
+    this.intensity = intensity;
   }
 }

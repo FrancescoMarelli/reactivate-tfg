@@ -16,6 +16,9 @@ const sequences = [sVi, sVd, s1, s2, sHi, sHd];
 export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise {
   isReady: boolean;
   scene: Phaser.Scene;
+  difficulty: number;
+  intensity: number;
+
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
 
   private triggerAction: boolean = true;
@@ -184,6 +187,7 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
   }
 
   probabilityTypesMarkers(probInv: number) {
+    probInv *= this.intensity;
     let rand = Math.random();
     rand < probInv ? (this.invertDirection = true) : (this.invertDirection = false);
     this.nextSequence = Utils.random(0, sequences.length - 1);
@@ -191,5 +195,13 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
 
   getLevel(): number {
     return this.currentLevel;
+  }
+
+  setDifficulty(difficulty: number) {
+    this.difficulty = difficulty;
+  }
+
+  setIntensity(intensity: number) {
+    this.intensity = intensity;
   }
 }

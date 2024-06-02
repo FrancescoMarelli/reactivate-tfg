@@ -166,7 +166,7 @@ export default class HUD extends Phaser.Scene {
       color: '#FFFFFF',
       fontStyle: 'normal',
     });
-    this.counterText = this.add.text(this.width / 2 - 45, 27, '0', {
+    this.counterText = this.add.text(this.width / 2 - 43, 27, '0', {
       fontFamily: 'Russo One',
       fontSize: '45px',
       color: '#FFFFFF',
@@ -325,6 +325,10 @@ export default class HUD extends Phaser.Scene {
         },
       });
     }
+  }
+
+  getLevel(): number {
+    return this.level;
   }
 
 
