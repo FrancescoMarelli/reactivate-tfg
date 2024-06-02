@@ -133,7 +133,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
        activeJoints: ["LeftIndex", "RightIndex"]
      };
     this.detectorExercise = this.movementFactory.create(this);
-    this.detectorExercise.setDifficulty(this.difficulty);
     this.detectorExercise.setIntensity(this.intensity);
 
   }

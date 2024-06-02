@@ -2,17 +2,16 @@ import Phaser from 'phaser';
 import Constants from '~/constants';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
-import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';
 import NewMarker from '~/gameobjects/new-marker';
 
 export default class CardioWorkout implements IGymExercise, IArcadeExercise {
   markers: NewMarker[] = [];
   scene: Phaser.Scene;
-  difficulty: number;
   intensity: number;
+  bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+  isReady: boolean = false;
 
-  private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private triggerAction: boolean = true;
 
   private multipleMarkerProb = false;
@@ -27,8 +26,6 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
   private lastIdMarker = 0;
   private randomMarker: number = 3;
 
-  private layoutFactory: ILayoutFactory;
-  isReady: boolean = false;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -142,10 +139,6 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
 
   getLevel(): number {
     return this.currentLevel;
-  }
-
-  setDifficulty(difficulty: number) {
-    this.difficulty = difficulty;
   }
 
   setIntensity(intensity: number) {

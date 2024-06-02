@@ -16,10 +16,10 @@ const sequences = [sVi, sVd, s1, s2, sHi, sHd];
 export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise {
   isReady: boolean;
   scene: Phaser.Scene;
-  difficulty: number;
   intensity: number;
+  bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+  markers: any[] = [];
 
-  private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
 
   private triggerAction: boolean = true;
   private exp: number = 0;
@@ -43,7 +43,6 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
   private prevMarker;
   private showNextSequence: boolean = true;
   private lastIdSequence = 0;
-  markers: any[] = [];
 
 
   constructor(scene : Phaser.Scene) {
@@ -195,10 +194,6 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
 
   getLevel(): number {
     return this.currentLevel;
-  }
-
-  setDifficulty(difficulty: number) {
-    this.difficulty = difficulty;
   }
 
   setIntensity(intensity: number) {

@@ -2,17 +2,17 @@ import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import Marker from '~/gameobjects/marker';
 import Phaser from 'phaser';
-import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import Constants from '~/constants';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';
 
 export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   markers: any[] = [];
   scene: Phaser.Scene;
-  difficulty: number;
   intensity: number;
+  bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+  isReady: boolean = false;
 
-  private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+
   private triggerAction: boolean = true;
 
   private multipleMarkerProb = false;
@@ -29,8 +29,6 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   private exp: number = 0;
   private ball;
   private ballEmitter;
-  private layoutFactory: ILayoutFactory;
-  isReady: boolean = false;
   private particles;
   private ballAppearanceLeft: boolean = true;
   private ballAppearanceTop: boolean = true;
@@ -62,7 +60,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   createContactBall() {
     this.particles = this.scene.add.particles('particle-orange');
     this.ballEmitter = this.particles.createEmitter({
-      speed: 80,
+      speed: 80 * this.intensity,
       scale: { start: 0.6, end: 0 },
       blendMode: 'ADD',
       tint: ['0xfff107']
@@ -204,10 +202,6 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
 
   getLevel(): number {
     return this.currentLevel;
-  }
-
-  setDifficulty(difficulty: number) {
-    this.difficulty = difficulty;
   }
 
   setIntensity(intensity: number) {
