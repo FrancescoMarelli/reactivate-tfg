@@ -32,8 +32,29 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
 
     // Use the provided marker images, or default to "blueBall" and "errorBall"
-    this.defaultMarker = config.defaultMarker || config.texture || "blueBall";
-    this.defaultErrorMarker =  "errorBall";
+    this.switchMarker(config.defaultMarker);
+  }
+
+  switchMarker(texture: string) {
+    switch (texture) {
+      case 'japan':
+        this.defaultMarker = 'blueAnime';
+        this.defaultErrorMarker = 'redAnime';
+        break;
+      case 'default':
+        this.defaultMarker = 'blueBall';
+        this.defaultErrorMarker = 'errorBall';
+        break;
+      case 'medieval':
+        this.defaultMarker = 'medievalBlue';
+        this.defaultErrorMarker = 'medievalRed';
+        break;
+      case 'future':
+        this.defaultMarker = 'blueFuture';
+        this.defaultErrorMarker = 'redFuture';
+        break;
+
+    }
   }
 
 
@@ -116,11 +137,7 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.ball = this.scene.add.sprite(this.coordx, this.coordy, this.defaultMarker);
     }
-    if (this.flexibilityGame) {
-      this.ball.setScale(0.10);
-    } else {
-      this.ball.setScale(0.11);
-    }
+    this.ball.setScale(0.08);
 
     let timerForMarker = 5500;
     if (this.flexibilityGame) timerForMarker = 20000;
@@ -176,8 +193,7 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     return this.errorMarker;
   }
 
-  setAgilityGame(agility: boolean, markerType: string) {
-    this.defaultMarker = markerType;
+  setAgilityGame(agility: boolean) {
     this.agilityGame = agility;
   }
 

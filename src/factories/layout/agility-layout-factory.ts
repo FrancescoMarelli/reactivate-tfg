@@ -19,8 +19,9 @@ export class AgilityLayoutFactory implements ILayoutFactory {
           y: height,
           texture: Constants.TRANSPARENTMARKER.ID,
           id: i,
+          defaultMarker: markerType,
         });
-      marker.setAgilityGame(true, markerType);
+      marker.setAgilityGame(true);
       if (i % 6 == 0) {
         height = height + 170;
         width = 50;

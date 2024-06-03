@@ -61,13 +61,22 @@ export default class Loader extends Phaser.Scene {
     this.load.image('silhouette', 'img/blueSilhouette.png');
     this.load.image('button', 'img/button.png');
     this.load.image('getReady', 'img/out.png');
-    this.load.image('blueFuture', 'img/blueFuture.png');
-    this.load.image('blueBall', 'img/blueBall.png');
-    this.load.image('purpleball', 'img/purpball.png');
-    this.load.image('futureball', 'img/futureball.png');
-    this.load.image('errorBall', 'img/errorBall.png');
-    this.load.image('marker', 'img/marker.png');
-    this.load.image('transparentMarker', 'img/transparentMarker.png');
+
+    this.load.image('blueFuture', 'img/markers/blueFuture.png');
+    this.load.image('redFuture', 'img/markers/redFuture.png');
+
+    this.load.image('blueBall', 'img/markers/blueBall.png');
+    this.load.image('errorBall', 'img/markers/errorBall.png');
+
+    this.load.image('blueAnime', 'img/markers/blueAnime.png');
+    this.load.image('redAnime', 'img/markers/redAnime.png');
+
+    this.load.image('medievalBlue', 'img/markers/mediavalBlue.png');
+    this.load.image('medievalRed', 'img/markers/medievalRed.png');
+
+    this.load.image('marker', 'img/markers/marker.png');
+    this.load.image('transparentMarker', 'img/markers/transparentMarker.png');
+
     this.load.image('backgroundStats', 'img/backgroundStats.png');
     this.load.image('room', 'img/room.png');
     this.load.image('meteorite', 'img/meteorite.png');

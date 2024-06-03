@@ -21,54 +21,53 @@ const baseStyle = {
 interface GameConfig {
   difficulty: number;
   intensity: number;
-  gameLength: number;
   type: number;
-  markerTypes: number;
+  theme: number;
   backgroundMusic: number;
 }
 
 const workoutConfigurations = {
   "push-ups": {
-    "Principiante": { reps: 5 },
-    "Esordiente": { reps: 7 },
-    "Experto": { reps: 10 },
-    "Avanzado": { reps: 20 },
-    "Pro": { reps: 30 }
+    "Principiante": { reps: 7, time: 60 },
+    "Esordiente": { reps: 10, time: 60 },
+    "Experto": { reps: 12, time: 60 },
+    "Avanzado": { reps: 15, time: 60 },
+    "Pro": { reps: 20, time: 60 }
   },
   "jumping-jacks": {
-    "Principiante": { reps: 5 },
-    "Esordiente": { reps: 7 },
-    "Experto": { reps: 10 },
-    "Avanzado": { reps: 20 },
-    "Pro": { reps: 30 }
+    "Principiante": { reps: 20, time: 60 },
+    "Esordiente": { reps: 25, time: 60 },
+    "Experto": { reps: 30, time: 60 },
+    "Avanzado": { reps: 35, time: 60 },
+    "Pro": { reps: 40, time: 60 }
   },
   "weight-lifting": {
-    "Principiante": { reps: 10 },
-    "Esordiente": { reps: 20 },
-    "Experto": { reps: 30 },
-    "Avanzado": { reps: 40 },
-    "Pro": { reps: 50 }
+    "Principiante": { reps: 20, time: 60 },
+    "Esordiente": { reps: 30, time: 60 },
+    "Experto": { reps: 40, time: 60 },
+    "Avanzado": { reps: 50, time: 60 },
+    "Pro": { reps: 60, time: 60 }
   },
   "agilidad": {
-    "Principiante": { reps: 20 },
-    "Esordiente": { reps: 30 },
-    "Experto": { reps: 40 },
-    "Avanzado": { reps: 50 },
-    "Pro": { reps: 60 }
+    "Principiante": { reps: 20, time: 180 },
+    "Esordiente": { reps: 30, time: 180 },
+    "Experto": { reps: 40, time: 180 },
+    "Avanzado": { reps: 50, time: 180 },
+    "Pro": { reps: 60, time: 180 }
   },
   "flexibilidad": {
-    "Principiante": { reps: 40 },
-    "Esordiente": { reps: 50 },
-    "Experto": { reps: 60 },
-    "Avanzado": { reps: 70 },
-    "Pro": { reps: 80 }
+    "Principiante": { reps: 40, time: 180 },
+    "Esordiente": { reps: 50, time: 180 },
+    "Experto": { reps: 60, time: 180 },
+    "Avanzado": { reps: 70, time: 180 },
+    "Pro": { reps: 80, time: 180 }
   },
   "cardio": {
-    "Principiante": { reps: 20 },
-    "Esordiente": { reps: 30 },
-    "Experto": { reps: 40 },
-    "Avanzado": { reps: 50 },
-    "Pro": { reps: 60 }
+    "Principiante": { reps: 20, time: 180 },
+    "Esordiente": { reps: 30, time: 180 },
+    "Experto": { reps: 40, time: 180 },
+    "Avanzado": { reps: 50, time: 180 },
+    "Pro": { reps: 60, time: 180 }
   }
 };
 
@@ -85,7 +84,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
   public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "flexibilidad", "agilidad", "cardio"];
-  private markerTypeLabels = ["blueBall", "futureball", "blueFuture", "purpleball"];
+  private themeLabels = ["default", "medieval", "japan", "future"];
   private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private touchingButton: boolean = false;
@@ -98,7 +97,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
   constructor() {
     super({ key: Constants.SCENES.CONFIG });
-    this.config = { difficulty: 2, intensity: 1, gameLength: 5, type: 0, markerTypes: 0, backgroundMusic: 0 };
+    this.config = { difficulty: 2, intensity: 1, type: 0, theme: 0, backgroundMusic: 0 };
     this.soundFactory = new BackgroundSoundFactory();
   }
 
@@ -111,24 +110,19 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     darkenOverlay.setAlpha(0.7);
 
     // creación de botones de configuración
-    this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficulty', 'difficulty', ConfigScene.difficultyLabels);
-    this.buttons['intensity'] = this.createConfigControl(710, 200, 'button', 'Intensity', 'intensity', this.intensityLabels);
-    this.buttons['gameLength'] = this.createConfigControl(710, 310, 'button', 'Game Length', 'gameLength', Array.from({ length: 10 }, (_, i) => i + 1));
-    this.buttons['backgroundMusic'] = this.createConfigControl(710, 420, 'button', 'Background Music', 'backgroundMusic', this.backgroundMusicLabels);
-    this.buttons['type'] = this.createConfigControl(710, 530, 'button', 'Workout Type', 'type', this.workoutTypeLabels);
-    this.buttons['markerTypes'] = this.createConfigControl(710, 640, 'button', 'Marker Types', 'markerTypes', this.markerTypeLabels);
+    this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficultad', 'difficulty', ConfigScene.difficultyLabels);
+    this.buttons['intensity'] = this.createConfigControl(710, 200, 'button', 'Intensidad', 'intensity', this.intensityLabels);
+    this.buttons['backgroundMusic'] = this.createConfigControl(710, 310, 'button', 'Musica', 'backgroundMusic', this.backgroundMusicLabels);
+    this.buttons['type'] = this.createConfigControl(710, 420, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
+    this.buttons['theme'] = this.createConfigControl(710, 530, 'button', 'Tema', 'theme', this.themeLabels);
 
-
-    this.updateMarkerTypesVisibility();
 
     this.events.on('valueChanged', (field, newValue) => {
       this.config[field] = newValue;
       if (field === 'difficulty' || field === 'intensity') {
         this.updateWorkoutConfig();
       }
-      if (field === 'type') {
-        this.updateMarkerTypesVisibility();
-      }
+
     });
 
     this.createNavButtons();
@@ -306,15 +300,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     });
   }
 
-  updateMarkerTypesVisibility() {
-    const isVisible = [4, 5].includes(this.config.type);
-    if (this.buttons['markerTypes']) {
-      this.buttons['markerTypes'].setVisible(isVisible);
-    }
-    if (this.textLabels['markerTypes']) {
-      this.textLabels['markerTypes'].setVisible(isVisible);
-    }
-  }
 
   createConfigControl(x: number, y: number, texture: string, label: string, configField: string, values: any[]): CustomButtonWithControls {
     const text = this.add.text(90, y, `${label} `, {
@@ -366,9 +351,9 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     const configCopy = {
       difficulty: ConfigScene.difficultyLabels[this.buttons['difficulty'].getIndex()],
       intensity: this.buttons['intensity'].getIndex().toString(),
-      gameLength: this.buttons['gameLength'].getIndex(),
+      gameLength: this.getWorkoutConfig().time,
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
-      markerTypes: this.markerTypeLabels[this.buttons['markerTypes'].getIndex()],
+      theme: this.themeLabels[this.buttons['theme'].getIndex()],
       backgroundMusic: this.backgroundMusicLabels[this.buttons['backgroundMusic'].getIndex()],
       workoutConfig: this.getWorkoutConfig()
     };
@@ -397,7 +382,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     if (workoutConfigurations[workoutType] && workoutConfigurations[workoutType][difficulty]) {
       const baseConfig = workoutConfigurations[workoutType][difficulty];
       const adjustedReps = baseConfig.reps * intensityConfig.multiplier;
-      const time = this.config.gameLength * 60;
+      const time = baseConfig.time;  // Corrige la multiplicación por intensidad
       return { ...baseConfig, reps: adjustedReps, time: time };
     }
 
@@ -413,7 +398,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     if (workoutConfigurations[workoutType] && workoutConfigurations[workoutType][difficulty]) {
       const baseConfig = workoutConfigurations[workoutType][difficulty];
       const adjustedReps = baseConfig.reps * intensityConfig.multiplier;
-      const time = this.config.gameLength * 60;
+      const time = baseConfig.time;  // Corrige la multiplicación por intensidad
       this.config['workoutConfig'] = { ...baseConfig, reps: adjustedReps, time: time };
       console.log(`Updated Workout Config: Difficulty: ${difficulty}, Type: ${workoutType}, Intensity: ${intensity}, Reps: ${adjustedReps}, Time: ${time}`);
     } else {

@@ -67,7 +67,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private levelTime: number = 0.3;
   private remainingTime: number;
   private audioSettings;
-  private markerTypes;
+  private theme;
   private randomMarker: number = 3;
   private movementSettings: any;
 
@@ -109,11 +109,11 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       const gameConfig  = this.registry.get('game-config');
       this.type = gameConfig.type;
       this.audioSettings = gameConfig.backgroundMusic;
-      this.markerTypes = gameConfig.markerTypes;
+      this.theme = gameConfig.theme;
       this.intensity = gameConfig.intensity;
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
-      this.remainingTime = this.workoutConfig.time  + 60;
+      this.remainingTime = this.workoutConfig.time;
       this.randomMarker = 3;
 
       this.counter = 0;
@@ -133,7 +133,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
        activeJoints: ["LeftIndex", "RightIndex"]
      };
     this.detectorExercise = this.movementFactory.create(this);
-    this.detectorExercise.setIntensity(this.intensity);
+    if(this.detectorExercise.getType() == 'Arcade')
+      this.detectorExercise.setIntensity(this.intensity);
 
   }
 
@@ -289,7 +290,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
     if(this.detectorExercise.getType() == 'Arcade') {
-      this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.markerTypes);
+      this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.theme);
       this.detectorExercise.setBodyPoints(this.bodyPoints);
       this.detectorExercise.setMarkers(this.markers);
 
@@ -305,6 +306,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.getReadyRight = false;
     this.sound.pauseOnBlur = false;
     if(this.type == 'agilidad') {
+      this.detectorExercise.setTheme(this.theme);
       this.detectorExercise.createContactBall();
     }
   }
@@ -382,7 +384,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         // Send to HUD
         this.events.emit(Constants.EVENT.CLOCK);
 
-        this.counter = this.detectorExercise.getTouchedMarkers();
+        if (this.detectorExercise.getType() == 'Arcade')
+            this.counter = this.detectorExercise.getTouchedMarkers();
 
         // End of workout
         if (this.remainingTime == 0) {

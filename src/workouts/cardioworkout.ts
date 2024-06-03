@@ -38,6 +38,14 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
   destroyMarker(marker: NewMarker, touched: boolean): void {
     this.currentMarkersAlive--;
     let exp = Number(this.scene.registry.get(Constants.REGISTER.EXP));
+    exp = this.updateExpAndUntouchedMarkers(marker, touched, exp);
+    this.scene.registry.set(Constants.REGISTER.EXP, exp);
+    this.scene.events.emit(Constants.EVENT.UPDATEEXP);
+    this.updateRandomMarker();
+    this.updateCurrentLevelAndMaxMarkers();
+  }
+
+  updateExpAndUntouchedMarkers(marker: NewMarker, touched: boolean, exp: number): number {
     if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
       if (exp > 0) {
         exp -= 10;
@@ -45,24 +53,26 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
           this.untouchedMarkers++;
         }
       }
-      this.scene.events.emit(Constants.EVENT.UNTOUCHED); // Emite el evento solo si el marcador fue tocado
+      this.scene.events.emit(Constants.EVENT.UNTOUCHED);
     } else if ((marker.getErrorMarker() && !touched) || (!marker.getErrorMarker() && touched)) {
-      //this.scene.events.emit(Constants.EVENT.COUNTER);
       exp += 10;
       if (!marker.getErrorMarker() && touched) {
         this.touchedMarkers++;
-        this.scene.events.emit(Constants.EVENT.MARKER_COUNT); // Emite el evento solo si el marcador fue tocado
+        this.scene.events.emit(Constants.EVENT.MARKER_COUNT);
       }
-
     }
-    this.scene.registry.set(Constants.REGISTER.EXP, exp);
-    this.scene.events.emit(Constants.EVENT.UPDATEEXP);
+    return exp;
+  }
 
+  updateRandomMarker(): void {
     this.randomMarker = Math.floor(Math.random() * 14) + 1;
     while (this.randomMarker === this.lastIdMarker) {
       this.randomMarker = Math.floor(Math.random() * 14) + 1;
     }
     this.lastIdMarker = this.randomMarker;
+  }
+
+  updateCurrentLevelAndMaxMarkers(): void {
     if (this.currentMarkersAlive === 0) {
       this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL))
       this.probabilityTypesMarkers(0.15, this.currentLevel / 10);

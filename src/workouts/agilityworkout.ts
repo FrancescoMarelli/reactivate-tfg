@@ -34,6 +34,8 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   private ballAppearanceTop: boolean = true;
   private width: number = 1280;
   private height: number = 720;
+  private theme : string;
+  private scale: number;
 
 
   constructor(scene: Phaser.Scene) {
@@ -48,12 +50,46 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
     return 'Arcade';
   }
 
+  getTheme(): string {
+    return this.theme;
+  }
+
+  setTheme(theme: string): void {
+    this.theme = theme;
+  }
+
   setMarkers(markers: Marker[]) {
     this.markers = markers;
   }
 
   setBodyPoints(bodyPoints: Phaser.Physics.Arcade.Sprite[]) {
     this.bodyPoints = bodyPoints;
+  }
+
+  switchTheme(theme: string): string {
+    switch (theme) {
+      case 'default':
+        this.scale = 0.15;
+        return 'meteorite';
+        break;
+      case 'japan':
+        this.scale = 0.08
+        return 'redAnime';
+        break;
+      case 'medieval':
+        this.scale = 0.08
+        return 'medievalRed';
+        break;
+      case 'future':
+        this.scale = 0.08
+        return 'redFuture';
+        break;
+      default:
+        this.scale = 0.15;
+        return 'meteorite';
+        break;
+
+    }
   }
 
 
@@ -66,8 +102,10 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
       tint: ['0xfff107']
     });
 
-    this.ball = this.scene.physics.add.image(this.ballAppearanceLeft ? 0 : this.width, this.ballAppearanceTop ? 100 : this.height, 'meteorite');
-    this.ball.setScale(0.15);
+    let spriteKey = this.switchTheme(this.theme);
+
+    this.ball = this.scene.physics.add.image(this.ballAppearanceLeft ? 0 : this.width, this.ballAppearanceTop ? 100 : this.height, spriteKey);
+    this.ball.setScale(this.scale);
     this.ball.setAlpha(0.75);
 
     this.ballAppearanceLeft = !this.ballAppearanceLeft;
@@ -75,7 +113,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
       this.ballAppearanceTop = !this.ballAppearanceTop;
     }
 
-    this.ball.setVelocity(100*this.intensity, 200*this.intensity);
+    this.ball.setVelocity(100 * this.intensity, 200 * this.intensity);
     this.ball.setBounce(1, 1);
     this.ball.setCollideWorldBounds(true);
     this.ball.setRotation(360);
