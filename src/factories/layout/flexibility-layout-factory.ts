@@ -21,7 +21,7 @@ export class FlexibilityLayoutFactory implements ILayoutFactory {
           y: height,
           texture:  Constants.TRANSPARENTMARKER.ID,
           id: i});
-      marker.setDefaultBall("triangle", "redTriangle");
+      marker.setFlexibilityMarkers(markerType);
       if (i % 6 == 0) {
         if (i > 17) {
           height = height + 140;

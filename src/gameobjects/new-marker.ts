@@ -138,6 +138,8 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
       this.ball = this.scene.add.sprite(this.coordx, this.coordy, this.defaultMarker);
     }
     this.ball.setScale(0.08);
+    if(this.flexibilityGame)
+      this.ball.setScale(0.1);
 
     let timerForMarker = 5500;
     if (this.flexibilityGame) timerForMarker = 20000;
@@ -159,9 +161,26 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     this.animationCreated = true;
   }
 
-  setDefaultBall(ball: string, errorBall: string) {
-    this.defaultMarker = ball;
-    this.defaultErrorMarker = errorBall;
+  setFlexibilityMarkers(type: string) {
+    switch (type) {
+      case 'japan':
+        this.defaultMarker = 'japBlue';
+        this.defaultErrorMarker = 'japRed';
+        break;
+      case 'default':
+        this.defaultMarker = 'triangle';
+        this.defaultErrorMarker = 'redTriangle';
+        break;
+      case 'medieval':
+        this.defaultMarker = 'medievalBlueTriangle';
+        this.defaultErrorMarker = 'medievalRedTriangle';
+        break;
+      case 'future':
+        this.defaultMarker = 'blueFutureTriangle';
+        this.defaultErrorMarker = 'redFutureTriangle';
+        break;
+
+    }
     this.flexibilityGame = true;
   }
 

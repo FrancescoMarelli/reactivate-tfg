@@ -64,15 +64,22 @@ export default class Loader extends Phaser.Scene {
 
     this.load.image('blueFuture', 'img/markers/blueFuture.png');
     this.load.image('redFuture', 'img/markers/redFuture.png');
-
     this.load.image('blueBall', 'img/markers/blueBall.png');
     this.load.image('errorBall', 'img/markers/errorBall.png');
-
     this.load.image('blueAnime', 'img/markers/blueAnime.png');
     this.load.image('redAnime', 'img/markers/redAnime.png');
-
-    this.load.image('medievalBlue', 'img/markers/mediavalBlue.png');
+    this.load.image('medievalBlue', 'img/markers/blueMedieval.png');
     this.load.image('medievalRed', 'img/markers/medievalRed.png');
+
+    this.load.image('triangle', 'img/markers/triangle.png');
+    this.load.image('redTriangle', 'img/markers/redTriangle.png');
+    this.load.image('japBlue', 'img/markers/japBlueTriangle.png');
+    this.load.image('japRed', 'img/markers/japRedTriangle.png');
+    this.load.image('medievalBlueTriangle', 'img/markers/medievalBlueTriangle.png');
+    this.load.image('medievalRedTriangle', 'img/markers/medievalRedTriangle.png');
+    this.load.image('blueFutureTriangle', 'img/markers/blueFutureTriangle.png');
+    this.load.image('redFutureTriangle', 'img/markers/redFutureTriangle.png');
+
 
     this.load.image('marker', 'img/markers/marker.png');
     this.load.image('transparentMarker', 'img/markers/transparentMarker.png');
@@ -86,8 +93,7 @@ export default class Loader extends Phaser.Scene {
     this.load.image('firework', 'img/fireworks.gif');
     this.load.image('gameover', 'img/gameover.gif');
     this.load.image('particle-green', 'particles/particle-green.png');
-    this.load.image('triangle', 'img/triangle.png');
-    this.load.image('redTriangle', 'img/redTriangle.png');
+
     this.load.image('background', 'img/background.png');
     this.load.image('up', 'img/uppushup.png');
     this.load.image('down', 'img/downpushup.png');
