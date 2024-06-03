@@ -73,15 +73,15 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
         return 'meteorite';
         break;
       case 'japan':
-        this.scale = 0.07
+        this.scale = 0.07;
         return 'redAnime';
         break;
       case 'medieval':
-        this.scale = 0.07
+        this.scale = 0.07;
         return 'medievalRed';
         break;
       case 'future':
-        this.scale = 0.07
+        this.scale = 0.07;
         return 'redFuture';
         break;
       default:

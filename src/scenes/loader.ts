@@ -62,6 +62,12 @@ export default class Loader extends Phaser.Scene {
     this.load.image('button', 'img/button.png');
     this.load.image('getReady', 'img/out.png');
 
+    this.load.image('default', 'img/defaultGym.png');
+    this.load.image('japan', 'img/dojoGym.png');
+    this.load.image('future', 'img/futureGym.png');
+    this.load.image('medieval', 'img/medievalGym.png');
+
+
     this.load.image('blueFuture', 'img/markers/blueFuture.png');
     this.load.image('redFuture', 'img/markers/redFuture.png');
     this.load.image('blueBall', 'img/markers/blueBall.png');
@@ -109,6 +115,7 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('future', 'audio/futuristic.mp3');
     this.load.audio('medieval', 'audio/medieval.mp3');
     this.load.audio('japan', 'audio/japanese.mp3');
+    this.load.audio('default', 'audio/sky.mp3');
 
     this.load.audio('sfxDestroyMarkerTouched', 'audio/soundAnimation.mp3');
     this.load.audio('sfxDestroyMarkerUntouched', 'audio/sfxDestroyMarkerUntouched.wav');
@@ -122,8 +129,16 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('posicion', 'audio/posicion.wav');
     this.load.audio('vamos', 'audio/posicion.wav');
     this.load.audio('audioTutorial', 'audio/tutorial.mp3');
+    this.load.audio('faster', 'audio/faster.mp3');
+    this.load.audio('goon', 'audio/goon.mp3');
+    this.load.audio('welldone', 'audio/welldone.mp3');
     this.load.video('tutorial','img/tutorial.mp4','tutorial',false, true)
 
+    this.load.image('japanGif', 'img/gif/samurai.gif');
+    this.load.image('defaultGif', 'img/gif/default.gif');
+    this.load.image('medievalGif', 'img/gif/elf.gif');
+    this.load.image('futureGif', 'img/gif/robot.gif');
+    this.load.image('cloud', 'img/gif/cloud.png');
   }
 
   /**

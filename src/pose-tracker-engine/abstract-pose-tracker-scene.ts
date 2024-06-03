@@ -11,7 +11,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   private poseTracker!: PoseTracker;
   private poseTrackerResults: IPoseTrackerResults | undefined;
   private poseBuffer: IPoseTrackerResults[] = [];
-  private static readonly BUFFER_SIZE = 2;  // Tamaño del buffer reducido para menos retraso
+  private static readonly BUFFER_SIZE = 3;  // Tamaño del buffer reducido para menos retraso
   private count : number = 0;
   private lastUpdateTime: number = 0;
 
@@ -28,8 +28,8 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
         selfieMode: true,
         upperBodyOnly: false,
         smoothLandmarks: true,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
       },
       (results: IPoseTrackerResults) => (this.poseTrackerResults = results),
     );
@@ -93,7 +93,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
     }
 
     // Adjust weights and buffer size accordingly
-    const weights = [0.6, 0.4];  // Weights for the buffer of size 2
+    const weights = [0.6, 0.5, 0.4];  // Weights for the buffer of size 2
     const totalWeight = weights.reduce((a, b) => a + b, 0);
 
     const averagedLandmarks: IPoseLandmark[] = [];
@@ -123,6 +123,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
         z: weightedSumZ / totalWeight,
         visibility: weightedSumVisibility / totalWeight,  // Ensure visibility is a number
       };
+
     }
 
     return {

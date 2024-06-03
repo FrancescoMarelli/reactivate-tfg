@@ -69,31 +69,33 @@ export class JumpinJackDetector implements IGymExercise {
     const leftArmPixel = {x: leftShoulder.x * this.scene.scale.width, y : leftShoulder.y * this.scene.scale.height};
     const rightArmPixel = { x: rightShoulder.x * this.scene.scale.width, y : rightShoulder.y * this.scene.scale.height};
 
+    const angleLeftArm = AnglesUtils.calculateAngle(leftHip, leftShoulder, leftWrist);
+    const angleRightArm = AnglesUtils.calculateAngle(rightHip, rightShoulder, rightWrist);
+    const angleLeftLeg = AnglesUtils.calculateAngle(leftShoulder,leftHip, leftKnee);
+    const angleRightLeg = AnglesUtils.calculateAngle(rightShoulder, rightHip, rightKnee);
+
+    if (MediapipePoseDetector.showLandmarks) {
+      this.leftLegAngleText.setText(` ${angleLeftLeg?.toFixed(0)}`);
+      this.leftLegAngleText.setPosition(leftLegPixel.x, leftLegPixel.y);
+      this.rightLegAngleText.setText(`${angleRightLeg?.toFixed(0)}`);
+      this.rightLegAngleText.setPosition(rightLegPixel.x, rightLegPixel.y);
+      this.leftArmAngleText.setText(` ${angleLeftArm?.toFixed(0)}`);
+      this.leftArmAngleText.setPosition(leftArmPixel.x, leftArmPixel.y);
+      this.rightArmAngleText.setText(`${angleRightArm?.toFixed(0)}`);
+      this.rightArmAngleText.setPosition(rightArmPixel.x, rightArmPixel.y);
+    } else {
+      this.leftLegAngleText.setText('');
+      this.rightLegAngleText.setText('');
+      this.leftArmAngleText.setText('');
+      this.rightArmAngleText.setText('');
+    }
+
     // Check if coordinates exist before calculating angles
     if (leftShoulder && leftHip && leftWrist && rightShoulder && rightHip  && rightWrist && leftKnee && rightKnee
     && leftShoulder.visibility > 0.5 && leftHip.visibility > 0.5 && leftWrist.visibility > 0.5 &&
       rightShoulder.visibility > 0.5 && rightHip.visibility > 0.5 && rightWrist.visibility > 0.5 && leftKnee.visibility > 0.5 && rightKnee.visibility > 0.5) {
 
-      const angleLeftArm = AnglesUtils.calculateAngle(leftHip, leftShoulder, leftWrist);
-      const angleRightArm = AnglesUtils.calculateAngle(rightHip, rightShoulder, rightWrist);
-      const angleLeftLeg = AnglesUtils.calculateAngle(leftShoulder,leftHip, leftKnee);
-      const angleRightLeg = AnglesUtils.calculateAngle(rightShoulder, rightHip, rightKnee);
 
-      if (MediapipePoseDetector.showLandmarks) {
-        this.leftLegAngleText.setText(` ${angleLeftLeg?.toFixed(0)}`);
-        this.leftLegAngleText.setPosition(leftLegPixel.x, leftLegPixel.y);
-        this.rightLegAngleText.setText(`${angleRightLeg?.toFixed(0)}`);
-        this.rightLegAngleText.setPosition(rightLegPixel.x, rightLegPixel.y);
-        this.leftArmAngleText.setText(` ${angleLeftArm?.toFixed(0)}`);
-        this.leftArmAngleText.setPosition(leftArmPixel.x, leftArmPixel.y);
-        this.rightArmAngleText.setText(`${angleRightArm?.toFixed(0)}`);
-        this.rightArmAngleText.setPosition(rightArmPixel.x, rightArmPixel.y);
-      } else {
-        this.leftLegAngleText.setText('');
-        this.rightLegAngleText.setText('');
-        this.leftArmAngleText.setText('');
-        this.rightArmAngleText.setText('');
-      }
       if (angleLeftArm <= this.topMinAngle && angleRightArm <= this.topMinAngle  && angleLeftLeg >= this.botMinRange[0] && angleLeftLeg <= this.botMinRange[1]
                                                                                   && angleRightLeg >= this.botMinRange[0] && angleRightLeg <= this.botMinRange[1]) {
         this.state = 'inAir';

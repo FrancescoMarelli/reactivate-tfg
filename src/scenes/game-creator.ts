@@ -18,7 +18,7 @@ import { JumpingJackFactory } from '~/factories/workouts/jumping-jack-factory';
 import { CardioFactory } from '~/factories/workouts/cardio-factory';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
-import { ArcadeFactory } from '~/factories/interfaces/ArcadeFactory';
+import { IArcadeFactory } from '~/factories/interfaces/arcade-factory.interface';
 import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
 import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';
 import { StaticLayoutFactory } from '~/factories/layout/static-layout-factory';
@@ -27,6 +27,8 @@ import { FlexibilityLayoutFactory } from '~/factories/layout/flexibility-layout-
 import { MarkerFactory } from '~/factories/markers/marker-factory';
 import { IMarkerFactory } from '~/factories/interfaces/marker-factory.interface';
 import NewMarker from '~/gameobjects/new-marker';
+import { IThemeFactory } from '~/factories/interfaces/theme-factory.interface';
+import ThemeFactory from '~/factories/theme-factory';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
@@ -80,13 +82,19 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   // Factories
   private soundFactory: ISoundFactory;
   private buttonFactory: IButtonFactory;
-  private movementFactory: IMovementFactory | ArcadeFactory;
+  private movementFactory: IMovementFactory | IArcadeFactory;
   private silhouetteFactory: ISilhouetteFactory;
   private layoutFactory : ILayoutFactory;
+  private themeFactory : IThemeFactory;
+
   private buttonShowLandmarks: Phaser.GameObjects.Container;
   private intensity: any;
   private difficulty: any;
   markerFactory: IMarkerFactory;
+  background: Phaser.GameObjects.Image;
+  private posGifShown: boolean = false;
+  ratio: number;
+  negGifShown: boolean = false;
 
 
   constructor() { // creo que las fabricas deberias de pasarse por parametro
@@ -95,6 +103,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.buttonFactory = new CustomButtonFactory();
     this.soundFactory = new BackgroundSoundFactory();
     this.markerFactory = new MarkerFactory();
+    this.themeFactory = new ThemeFactory();
   }
 
   init() {
@@ -114,7 +123,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
       this.remainingTime = this.workoutConfig.time;
-      this.randomMarker = 3;
+      this.ratio = this.workoutConfig.reps / this.remainingTime;
+
+        this.randomMarker = 3;
 
       this.counter = 0;
       this.registry.set(Constants.REGISTER.LEVEL, this.currentLevel);
@@ -130,7 +141,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.setupScene();
     this.workoutSwitch(this.type);
      this.movementSettings = {
-       activeJoints: ["LeftIndex", "RightIndex"]
+       activeJoints: ["LeftIndex", "RightIndex", "RightPinky", "LeftPinky",
+       "LeftWrist", "RightWrist", "LeftThumb", "RightThumb"]
      };
     this.detectorExercise = this.movementFactory.create(this);
     if(this.detectorExercise.getType() == 'Arcade')
@@ -289,6 +301,14 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   startWorkout() {
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
+
+    if(this.detectorExercise.getType() == 'Gym') {
+     /* this.background = this.add.image(0, 0, this.theme)
+        .setOrigin(0, 0)
+        //.setDepth(-1)
+        .setAlpha(0.2);*/
+    }
+
     if(this.detectorExercise.getType() == 'Arcade') {
       this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.theme);
       this.detectorExercise.setBodyPoints(this.bodyPoints);
@@ -310,6 +330,22 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.detectorExercise.createContactBall();
     }
   }
+
+  gifSwitch(): string {
+    switch (this.theme) {
+      case 'japan':
+        return 'japanGif';
+      case 'default':
+        return 'defaultGif';
+      case 'medieval':
+        return 'medievalGif';
+      case 'future':
+        return 'futureGif';
+      default:
+        return 'defaultGif';
+    }
+  }
+
 
   stopScene() {
     this.saveData();
@@ -365,8 +401,43 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       });
 
   /****************************************************************************** */
-    /****************************************************************************** */
     if (this.workoutStarted) {
+      let actualRatio = this.counter / this.remainingTime;
+      let lowerThresholdRatio = 0.4 + this.ratio;
+      let timeThreshold = 0.85;
+
+      if(!this.posGifShown &&  actualRatio > this.ratio) {
+        const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
+        let cloud = this.add.image(50, 610, "cloud").setOrigin(0,1);
+        let text = this.add.text(55, 535, 'Estás yendo\n muy bien', { fontSize: '24px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
+        gif.setScale(0.4);
+        cloud.setScale(0.1);
+
+        this.sound.play('welldone');
+        this.posGifShown = true;
+
+
+        setTimeout(() => {
+          gif.destroy();
+          cloud.destroy();
+          text.destroy();
+        }, 4000);
+      } else if(!this.negGifShown && (this.remainingTime <= this.workoutConfig.time * timeThreshold) && actualRatio < lowerThresholdRatio) {
+        const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
+        let cloud = this.add.image(50, 610, "cloud").setOrigin(0,1);
+        let text = this.add.text(55, 535, 'Accelera !!!', { fontSize: '24px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
+        gif.setScale(0.4);
+        cloud.setScale(0.1);
+
+        this.sound.play('faster');
+        this.negGifShown = true;
+
+        setTimeout(() => {
+          gif.destroy();
+          cloud.destroy();
+          text.destroy();
+        }, 4000); //
+      }
 
       // Time Management
       if (this.levelTime != Math.floor(Math.abs(time / 1000))) {

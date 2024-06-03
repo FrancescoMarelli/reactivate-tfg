@@ -54,9 +54,9 @@ export default class HUD extends Phaser.Scene {
     this.audioFlexibility = this.sound.add(Constants.AUDIO.FLEXIBILITY, { volume: 0.95, loop: false });
     this.audioHalf = this.sound.add(Constants.AUDIO.HALF, { volume: 0.95, loop: false });
     this.audioFaults = this.sound.add(Constants.AUDIO.FAULTS, { volume: 0.95, loop: false });
-    this.audioRhythm = this.sound.add(Constants.AUDIO.RHYTHM, { volume: 0.95, loop: false });
-    this.audioPosition = this.sound.add(Constants.AUDIO.POSITION, { volume: 0.95, loop: false });
-    this.audioGo = this.sound.add(Constants.AUDIO.GO, { volume: 0.95, loop: false });
+    this.audioRhythm = this.sound.add(Constants.AUDIO.RHYTHM, { volume: 0.85, loop: false });
+    this.audioPosition = this.sound.add(Constants.AUDIO.POSITION, { volume: 0.85, loop: false });
+    this.audioGo = this.sound.add(Constants.AUDIO.GO, { volume: 0.85, loop: false });
 
 
     if (this.scene.isActive(Constants.SCENES.WorkoutCardio)) {
@@ -168,7 +168,7 @@ export default class HUD extends Phaser.Scene {
     });
     this.counterText = this.add.text(this.width / 2 - 43, 27, '0', {
       fontFamily: 'Russo One',
-      fontSize: '45px',
+      fontSize: '38px',
       color: '#FFFFFF',
       fontStyle: 'normal',
     });
