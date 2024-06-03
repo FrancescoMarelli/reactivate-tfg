@@ -85,7 +85,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
   private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "flexibilidad", "agilidad", "cardio"];
   private themeLabels = ["default", "medieval", "japan", "future"];
-  private backgroundMusicLabels = ["sky", "beat", "adrenaline", "rock/hiphop", "workout" ];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private touchingButton: boolean = false;
   private saveButton: any;
@@ -111,10 +110,9 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
     // creación de botones de configuración
     this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficultad', 'difficulty', ConfigScene.difficultyLabels);
-    this.buttons['intensity'] = this.createConfigControl(710, 200, 'button', 'Intensidad', 'intensity', this.intensityLabels);
-    this.buttons['backgroundMusic'] = this.createConfigControl(710, 310, 'button', 'Musica', 'backgroundMusic', this.backgroundMusicLabels);
-    this.buttons['type'] = this.createConfigControl(710, 420, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
-    this.buttons['theme'] = this.createConfigControl(710, 530, 'button', 'Tema', 'theme', this.themeLabels);
+    this.buttons['intensity'] = this.createConfigControl(710, 220, 'button', 'Intensidad', 'intensity', this.intensityLabels);
+    this.buttons['type'] = this.createConfigControl(710, 340, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
+    this.buttons['theme'] = this.createConfigControl(710, 460, 'button', 'Tema', 'theme', this.themeLabels);
 
 
     this.events.on('valueChanged', (field, newValue) => {
@@ -354,7 +352,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       gameLength: this.getWorkoutConfig().time,
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
       theme: this.themeLabels[this.buttons['theme'].getIndex()],
-      backgroundMusic: this.backgroundMusicLabels[this.buttons['backgroundMusic'].getIndex()],
       workoutConfig: this.getWorkoutConfig()
     };
     this.registry.set('game-config', configCopy);

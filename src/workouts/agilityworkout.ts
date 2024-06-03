@@ -69,23 +69,23 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
   switchTheme(theme: string): string {
     switch (theme) {
       case 'default':
-        this.scale = 0.15;
+        this.scale = 0.12;
         return 'meteorite';
         break;
       case 'japan':
-        this.scale = 0.08
+        this.scale = 0.07
         return 'redAnime';
         break;
       case 'medieval':
-        this.scale = 0.08
+        this.scale = 0.07
         return 'medievalRed';
         break;
       case 'future':
-        this.scale = 0.08
+        this.scale = 0.07
         return 'redFuture';
         break;
       default:
-        this.scale = 0.15;
+        this.scale = 0.12;
         return 'meteorite';
         break;
 

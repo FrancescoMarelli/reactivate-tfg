@@ -108,8 +108,8 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
       const gameConfig  = this.registry.get('game-config');
       this.type = gameConfig.type;
-      this.audioSettings = gameConfig.backgroundMusic;
       this.theme = gameConfig.theme;
+      this.audioSettings = this.theme;
       this.intensity = gameConfig.intensity;
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
