@@ -137,7 +137,7 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.ball = this.scene.add.sprite(this.coordx, this.coordy, this.defaultMarker);
     }
-    this.ball.setScale(0.1);
+    this.ball.setScale(0.08);
 
     let timerForMarker = 5500;
     if (this.flexibilityGame) timerForMarker = 20000;

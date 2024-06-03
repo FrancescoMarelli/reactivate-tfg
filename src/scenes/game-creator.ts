@@ -380,11 +380,11 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        if(this.type == 'agilidad') {
-          MovePoints.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints);
-        } else {
+        // if(this.type == 'agilidad') {
+        //   MovePoints.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints);
+        // } else {
           MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
-        }
+        // }
         if(this.workoutStarted ) {
           this.detectorExercise.isReady = true;
           if (this.workoutEnded) {

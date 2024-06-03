@@ -77,10 +77,10 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.agility = new CustomButton(this, 1042, 220, 'button', 'Agilidad');
     this.buttons.push(this.agility);
 
-    this.buttonRight = new CustomButton(this, 1150, 100, 'out', '►', 95, -48);
+    this.buttonRight = new CustomButton(this, 1220, 600, 'out', '►', 95, -48);
     this.buttons.push(this.buttonRight);
 
-    this.buttonLeft = new CustomButton(this, 90, 100, 'out', '◄', 95, -48);
+    this.buttonLeft = new CustomButton(this, 60, 600, 'out', '◄', 95, -48);
     this.buttonLeft.setVisible(false);
     this.buttons.push(this.buttonLeft);
 
