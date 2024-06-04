@@ -111,7 +111,7 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.buttonExitMarker.setEnabled(false);
     this.buttons.push(this.buttonExitMarker);
 
-    this.buttonConfigScene = new CustomButton(this, 250, 220, 'button', 'gameConfig');
+    this.buttonConfigScene = new CustomButton(this, 250, 220, 'button', 'Crea juego');
     this.buttons.push(this.buttonConfigScene);
     this.add.existing(this.buttonConfigScene);
     this.physics.world.enable(this.buttonConfigScene);
@@ -220,7 +220,7 @@ export default class Menu extends AbstractPoseTrackerScene {
       case 'Agilidad':
         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
         break;
-      case 'gameConfig':
+      case 'Crea juego':
         this.startNewSceneWorkout(Constants.SCENES.CONFIG, ConfigScene);
         this.buttonLeft.setVisible(false);
         this.buttonLeft.setEnabled(false);

@@ -5,7 +5,7 @@ export default class CustomButtonWithControls extends CustomButton {
   plusButton: Phaser.GameObjects.Rectangle;
   minusButton: Phaser.GameObjects.Rectangle;
   private lastChangeTime: number = 0;
-  private changeDelay: number = 500; // Delay in milliseconds
+  private changeDelay: number = 800; // Delay in milliseconds
 
   private buttonText: Phaser.GameObjects.Text;
   private values: any[];
@@ -31,15 +31,25 @@ export default class CustomButtonWithControls extends CustomButton {
 
     const buttonHeight = this.height;
 
+  // En el constructor, después de crear los botones
     this.plusButton = scene.add.rectangle(this.width / 2 + 30, 0, buttonHeight, buttonHeight, 0x00FF00).setInteractive();
     this.minusButton = scene.add.rectangle(-this.width / 2 - 30, 0, buttonHeight, buttonHeight, 0xFF0000).setInteractive();
 
-    this.add([this.plusButton, this.minusButton]);
+    // Agrega texto a los botones
+    let plusButtonText = scene.add.text(this.width / 2 + 30, 0, "➡", { fontFamily: 'Russo One', fontSize: '40px', color: '#FFFFFF' }).setOrigin(0.5).setScale(1).setInteractive();
+    let minusButtonText = scene.add.text(-this.width / 2 - 30, 0, "⬅", { fontFamily: 'Russo One', fontSize: '40px', color: '#FFFFFF' }).setOrigin(0.5).setScale(1).setInteractive();
+    // Asegúrate de que el texto se muestre encima de los botones
+    plusButtonText.setDepth(1);
+    minusButtonText.setDepth(1);
 
+    this.add([this.plusButton, this.minusButton, plusButtonText, minusButtonText]);
     this.scene.physics.world.enable([this.plusButton, this.minusButton]);
 
     this.plusButton.on('pointerdown', () => this.changeValue(1));
     this.minusButton.on('pointerdown', () => this.changeValue(-1));
+    plusButtonText.on('pointerdown', () => this.changeValue(1));
+    minusButtonText.on('pointerdown', () => this.changeValue(-1))
+
 
     this.buttonText = scene.add.text(0, 0, values[this.currentIndex], {
       fontFamily: 'Russo One',

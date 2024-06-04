@@ -22,8 +22,8 @@ export default class CustomButton extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     this.upImage = scene.add.image(0, 0, upTexture);
-    this.barWidth = barWidth ? barWidth : 333;
-    this.initField = initField ? initField : -166.7;
+    this.barWidth = barWidth || 333;
+    this.initField = initField || -166.7;
     this.overImage = new Phaser.GameObjects.Rectangle(scene, this.initField, 0, 0, 95, 0x34495e);
     this.buttomText = scene.add
       .text(0,

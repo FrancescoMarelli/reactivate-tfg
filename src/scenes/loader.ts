@@ -22,11 +22,12 @@ export default class Loader extends Phaser.Scene {
     const fonts = new WebFontFile(this.load, 'Russo One');
     this.load.addFile(fonts);
 
+
     this.textLoading = this.add.text(this.width / 2 - 120, this.height / 2 - 120, 'Cargando ...', {
       fontFamily: 'Russo One',
       fontSize: '45px',
       color: '#FFFFFF',
-      fontStyle: 'bold',
+      fontStyle: 'normal',
     });
 
     //Listener mientras se cargan los assets
