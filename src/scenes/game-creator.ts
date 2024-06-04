@@ -413,7 +413,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     if (this.workoutStarted) {
       let actualRatio = this.counter / this.remainingTime;
       let lowerThresholdRatio = 0.4 + this.ratio;
-      let timeThreshold = 0.85;
+      let timeThreshold = 0.7;
 
       if(!this.posGifShown &&  actualRatio > this.ratio) {
         const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
