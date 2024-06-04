@@ -1,4 +1,5 @@
 import Utils from '~/utils';
+import Constants from '~/constants';
 
 export default class Stats extends Phaser.GameObjects.Image {
   private mystats;
@@ -65,13 +66,26 @@ export default class Stats extends Phaser.GameObjects.Image {
 
   showStats(myMaxStat: JSON) {
     if (myMaxStat) {
-      var content = [
-        "Tipo de entrenamiento: " + myMaxStat["_workout"],
-        "Fecha del entrenamiento: " + myMaxStat["_date"],
-        "Máximo nivel alcanzado: " + myMaxStat["_maxLevel"],
-        "Marcadores alcanzados / Reps: " + myMaxStat["_touchedMarkers"],
-        "Marcadores no alcanzados: " + myMaxStat["_untouchedMarkers"],
-      ];
+      if (![Constants.TRAINING.FLEXIONES,
+        Constants.TRAINING.SALTOSDETIJERA,
+        Constants.TRAINING.PESOS].includes(myMaxStat["_workout"])) {
+        var content = [
+          "Tipo de entrenamiento: " + myMaxStat["_workout"],
+          "Fecha del entrenamiento: " + myMaxStat["_date"],
+          "Máximo nivel alcanzado: " + myMaxStat["_maxLevel"],
+          "Marcadores alcanzados: " + myMaxStat["_touchedMarkers"],
+          "Marcadores no alcanzados: " + myMaxStat["_untouchedMarkers"],
+        ];
+      } else {
+        var content = [
+          "Tipo de entrenamiento: " + myMaxStat["_workout"],
+          "Fecha del entrenamiento: " + myMaxStat["_date"],
+          "Nivel del entrenamiento: " + myMaxStat["_maxLevel"],
+          "Repeticiones realizadas: " + myMaxStat["_touchedMarkers"],
+        ];
+      }
+
+
       this.progress[0] = myMaxStat["_maxLevel"] * 25;
       this.progress[1] = myMaxStat["_touchedMarkers"] * 7.5;
       this.progress[2] = myMaxStat["_untouchedMarkers"] * 2.5;
