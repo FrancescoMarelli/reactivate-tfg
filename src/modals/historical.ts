@@ -49,10 +49,8 @@ export default class Historical extends Phaser.GameObjects.Image {
     }
 
     var content: string[] = [];
-     for (var i = this.actualStatGruop; i < this.myStats.length && (i - this.actualStatGruop) < 3; i++) {
-
-
-        // Only add "Marcadores no alcanzados" if the workout is not "pushups", "jumping jacks", or "weight lifting"
+      for (var i = this.actualStatGruop; i < this.myStats.length && (i - this.actualStatGruop) < 3; i++) {
+        // Condicional para agregar diferente contenido dependiendo del tipo de entrenamiento
         if (![Constants.TRAINING.FLEXIONES,
           Constants.TRAINING.SALTOSDETIJERA,
           Constants.TRAINING.PESOS].includes(this.myStats[i]["_workout"])) {
@@ -61,19 +59,18 @@ export default class Historical extends Phaser.GameObjects.Image {
             "Fecha del entrenamiento: " + this.myStats[i]["_date"],
             "Máximo nivel alcanzado: " + this.myStats[i]["_maxLevel"],
             "Marcadores alcanzados: " + this.myStats[i]["_touchedMarkers"],
-            "Marcadores no alcanzados: " + this.myStats[i]["_untouchedMarkers"]);
+            "Marcadores no alcanzados: " + this.myStats[i]["_untouchedMarkers"]
+          );
         } else {
           content.push(
             "Tipo de entrenamiento: " + this.myStats[i]["_workout"],
             "Fecha del entrenamiento: " + this.myStats[i]["_date"],
             "Nivel del entrenamiento: " + this.myStats[i]["_maxLevel"],
-            "Repeticiones realizadas: " + this.myStats[i]["_touchedMarkers"],
+            "Repeticiones realizadas: " + this.myStats[i]["_touchedMarkers"]
           );
-
         }
-
-        content.push("");
-     }
+        content.push(""); // Añade una línea vacía entre cada grupo de estadísticas
+      }
 
     this.bodyTxt = this.scene.add.text(this.mywidth / 4, this.myheight / 2 - 20, content, {
       fontFamily: 'Russo One',
