@@ -62,12 +62,6 @@ export default class Loader extends Phaser.Scene {
     this.load.image('button', 'img/button.png');
     this.load.image('getReady', 'img/out.png');
 
-    this.load.image('default', 'img/defaultGym.png');
-    this.load.image('japan', 'img/dojoGym.png');
-    this.load.image('future', 'img/futureGym.png');
-    this.load.image('medieval', 'img/medievalGym.png');
-
-
     this.load.image('blueFuture', 'img/markers/blueFuture.png');
     this.load.image('redFuture', 'img/markers/redFuture.png');
     this.load.image('blueBall', 'img/markers/blueBall.png');
@@ -112,10 +106,10 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('trance3', 'audio/trance3.mp3');
 
     this.load.audio('sky', 'audio/sky.mp3');
-    this.load.audio('future', 'audio/futuristic.mp3');
-    this.load.audio('medieval', 'audio/medieval.mp3');
-    this.load.audio('japan', 'audio/japanese.mp3');
-    this.load.audio('default', 'audio/sky.mp3');
+    this.load.audio('Futuro', 'audio/futuristic.mp3');
+    this.load.audio('Medieval', 'audio/medieval.mp3');
+    this.load.audio('Japon', 'audio/japanese.mp3');
+    this.load.audio('Default', 'audio/sky.mp3');
 
     this.load.audio('sfxDestroyMarkerTouched', 'audio/soundAnimation.mp3');
     this.load.audio('sfxDestroyMarkerUntouched', 'audio/sfxDestroyMarkerUntouched.wav');

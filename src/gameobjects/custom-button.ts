@@ -68,6 +68,10 @@ export default class CustomButton extends Phaser.GameObjects.Container {
     return false;
   }
 
+  setVisible(value: boolean): this {
+    return super.setVisible(value);
+  }
+
   getText(): string {
     return this.buttomText.text;
   }

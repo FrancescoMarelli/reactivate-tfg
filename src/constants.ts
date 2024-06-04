@@ -32,7 +32,8 @@ const Constants = {
     ARCADE: 'Arcade',
     PUSHUPS: 'PushUps',
     JUMPINGJACKS: 'JumpingJacks',
-    WEIGTHLIFTING: 'WeigthLifting'
+    WEIGTHLIFTING: 'WeigthLifting',
+    ARTICULATIONMENU: 'ArticulationMenu'
   },
   MARKER: {
     ID: 'marker',

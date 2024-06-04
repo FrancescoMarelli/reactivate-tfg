@@ -29,6 +29,7 @@ import { IMarkerFactory } from '~/factories/interfaces/marker-factory.interface'
 import NewMarker from '~/gameobjects/new-marker';
 import { IThemeFactory } from '~/factories/interfaces/theme-factory.interface';
 import ThemeFactory from '~/factories/theme-factory';
+import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
@@ -72,6 +73,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private theme;
   private randomMarker: number = 3;
   private movementSettings: any;
+  private articulations: string[];
 
   private counter: number = 0;
   private counterText: Phaser.GameObjects.Text;
@@ -123,11 +125,19 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
       this.remainingTime = this.workoutConfig.time;
+      this.articulations = this.registry.get('selectedArticulations');
+      console.log('Articulaciones seleccionadas:', this.articulations);
+
+      if (!this.articulations) {
+        this.articulations = Object.values(EPoseLandmark).filter(value => typeof value === 'string') as string[];
+        this.registry.set('selectedArticulations', this.articulations);
+      }
+
       this.ratio = this.workoutConfig.reps / this.remainingTime;
 
-        this.randomMarker = 3;
-
+      this.randomMarker = 3;
       this.counter = 0;
+
       this.registry.set(Constants.REGISTER.LEVEL, this.currentLevel);
       this.registry.set(Constants.REGISTER.EXP, this.exp);
       this.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);
@@ -141,8 +151,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.setupScene();
     this.workoutSwitch(this.type);
      this.movementSettings = {
-       activeJoints: ["LeftIndex", "RightIndex", "RightPinky", "LeftPinky",
-       "LeftWrist", "RightWrist", "LeftThumb", "RightThumb"]
+       activeJoints: this.articulations
      };
     this.detectorExercise = this.movementFactory.create(this);
     if(this.detectorExercise.getType() == 'Arcade')
@@ -156,28 +165,28 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   workoutSwitch(workout: string) {
     switch (workout) {
-      case 'push-ups':
+      case 'Flexiones':
         this.movementFactory = new PushUpsFactory();
         break;
-      case 'weight-lifting':
+      case 'Pesos':
         this.movementFactory = new WeightLiftinFactory();
         break;
-      case 'jumping-jacks':
+      case 'Saltos de tijera':
         this.movementFactory = new JumpingJackFactory();
         break;
-      case 'cardio':
+      case 'Cardio':
         this.movementFactory = new CardioFactory();
         this.layoutFactory = new StaticLayoutFactory();
         this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
         this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
         break;
-        case 'agilidad':
+        case 'Agilidad':
           this.movementFactory = new AgilidadFactory();
           this.layoutFactory = new AgilityLayoutFactory();
           this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
           this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
           break;
-      case 'flexibilidad':
+      case 'Flexibilidad':
         this.movementFactory = new FlexibilidadFactory();
         this.layoutFactory = new FlexibilityLayoutFactory();
         this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
@@ -325,7 +334,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.getReadyLeft = false;
     this.getReadyRight = false;
     this.sound.pauseOnBlur = false;
-    if(this.type == 'agilidad') {
+    if(this.type == 'Agilidad') {
       this.detectorExercise.setTheme(this.theme);
       this.detectorExercise.createContactBall();
     }
@@ -333,13 +342,13 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   gifSwitch(): string {
     switch (this.theme) {
-      case 'japan':
+      case 'Japon':
         return 'japanGif';
-      case 'default':
+      case 'Default':
         return 'defaultGif';
-      case 'medieval':
+      case 'Medieval':
         return 'medievalGif';
-      case 'future':
+      case 'Futuro':
         return 'futureGif';
       default:
         return 'defaultGif';
@@ -425,7 +434,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       } else if(!this.negGifShown && (this.remainingTime <= this.workoutConfig.time * timeThreshold) && actualRatio < lowerThresholdRatio) {
         const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
         let cloud = this.add.image(50, 610, "cloud").setOrigin(0,1);
-        let text = this.add.text(55, 535, 'Accelera !!!', { fontSize: '24px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
+        let text = this.add.text(63, 512, 'Accelera !!!', { fontSize: '23px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
         gif.setScale(0.4);
         cloud.setScale(0.1);
 

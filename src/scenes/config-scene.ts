@@ -10,6 +10,7 @@ import Menu from '~/scenes/menu';
 import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
 import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
+import ArticulationSelectionScene from '~/scenes/articulation-selection-scene';
 
 const baseStyle = {
   color: '#FFFFFF',
@@ -27,42 +28,42 @@ interface GameConfig {
 }
 
 const workoutConfigurations = {
-  "push-ups": {
+  "Flexiones": {
     "Principiante": { reps: 7, time: 60 },
     "Esordiente": { reps: 10, time: 60 },
     "Experto": { reps: 12, time: 60 },
     "Avanzado": { reps: 15, time: 60 },
     "Pro": { reps: 20, time: 60 }
   },
-  "jumping-jacks": {
+  "Saltos de tijera": {
     "Principiante": { reps: 20, time: 60 },
     "Esordiente": { reps: 25, time: 60 },
     "Experto": { reps: 30, time: 60 },
     "Avanzado": { reps: 35, time: 60 },
     "Pro": { reps: 40, time: 60 }
   },
-  "weight-lifting": {
+  "Pesos": {
     "Principiante": { reps: 20, time: 60 },
     "Esordiente": { reps: 30, time: 60 },
     "Experto": { reps: 40, time: 60 },
     "Avanzado": { reps: 50, time: 60 },
     "Pro": { reps: 60, time: 60 }
   },
-  "agilidad": {
+  "Agilidad": {
     "Principiante": { reps: 20, time: 180 },
     "Esordiente": { reps: 30, time: 180 },
     "Experto": { reps: 40, time: 180 },
     "Avanzado": { reps: 50, time: 180 },
     "Pro": { reps: 60, time: 180 }
   },
-  "flexibilidad": {
+  "Flexibilidad": {
     "Principiante": { reps: 60, time: 180 },
     "Esordiente": { reps: 100, time: 180 },
     "Experto": { reps: 120, time: 180 },
     "Avanzado": { reps: 150, time: 180 },
     "Pro": { reps: 180, time: 180 }
   },
-  "cardio": {
+  "Cardio": {
     "Principiante": { reps: 20, time: 180 },
     "Esordiente": { reps: 30, time: 180 },
     "Experto": { reps: 40, time: 180 },
@@ -83,9 +84,10 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
   public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
-  private workoutTypeLabels = ["push-ups", "jumping-jacks", "weight-lifting", "flexibilidad", "agilidad", "cardio"];
-  private themeLabels = ["default", "medieval", "japan", "future"];
+  private workoutTypeLabels = ["Flexiones", "Saltos de tijera", "Pesos", "Flexibilidad", "Agilidad", "Cardio"];
+  private themeLabels = ["Default", "Medieval", "Japon", "Futuro"];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
+  private selectArticulationsButton: Phaser.GameObjects.Text;
   private touchingButton: boolean = false;
   private saveButton: any;
   private buttonExitMarker;
@@ -93,6 +95,9 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private soundFactory: ISoundFactory;
   private poseSelectionButton: any;
   private navButtons: any[] = [];
+  private articulationButton: any;
+
+
 
   constructor() {
     super({ key: Constants.SCENES.CONFIG });
@@ -102,23 +107,34 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
   create() {
     super.create();
-    this.audioScene = this.soundFactory.create(this, { key: 'sky', volume: 0.8, loop: true });
+    if (!this.audioScene || !this.audioScene.isPlaying) {
+      this.audioScene = this.soundFactory.create(this, { key: 'sky', volume: 0.8, loop: true });
+    }
     this.add.image(640, 360, 'background').setScale(0.8);
     const darkenOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000);
     darkenOverlay.setOrigin(0, 0);
     darkenOverlay.setAlpha(0.7);
 
     // creación de botones de configuración
-    this.buttons['difficulty'] = this.createConfigControl(710, 90, 'button', 'Difficultad', 'difficulty', ConfigScene.difficultyLabels);
-    this.buttons['intensity'] = this.createConfigControl(710, 220, 'button', 'Intensidad', 'intensity', this.intensityLabels);
-    this.buttons['type'] = this.createConfigControl(710, 340, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
-    this.buttons['theme'] = this.createConfigControl(710, 460, 'button', 'Tema', 'theme', this.themeLabels);
+    this.buttons['difficulty'] = this.createConfigControl(710, 100, 'button', 'Difficultad', 'difficulty', ConfigScene.difficultyLabels);
+    this.buttons['intensity'] = this.createConfigControl(710, 250, 'button', 'Intensidad', 'intensity', this.intensityLabels);
+    this.buttons['type'] = this.createConfigControl(710, 400, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
+    this.buttons['theme'] = this.createConfigControl(710, 550, 'button', 'Tema', 'theme', this.themeLabels);
 
+
+    this.articulationButton = new CustomButton(this,160, 670, 'button', 'Juntas');
+    this.articulationButton.setScale(0.7, 0.75);
+    this.navButtons.push(this.articulationButton);
+
+    this.updateArticulationsVisibility();
 
     this.events.on('valueChanged', (field, newValue) => {
       this.config[field] = newValue;
       if (field === 'difficulty' || field === 'intensity') {
         this.updateWorkoutConfig();
+      }
+      if (field === 'type') {
+         this.updateArticulationsVisibility();
       }
 
     });
@@ -129,9 +145,19 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.overlapMenuButtons(); //realiza animaciones de botones y eventos customs buttons
   }
 
+  updateArticulationsVisibility() {
+    const isVisible = [3, 4, 5].includes(this.config.type);
+    if (this.buttons['type']) {
+      this.articulationButton.setVisible(isVisible);
+    } else {
+      this.articulationButton.setVisible(false);
+    }
+  }
+
+
   createNavButtons() {
-    this.saveButton = new CustomButton(this, 1150, 680, 'button', 'SAVE');
-    this.saveButton.setScale(0.7, 0.65);
+    this.saveButton = new CustomButton(this, 1140, 670, 'button', 'Guardar');
+    this.saveButton.setScale(0.7, 0.75);
     this.navButtons.push(this.saveButton);
 
     this.buttonExitMarker = new CustomButton(this, 1140, 102, 'out', '[➔', 95, -48);
@@ -143,6 +169,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
     this.addClickEventListener(this.buttonExitMarker, this.goBack.bind(this));
     this.addClickEventListener(this.poseSelectionButton, this.togglePoseSelection.bind(this));
+    this.addClickEventListener(this.articulationButton, this.openArticulationSelectionScene.bind(this));
 
     this.enableButtons(this.navButtons);
 
@@ -296,6 +323,20 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
         }
       }, undefined, this);
     });
+
+    this.add.existing(this.articulationButton);
+    this.physics.world.enable(this.articulationButton);
+    this.articulationButton.body.setAllowGravity(false);
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.articulationButton, point, () => {
+        this.articulationButton.animateToFill(false);
+        this.touchingButton = true;
+        if (this.articulationButton.buttonIsFull() && this.articulationButton.isEnabled()) {
+          this.articulationButton.emit('down', this.articulationButton);
+          this.openArticulationSelectionScene();
+        }
+      }, undefined, this);
+    });
   }
 
 
@@ -352,7 +393,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       gameLength: this.getWorkoutConfig().time,
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
       theme: this.themeLabels[this.buttons['theme'].getIndex()],
-      workoutConfig: this.getWorkoutConfig()
+      workoutConfig: this.getWorkoutConfig(),
     };
     this.registry.set('game-config', configCopy);
     console.log('Configuración guardada:', configCopy);
@@ -368,6 +409,14 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.scene.start(Constants.SCENES.GAME_CREATOR);
     this.scene.start(Constants.SCENES.HUD);
     this.scene.bringToTop(Constants.SCENES.HUD);
+  }
+
+  openArticulationSelectionScene() {
+    this.scene.stop();
+    if(!this.scene.get(Constants.SCENES.ARTICULATIONMENU )) {
+      this.scene.add(Constants.SCENES.ARTICULATIONMENU , ArticulationSelectionScene, false, { x: 400, y: 300});
+    }
+    this.scene.start(Constants.SCENES.ARTICULATIONMENU );
   }
 
   getWorkoutConfig() {
@@ -395,7 +444,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     if (workoutConfigurations[workoutType] && workoutConfigurations[workoutType][difficulty]) {
       const baseConfig = workoutConfigurations[workoutType][difficulty];
       const adjustedReps = baseConfig.reps * intensityConfig.multiplier;
-      const time = baseConfig.time;  // Corrige la multiplicación por intensidad
+      const time = baseConfig.time;
       this.config['workoutConfig'] = { ...baseConfig, reps: adjustedReps, time: time };
       console.log(`Updated Workout Config: Difficulty: ${difficulty}, Type: ${workoutType}, Intensity: ${intensity}, Reps: ${adjustedReps}, Time: ${time}`);
     } else {

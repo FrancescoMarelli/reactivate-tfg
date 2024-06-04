@@ -37,19 +37,19 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
 
   switchMarker(texture: string) {
     switch (texture) {
-      case 'japan':
+      case 'Japon':
         this.defaultMarker = 'blueAnime';
         this.defaultErrorMarker = 'redAnime';
         break;
-      case 'default':
+      case 'Default':
         this.defaultMarker = 'blueBall';
         this.defaultErrorMarker = 'errorBall';
         break;
-      case 'medieval':
+      case 'Medieval':
         this.defaultMarker = 'medievalBlue';
         this.defaultErrorMarker = 'medievalRed';
         break;
-      case 'future':
+      case 'Futuro':
         this.defaultMarker = 'blueFuture';
         this.defaultErrorMarker = 'redFuture';
         break;
@@ -161,19 +161,19 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
 
   setFlexibilityMarkers(type: string) {
     switch (type) {
-      case 'japan':
+      case 'Japon':
         this.defaultMarker = 'japBlue';
         this.defaultErrorMarker = 'japRed';
         break;
-      case 'default':
+      case 'Default':
         this.defaultMarker = 'triangle';
         this.defaultErrorMarker = 'redTriangle';
         break;
-      case 'medieval':
+      case 'Medieval':
         this.defaultMarker = 'medievalBlueTriangle';
         this.defaultErrorMarker = 'medievalRedTriangle';
         break;
-      case 'future':
+      case 'Futuro':
         this.defaultMarker = 'blueFutureTriangle';
         this.defaultErrorMarker = 'redFutureTriangle';
         break;

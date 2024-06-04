@@ -47,6 +47,7 @@ export default class CustomButtonWithControls extends CustomButton {
       color: '#FFFFFF'
     }).setOrigin(0.5);
     this.add(this.buttonText);
+    this.setScale(1.2, 1.2)
   }
 
   changeValue(delta: number) {
