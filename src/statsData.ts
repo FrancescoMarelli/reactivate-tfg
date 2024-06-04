@@ -13,6 +13,7 @@ export default class StatsData {
         this._touchedMarkers = touchedMarkers;
         this._untouchedMarkers = untouchedMarkers;
         this._totalTouchableMarkers = totalTouchableMarkers;
+
     }
 
     public get workout(): string {
@@ -52,7 +53,5 @@ export default class StatsData {
     public set totalTouchableMarkers(value: number) {
         this._untouchedMarkers = value;
     }
-
-
 }
 

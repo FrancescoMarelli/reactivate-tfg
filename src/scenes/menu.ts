@@ -1,5 +1,5 @@
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
-import CustomButtom from '~/gameobjects/custom-button';
+import CustomButton from '~/gameobjects/custom-button';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import Stats from '../modals/stats';
@@ -8,6 +8,7 @@ import HUD from './hud';
 import WorkoutAgility from './workout-agilidad';
 import Historical from '~/modals/historical';
 import WorkoutFlexibilidad from './workout-flexibility';
+import ConfigScene from '~/scenes/config-scene';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {
@@ -35,6 +36,8 @@ export default class Menu extends AbstractPoseTrackerScene {
   private videoTutorial;
   private audioTutorial;
 
+  private buttonConfigScene;
+
   private bodyPoints: any = [];
   private buttons: any[] = [];
   private touchingButton: boolean = false;
@@ -42,6 +45,7 @@ export default class Menu extends AbstractPoseTrackerScene {
   init() {
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
+    //this.initiBodyPoints();
   }
 
   create(): void {
@@ -64,53 +68,54 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
 
 
-    this.flexibility = new CustomButtom(this, 250, 220, 'button', 'Flexibilidad');
+    this.flexibility = new CustomButton(this, 250, 220, 'button', 'Flexibilidad');
     this.buttons.push(this.flexibility);
 
-    this.cardio = new CustomButtom(this, 645, 220, 'button', 'Cardio');
+    this.cardio = new CustomButton(this, 645, 220, 'button', 'Cardio');
     this.buttons.push(this.cardio);
 
-    this.agility = new CustomButtom(this, 1042, 220, 'button', 'Agilidad');
+    this.agility = new CustomButton(this, 1042, 220, 'button', 'Agilidad');
     this.buttons.push(this.agility);
 
-    this.buttonRight = new CustomButtom(this, 1220, 600, 'out', '►', 95, -48);
+    this.buttonRight = new CustomButton(this, 1220, 600, 'out', '►', 95, -48);
     this.buttons.push(this.buttonRight);
 
-    this.buttonLeft = new CustomButtom(this, 60, 600, 'out', '◄', 95, -48);
+    this.buttonLeft = new CustomButton(this, 60, 600, 'out', '◄', 95, -48);
     this.buttonLeft.setVisible(false);
     this.buttons.push(this.buttonLeft);
 
 
-    this.buttonPreviousHistorical = new CustomButtom(this, 80, this.height / 2, 'out', '＜', 95, -48);
+    this.buttonPreviousHistorical = new CustomButton(this, 80, this.height / 2, 'out', '＜', 95, -48);
     this.buttonPreviousHistorical.setVisible(false);
     this.buttonPreviousHistorical.setEnabled(false);
     this.buttons.push(this.buttonPreviousHistorical);
 
-    this.buttonNextHistorical = new CustomButtom(this, 1200, this.height / 2, 'out', '＞', 95, -48);
+    this.buttonNextHistorical = new CustomButton(this, 1200, this.height / 2, 'out', '＞', 95, -48);
     this.buttonNextHistorical.setVisible(false);
     this.buttonNextHistorical.setEnabled(false);
     this.buttons.push(this.buttonNextHistorical);
 
 
-    this.tutorial = new CustomButtom(this, 250, 220, 'button', 'Tutorial')
-    this.tutorial.setVisible(false);
-    this.tutorial.setEnabled(false);
-    this.buttons.push(this.tutorial);
-
-    this.buttonRanking = new CustomButtom(this, 645, 220, 'button', 'Historial')
+    this.buttonRanking = new CustomButton(this, 645, 220, 'button', 'Historial')
     this.buttonRanking.setVisible(false);
     this.buttonRanking.setEnabled(false);
     this.buttons.push(this.buttonRanking);
 
-    this.buttonStats = new CustomButtom(this, 1042, 220, 'button', 'Estadísticas')
+    this.buttonStats = new CustomButton(this, 1042, 220, 'button', 'Estadísticas')
     this.buttonStats.setVisible(false);
     this.buttonStats.setEnabled(false);
     this.buttons.push(this.buttonStats);
 
-    this.buttonExitMarker = new CustomButtom(this, 1200, 52, 'out', 'X', 95, -48);
+    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', 'X', 95, -48);
     this.buttonExitMarker.setVisible(false);
     this.buttonExitMarker.setEnabled(false);
     this.buttons.push(this.buttonExitMarker);
+
+    this.buttonConfigScene = new CustomButton(this, 250, 220, 'button', 'Crea juego');
+    this.buttons.push(this.buttonConfigScene);
+    this.add.existing(this.buttonConfigScene);
+    this.physics.world.enable(this.buttonConfigScene);
+    this.buttonConfigScene.body.setAllowGravity(false);
 
 
     this.buttons.forEach((button) => {
@@ -118,6 +123,25 @@ export default class Menu extends AbstractPoseTrackerScene {
       this.physics.world.enable(button);
       button.body.setAllowGravity(false);
     });
+
+    this.initiBodyPoints();
+
+
+    if (this.scene.get(Constants.SCENES.WorkoutCardio))
+      this.scene.remove(Constants.SCENES.WorkoutCardio);
+    if (this.scene.get(Constants.SCENES.WorkoutAgilidad))
+      this.scene.remove(Constants.SCENES.WorkoutAgilidad);
+    if (this.scene.get(Constants.SCENES.WorkoutFlexibilidad))
+      this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
+    if(this.scene.get(Constants.SCENES.CONFIG))
+      this.scene.remove(Constants.SCENES.CONFIG)
+    if(this.scene.get(Constants.SCENES.GAME_CREATOR))
+      this.scene.remove(Constants.SCENES.GAME_CREATOR)
+    if (this.scene.get(Constants.SCENES.HUD))
+      this.scene.remove(Constants.SCENES.HUD);
+  }
+
+  initiBodyPoints() {
 
     for (var i = 0; i < 22; i++) {
       let point;
@@ -183,20 +207,9 @@ export default class Menu extends AbstractPoseTrackerScene {
       } catch (error) {
       }
     });
-
-
-
-    if (this.scene.get(Constants.SCENES.WorkoutCardio))
-      this.scene.remove(Constants.SCENES.WorkoutCardio);
-    if (this.scene.get(Constants.SCENES.WorkoutAgilidad))
-      this.scene.remove(Constants.SCENES.WorkoutAgilidad);
-    if (this.scene.get(Constants.SCENES.WorkoutFlexibilidad))
-      this.scene.remove(Constants.SCENES.WorkoutFlexibilidad);
-    if (this.scene.get(Constants.SCENES.HUD))
-      this.scene.remove(Constants.SCENES.HUD);
   }
 
-  menuSwitch(button: CustomButtom) {
+  menuSwitch(button: CustomButton) {
     switch (button.getText()) {
       case 'Flexibilidad':
         this.startNewSceneWorkout(Constants.SCENES.WorkoutFlexibilidad, WorkoutFlexibilidad);
@@ -207,16 +220,18 @@ export default class Menu extends AbstractPoseTrackerScene {
       case 'Agilidad':
         this.startNewSceneWorkout(Constants.SCENES.WorkoutAgilidad, WorkoutAgility);
         break;
-      case 'Tutorial':
-        this.videoTutorial = this.add.video(this.width / 2, this.height / 2, 'tutorial');
-        this.videoTutorial.play();
-        this.audioTutorial.play();
+      case 'Crea juego':
+        this.startNewSceneWorkout(Constants.SCENES.CONFIG, ConfigScene);
         this.buttonLeft.setVisible(false);
         this.buttonLeft.setEnabled(false);
         this.setScreen2(false);
         this.titleText.setVisible(false);
         this.buttonExitMarker.setVisible(true);
         this.buttonExitMarker.setEnabled(true);
+        this.buttonNextHistorical.setVisible(true);
+        this.buttonNextHistorical.setEnabled(true);
+        this.buttonPreviousHistorical.setVisible(true);
+        this.buttonPreviousHistorical.setEnabled(true);
         break;
       case 'Estadísticas':
         this.statsView = new Stats(this, this.width / 2, this.height / 2, "backgroundStats");
@@ -314,10 +329,10 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.agility.setEnabled(enable);
   }
   setScreen2(enable: boolean) {
-    this.tutorial.setVisible(enable);
+    this.buttonConfigScene.setEnabled(enable);
+    this.buttonConfigScene.setVisible(enable);
     this.buttonRanking.setVisible(enable);
     this.buttonStats.setVisible(enable);
-    this.tutorial.setEnabled(enable);
     this.buttonRanking.setEnabled(enable);
     this.buttonStats.setEnabled(enable);
   }
@@ -326,7 +341,7 @@ export default class Menu extends AbstractPoseTrackerScene {
     this.scene.stop();
     if (!this.scene.get(scene))
       this.scene.add(scene, nameClass, false, { x: 400, y: 300 });
-    if (!this.scene.get(Constants.SCENES.HUD))
+    if (!this.scene.get(Constants.SCENES.HUD) && scene != Constants.SCENES.CONFIG)
       this.scene.add(Constants.SCENES.HUD, HUD, false, { x: 400, y: 300 });
     this.scene.start(scene);
     this.scene.start(Constants.SCENES.HUD);

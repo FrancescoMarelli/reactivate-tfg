@@ -4,7 +4,7 @@ import Constants from '~/constants';
 export default class Marker extends Phaser.Physics.Arcade.Sprite {
   private ball: Phaser.GameObjects.Sprite;
   private tween!: Phaser.Tweens.Tween;
-  private id: number;
+  id: number;
   scene: Phaser.Scene;
   private coordx: number;
   private coordy: number;
@@ -12,8 +12,8 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
   private errorMarker: boolean = false;
   private internalTimerConsumed: boolean = false;
   private timerEvent;
-  private defaultMarker: string = "blueBall";
-  private defaultErrorMarker: string = "errorBall";
+  private defaultMarker: string;
+  private defaultErrorMarker: string;
   private flexibilityGame: boolean;
   private agilityGame: boolean;
   private directionAngle: number = 0;
@@ -30,8 +30,8 @@ export default class Marker extends Phaser.Physics.Arcade.Sprite {
     this.animationCreated = false;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-
-
+    this.defaultMarker = config.defaultMarker || "blueBall";
+    this.defaultErrorMarker = config.defaultErrorMarker || "errorBall";
   }
 
   update(): void {

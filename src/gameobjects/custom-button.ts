@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 
-export default class CustomButtom extends Phaser.GameObjects.Container {
-  private upImage: Phaser.GameObjects.Image;
-  private overImage: Phaser.GameObjects.Rectangle;
-  private buttomText: Phaser.GameObjects.Text;
-  private cancelAnimationEmpty: boolean;
-  private barWidth: number;
+export default class CustomButton extends Phaser.GameObjects.Container {
+  protected upImage: Phaser.GameObjects.Image;
+  protected overImage: Phaser.GameObjects.Rectangle;
+  buttomText: Phaser.GameObjects.Text;
+  protected cancelAnimationEmpty: boolean;
+  protected barWidth: number;
   private initField: number;
   private enabled: boolean = true;
 
@@ -15,18 +15,22 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
     x: number,
     y: number,
     upTexture: string,
-    inputText: string,
+    inputText?: string,
     barWidth?: number,
     initField?: number,
   ) {
     super(scene, x, y);
 
     this.upImage = scene.add.image(0, 0, upTexture);
-    this.barWidth = barWidth ? barWidth : 333;
-    this.initField = initField ? initField : -166.7;
+    this.barWidth = barWidth || 333;
+    this.initField = initField || -166.7;
     this.overImage = new Phaser.GameObjects.Rectangle(scene, this.initField, 0, 0, 95, 0x34495e);
     this.buttomText = scene.add
-      .text(0, 0, inputText, { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
+      .text(0,
+        0,
+        // @ts-ignore
+        inputText,
+        { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
       .setOrigin(0.5);
 
     this.add(this.upImage);
@@ -64,6 +68,10 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
     return false;
   }
 
+  setVisible(value: boolean): this {
+    return super.setVisible(value);
+  }
+
   getText(): string {
     return this.buttomText.text;
   }
@@ -74,5 +82,12 @@ export default class CustomButtom extends Phaser.GameObjects.Container {
 
   isEnabled(){
     return this.enabled;
+  }
+  setText(s: string) {
+    this.buttomText.text = s;
+  }
+
+  getType() {
+    return 'CustomButton';
   }
 }

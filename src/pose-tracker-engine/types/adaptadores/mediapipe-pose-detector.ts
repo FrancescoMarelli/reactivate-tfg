@@ -2,12 +2,13 @@ import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose/pose';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_utils';
 import {
-  IPoseTrackerRenderElementsSettings
+  IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
 import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detector.interface';
 
 export class MediapipePoseDetector implements PoseDetector {
   private pose: Pose;
+  public static showLandmarks: boolean = false;
 
   constructor() {
     this.pose = new Pose({
@@ -47,8 +48,10 @@ export class MediapipePoseDetector implements PoseDetector {
 
     if (renderElementsSettings?.shouldDrawPoseLandmarks && results.poseLandmarks) {
       ctx.save();
-      drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 4 });
-      drawLandmarks(ctx, results.poseLandmarks, { color: '#FF0000', lineWidth: 2 });
+      if(MediapipePoseDetector.showLandmarks) {
+        drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
+        drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });
+      }
       ctx.restore();
     }
   }

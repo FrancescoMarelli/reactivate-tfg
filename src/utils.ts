@@ -39,12 +39,19 @@ export default class Utils {
     }
 
     static getMaxStatFromStorage(): JSON {
-        var mydata = this.getLocalStorageData();
-        var max;
+        let mydata = this.getLocalStorageData();
+        let max;
+        let maxLevel = -Infinity; // Inicializa a un valor muy pequeño
         if (mydata["stats"]?.length) {
             for (var i = 0; i < mydata["stats"].length; i++) {
-                if (max == null || parseInt(mydata["stats"][i]["_maxLevel"]) > parseInt(max["_maxLevel"]))
+                let currentMaxLevel = parseInt(mydata["stats"][i]["_maxLevel"]);
+                if (isNaN(currentMaxLevel)) {
+                    continue; // Si _maxLevel no es un número, ignora este objeto
+                }
+                if (max == null || currentMaxLevel > maxLevel) {
                     max = mydata["stats"][i];
+                    maxLevel = currentMaxLevel; // Actualiza el nivel máximo
+                }
             }
         }
         return max;

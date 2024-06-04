@@ -1,5 +1,5 @@
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
-import Phaser from 'phaser';
+import Phaser, { Scene } from 'phaser';
 import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
@@ -7,6 +7,7 @@ import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
+import HUD from './hud';
 
 export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -129,8 +130,8 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
     /***************************************** */
 
     /************** Time control ************** */
-    this.levelTime = 0.3;
-    this.remainingTime = 2 * 60;
+    this.levelTime = 1;
+    this.remainingTime = 8 * 60;
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     /***************************************** */
 
@@ -286,12 +287,12 @@ export default class WorkoutCardio extends AbstractPoseTrackerScene {
     if (this.currentMarkersAlive === 0) {
       this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
       this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
-      if (this.multipleMarkerProb && this.currentLevel > 1) {
-        this.maxMarkers = 4;
-      } else if (this.multipleMarkerProb) {
+      if (this.multipleMarkerProb && this.currentLevel > 5) {
         this.maxMarkers = 3;
-      } else {
+      } else if (this.multipleMarkerProb) {
         this.maxMarkers = 2;
+      } else {
+        this.maxMarkers = 1;
       }
 
     }

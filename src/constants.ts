@@ -2,14 +2,24 @@ const Constants = {
   EVENT: {
     UPDATEEXP: 'updateExp',
     CLOCK: 'clock',
-    STOPAUDIOINIT: 'stopAudioInit'
+    STOPAUDIOINIT: 'stopAudioInit',
+    COUNTER: 'updateCounter',
+    UPDATE_HALF: 'updateHalf',
+    FULL: 'full',
+    MARKER_CREATED: 'markerCreated',
+    MARKER_COUNT: 'markerCount',
+    UNTOUCHED: 'untouched',
   },
   REGISTER: {
     EXP: 'exp',
     CLOCK: 'clock',
     LEVEL: 'level',
+    COUNTER: 'contador',
+    MARKER_COUNT: 'markerCount',
+    UNTOUCHED: 'untouched',
   },
   SCENES: {
+    CONFIG: 'GameConfig',
     LOADER: 'Loader',
     Menu: 'Menu',
     WorkoutCardio: 'WorkoutCardio',
@@ -17,6 +27,21 @@ const Constants = {
     WorkoutFlexibilidad: 'WorkoutFlexibilidad',
     HUD: 'HUD',
     STATS: 'STATS',
+    GAME_CREATOR: 'GameScene',
+    GAME: 'Gym',
+    ARCADE: 'Arcade',
+    PUSHUPS: 'PushUps',
+    JUMPINGJACKS: 'JumpingJacks',
+    WEIGTHLIFTING: 'WeigthLifting',
+    ARTICULATIONMENU: 'ArticulationMenu'
+  },
+  TRAINING: {
+    CARDIO: 'Cardio',
+    AGILIDAD: 'Agilidad',
+    FLEXIBILIDAD: 'Flexibilidad',
+    FLEXIONES: 'Flexiones',
+    SALTOSDETIJERA: 'Saltos de tijera',
+    PESOS: 'Pesos',
   },
   MARKER: {
     ID: 'marker',
@@ -52,10 +77,13 @@ const Constants = {
     GO: 'vamos',
     AUDIOTUTORIAL: 'audioTutorial'
   },
-
   DATA: {
     RANKING: 'ranking',
     STATS: 'stats'
+  },
+  CANVASMULTI: {
+    WIDTHMULTI: 1280,
+    HEIGHTMULTI: 720
   }
 };
 
