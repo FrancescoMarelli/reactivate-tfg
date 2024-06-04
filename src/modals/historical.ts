@@ -1,4 +1,5 @@
 import Utils from '~/utils';
+import Constants from '~/constants';
 
 export default class Historical extends Phaser.GameObjects.Image {
   private TitleTxt: Phaser.GameObjects.Text;
@@ -48,16 +49,23 @@ export default class Historical extends Phaser.GameObjects.Image {
     }
 
     var content: string[] = [];
-    for (var i = this.actualStatGruop; i < this.myStats.length && (i - this.actualStatGruop) < 3; i++) {
-      content.push(
-        "Tipo de entrenamiento: " + this.myStats[i]["_workout"],
-        "Fecha del entrenamiento: " + this.myStats[i]["_date"],
-        "Máximo nivel alcanzado: " + this.myStats[i]["_maxLevel"],
-        "Marcadores alcanzados / repeticiones: " + this.myStats[i]["_touchedMarkers"],
-        "Marcadores no alcanzados: " + this.myStats[i]["_untouchedMarkers"],
-        "",
-      );
-    }
+     for (var i = this.actualStatGruop; i < this.myStats.length && (i - this.actualStatGruop) < 3; i++) {
+        content.push(
+          "Tipo de entrenamiento: " + this.myStats[i]["_workout"],
+          "Fecha del entrenamiento: " + this.myStats[i]["_date"],
+          "Máximo nivel alcanzado: " + this.myStats[i]["_maxLevel"],
+          "Marcadores alcanzados / repeticiones: " + this.myStats[i]["_touchedMarkers"],
+        );
+
+        // Only add "Marcadores no alcanzados" if the workout is not "pushups", "jumping jacks", or "weight lifting"
+        if (![Constants.TRAINING.FLEXIONES,
+          Constants.TRAINING.SALTOSDETIJERA,
+          Constants.TRAINING.PESOS].includes(this.myStats[i]["_workout"])) {
+          content.push("Marcadores no alcanzados: " + this.myStats[i]["_untouchedMarkers"]);
+        }
+
+        content.push("");
+     }
 
     this.bodyTxt = this.scene.add.text(this.mywidth / 4, this.myheight / 2 - 20, content, {
       fontFamily: 'Russo One',

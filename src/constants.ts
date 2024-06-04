@@ -35,6 +35,14 @@ const Constants = {
     WEIGTHLIFTING: 'WeigthLifting',
     ARTICULATIONMENU: 'ArticulationMenu'
   },
+  TRAINING: {
+    CARDIO: 'Cardio',
+    AGILIDAD: 'Agilidad',
+    FLEXIBILIDAD: 'Flexibilidad',
+    FLEXIONES: 'Flexiones',
+    SALTOSDETIJERA: 'Saltos de tijera',
+    PESOS: 'Pesos',
+  },
   MARKER: {
     ID: 'marker',
     ANIMATION: {

@@ -165,28 +165,28 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   workoutSwitch(workout: string) {
     switch (workout) {
-      case 'Flexiones':
+      case Constants.TRAINING.FLEXIONES:
         this.movementFactory = new PushUpsFactory();
         break;
-      case 'Pesos':
+      case Constants.TRAINING.PESOS:
         this.movementFactory = new WeightLiftinFactory();
         break;
-      case 'Saltos de tijera':
+      case Constants.TRAINING.SALTOSDETIJERA:
         this.movementFactory = new JumpingJackFactory();
         break;
-      case 'Cardio':
+      case Constants.TRAINING.CARDIO:
         this.movementFactory = new CardioFactory();
         this.layoutFactory = new StaticLayoutFactory();
         this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
         this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
         break;
-        case 'Agilidad':
+        case Constants.TRAINING.AGILIDAD:
           this.movementFactory = new AgilidadFactory();
           this.layoutFactory = new AgilityLayoutFactory();
           this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
           this.registry.set(Constants.REGISTER.UNTOUCHED, this.untouchedMarkers);
           break;
-      case 'Flexibilidad':
+      case Constants.TRAINING.FLEXIBILIDAD:
         this.movementFactory = new FlexibilidadFactory();
         this.layoutFactory = new FlexibilityLayoutFactory();
         this.registry.set(Constants.REGISTER.MARKER_COUNT, this.counter);
