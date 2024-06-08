@@ -13,6 +13,8 @@ export default class ArticulationSelectionScene extends Phaser.Scene {
   private articulationLabels: string[] = Object.values(EPoseLandmark).filter(value => typeof value === 'string') as string[];
   private confirmButton;
   private cancelButton;
+  private usingPoseNet = true; // Añade tu lógica para establecer esta bandera
+  private posenetArticulations = ['Nose', 'LeftEye', 'RightEye', 'LeftEar', 'RightEar', 'LeftShoulder', 'RightShoulder', 'LeftElbow', 'RightElbow', 'LeftWrist', 'RightWrist', 'LeftHip', 'RightHip', 'LeftKnee', 'RightKnee', 'LeftAnkle', 'RightAnkle']; // Articulaciones que PoseNet puede detectar
 
 
   constructor() {

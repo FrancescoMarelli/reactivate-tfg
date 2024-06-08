@@ -11,15 +11,18 @@ import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detec
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 
 export default class PoseTracker {
-  private pose: PosenetDetector;
+  private pose: PoseDetector;
   private camera: Camera | null;
-  private videoEl: HTMLVideoElement | null;
+  private isDetectingPose: boolean; // New state variable
+
 
   constructor(
     videoEl: HTMLVideoElement | null,
     settings: IPoseSettings & ISize,
     onResults: (results: IPoseTrackerResults) => void,
   ) {
+    this.isDetectingPose = false; // Initialize state variable
+
     if (!videoEl) {
       videoEl = document.createElement('video');
       videoEl.id = 'input-video';
@@ -29,8 +32,7 @@ export default class PoseTracker {
     videoEl.removeAttribute('src');
     videoEl.load();
 
-    this.pose = new PosenetDetector();
-/*  this.pose = new MediapipePoseDetector();
+  this.pose = new MediapipePoseDetector();
     this.pose.setOptions(settings);
     this.pose.onResults(onResults);
     this.camera = new Camera(
@@ -38,20 +40,23 @@ export default class PoseTracker {
       async (): Promise<void> => {
         await this.pose.getPose()?.send({ image: videoEl });
       },
-    );*/
+    );
+    /*this.pose = new PosenetDetector();
     this.camera = new Camera(
       videoEl,
       async (): Promise<void> => {
-        if (videoEl) {
-            const pose = await this.pose.estimatePose(videoEl);
+        if (videoEl && !this.isDetectingPose) { // Check if a pose detection is already in progress
+          this.isDetectingPose = true; // Indicate that a pose detection is in progress
+          const pose = await this.pose.estimatePose(videoEl);
           if (pose) {
             const landmarks = mapKeypointsToLandmarks(pose);
             const results: IPoseTrackerResults = { image: videoEl, poseLandmarks: landmarks };
             onResults(results);
           }
+          this.isDetectingPose = false; // Indicate that the pose detection has finished
         }
       },
-    );
+    );*/
     this.camera.start(settings.width, settings.height);
   }
 

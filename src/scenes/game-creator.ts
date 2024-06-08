@@ -383,6 +383,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   /* ***************************************************************************** */
   update(time: number, delta: number): void {
+
     super.update(time, delta, {
       renderElementsSettings: {
         shouldDrawFrame: true,

@@ -10,6 +10,7 @@ import { flipPoseHorizontal } from '@tensorflow-models/posenet/dist/util';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose/pose';
+import { drawKeypoints, drawSkeleton } from '~/pose-tracker-engine/utils';
 
 
 export default class PosenetDetector {
@@ -17,6 +18,7 @@ export default class PosenetDetector {
   private modelLoaded: Promise<void>;
   private width = 1280;
   private height = 720;
+  public scaledKeypoints: posenet.Keypoint[] | null = null; // Nuevo campo para almacenar los keypoints escalados
 
 
   constructor() {
@@ -29,7 +31,7 @@ export default class PosenetDetector {
       architecture: 'MobileNetV1',
       outputStride: 16,
       inputResolution: { width: this.width, height: this.height },
-      multiplier: 0.75
+      multiplier: 0.5
     });
   }
 
@@ -38,7 +40,6 @@ export default class PosenetDetector {
   }
 
   public async estimatePose(video: HTMLVideoElement): Promise<posenet.Pose | null> {
-  //  await this.modelLoaded; // Asegúrate de que el modelo esté cargado
     return new Promise(async (resolve, reject) => {
       // Espera a que el video esté listo antes de estimar la pose
       if (this.net) {
@@ -47,23 +48,23 @@ export default class PosenetDetector {
         let pose = await this.net.estimateSinglePose(video, {
           flipHorizontal: false
         });
-       // flipPoseHorizontal(pose, this.width);
 
       if (pose) {
               // Escalar las coordenadas de los landmarks al tamaño del canvas
-          const scaledLandmarks = pose.keypoints.map((keypoint) => {
+          const scaledKeypoints = pose.keypoints.map((keypoint) => {
             return {
               ...keypoint,
               position: {
-                x: keypoint.position.x / 1280,
-                y: keypoint.position.y / 720
-              }
+                x: keypoint.position.x /1280,
+                y: keypoint.position.y/720
+              },
+              visibility: keypoint.score
             };
           });
 
           resolve({
             ...pose,
-            keypoints: scaledLandmarks
+            keypoints: scaledKeypoints
           });
         }
        resolve(null);

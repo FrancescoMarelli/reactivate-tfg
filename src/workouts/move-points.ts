@@ -5,6 +5,7 @@ import Phaser from 'phaser';
 
 export abstract class MovePoints {
   static movePoints(coords: IPoseLandmark[] | undefined, bodyPoints: Phaser.Physics.Arcade.Sprite[] | undefined, movementSettings: any) {
+    coords = coords?.map((coord) => coord ?? {x: 0, y: 0, z: 0, visibility: 0});
     if (bodyPoints && coords) {
       // Mapeo de índices activos según el EPoseLandmark
       const activeIndices = movementSettings.activeJoints.map((joint: string) => EPoseLandmark[joint as keyof typeof EPoseLandmark]);

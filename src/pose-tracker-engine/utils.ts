@@ -9,7 +9,6 @@ import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 
 
 // Mapa de índices PoseNet a MediaPipe
-// Mapa de índices PoseNet a MediaPipe
 const poseNetToMediaPipeMap: { [key: string]: EPoseLandmark } = {
   'nose': EPoseLandmark.Nose,
   'leftEye': EPoseLandmark.LeftEye,
@@ -29,7 +28,6 @@ const poseNetToMediaPipeMap: { [key: string]: EPoseLandmark } = {
   'leftAnkle': EPoseLandmark.LeftAnkle,
   'rightAnkle': EPoseLandmark.RightAnkle,
 };
-
 export function mapKeypointsToLandmarks(pose: Pose): IPoseLandmark[] {
   const landmarks: IPoseLandmark[] = Array(Object.keys(EPoseLandmark).length / 2).fill(null);
 
@@ -50,7 +48,7 @@ export function mapKeypointsToLandmarks(pose: Pose): IPoseLandmark[] {
 }
 
 
-/*
+
 export function toTuple({ y, x }: { y: number; x: number }): [number, number] {
   return [y, x];
 }
@@ -73,7 +71,7 @@ export function  drawSegment(
   ctx.beginPath();
   ctx.moveTo(ax * scale, ay * scale);
   ctx.lineTo(bx * scale, by * scale);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.strokeStyle = color;
   ctx.stroke();
 }
@@ -85,7 +83,7 @@ export function  drawSkeleton(keypoints: Keypoint[], minConfidence: number, ctx:
     drawSegment(
       toTuple(keypoints[0].position),
       toTuple(keypoints[1].position),
-      'red',
+      'blue',
       scale,
       ctx
     );
@@ -104,7 +102,9 @@ export function  drawKeypoints(keypoints: Keypoint[], minConfidence: number, ctx
     drawPoint(ctx, y * scale, x * scale, 3, 'red');
   }
 }
-*/
+
+
+
 
 
 
