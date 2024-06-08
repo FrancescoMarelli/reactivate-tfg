@@ -51,7 +51,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private touchingButton: boolean = false;
 
   // Markers
-
   private currentLevel: number = 1;
   private touchedMarkers: number = 0;
   private untouchedMarkers: number = 0;
@@ -99,7 +98,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   negGifShown: boolean = false;
 
 
-  constructor() { // creo que las fabricas deberias de pasarse por parametro
+  constructor() {
     super(Constants.SCENES.GAME_CREATOR);
     this.silhouetteFactory = new StandardSilhouetteFactory();
     this.buttonFactory = new CustomButtonFactory();
@@ -276,7 +275,6 @@ export default class GameCreator extends AbstractPoseTrackerScene {
           });
       }
     });
-    // Comprobar si es necesario
   }
 
   toggleLandmarks() {
@@ -311,19 +309,10 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
 
-    if(this.detectorExercise.getType() == 'Gym') {
-     /* this.background = this.add.image(0, 0, this.theme)
-        .setOrigin(0, 0)
-        //.setDepth(-1)
-        .setAlpha(0.2);*/
-    }
-
     if(this.detectorExercise.getType() == 'Arcade') {
       this.markers = this.layoutFactory.create(this, this.bodyPoints, this.detectorExercise, this.theme);
       this.detectorExercise.setBodyPoints(this.bodyPoints);
       this.detectorExercise.setMarkers(this.markers);
-
-      //this.events.emit(Constants.EVENT.MARKER_CREATED);
     }
 
     this.buttonsReady.forEach((button) => {
@@ -383,19 +372,14 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
   /* ***************************************************************************** */
   update(time: number, delta: number): void {
-
     super.update(time, delta, {
       renderElementsSettings: {
         shouldDrawFrame: true,
         shouldDrawPoseLandmarks: true,
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
-        // if(this.type == 'agilidad') {
-        //   MovePoints.movePointsAgilidad(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints);
-        // } else {
-          MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
-        // }
-        if(this.workoutStarted ) {
+        MovePoints.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined, this.bodyPoints, this.movementSettings);
+        if (this.workoutStarted) {
           this.detectorExercise.isReady = true;
           if (this.workoutEnded) {
             return;
@@ -404,49 +388,19 @@ export default class GameCreator extends AbstractPoseTrackerScene {
             this.updateCounter();
           }
         }
-        },
-        afterPaint: (poseTrackerResults) => {
-        },
+      },
+      afterPaint: (poseTrackerResults) => {},
+    });
 
-      });
-
-  /****************************************************************************** */
     if (this.workoutStarted) {
-      let actualRatio = this.counter / this.remainingTime;
-      let lowerThresholdRatio = 0.4 + this.ratio;
-      let timeThreshold = 0.7;
+      let actualRatio = this.counter / (this.workoutConfig.time - this.remainingTime);
+      let lowerThresholdRatio = 0.4 * this.ratio;
+      let timeThreshold = 0.7 * this.workoutConfig.time;
 
-      if(!this.posGifShown &&  actualRatio > this.ratio) {
-        const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
-        let cloud = this.add.image(50, 610, "cloud").setOrigin(0,1);
-        let text = this.add.text(55, 535, 'Estás yendo\n muy bien', { fontSize: '24px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
-        gif.setScale(0.4);
-        cloud.setScale(0.1);
-
-        this.sound.play('welldone');
-        this.posGifShown = true;
-
-
-        setTimeout(() => {
-          gif.destroy();
-          cloud.destroy();
-          text.destroy();
-        }, 4000);
-      } else if(!this.negGifShown && (this.remainingTime <= this.workoutConfig.time * timeThreshold) && actualRatio < lowerThresholdRatio) {
-        const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
-        let cloud = this.add.image(50, 610, "cloud").setOrigin(0,1);
-        let text = this.add.text(63, 512, 'Accelera !!!', { fontSize: '23px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
-        gif.setScale(0.4);
-        cloud.setScale(0.1);
-
-        this.sound.play('faster');
-        this.negGifShown = true;
-
-        setTimeout(() => {
-          gif.destroy();
-          cloud.destroy();
-          text.destroy();
-        }, 4000); //
+      if (!this.posGifShown && actualRatio > this.ratio && this.counter > 0) {
+        this.showPositiveFeedback();
+      } else if (!this.negGifShown && this.remainingTime <= timeThreshold && actualRatio < lowerThresholdRatio && this.counter > 0) {
+        this.showNegativeFeedback();
       }
 
       // Time Management
@@ -460,26 +414,62 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
         let clockText: string =
           Phaser.Utils.String.Pad(minutes, 2, '0', 1) + ':' + Phaser.Utils.String.Pad(seconds, 2, '0', 1);
+
         // Register
         this.registry.set(Constants.REGISTER.CLOCK, clockText);
         // Send to HUD
         this.events.emit(Constants.EVENT.CLOCK);
 
-        if (this.detectorExercise.getType() == 'Arcade')
-            this.counter = this.detectorExercise.getTouchedMarkers();
+        if (this.detectorExercise.getType() == 'Arcade') {
+          this.counter = this.detectorExercise.getTouchedMarkers();
+        }
 
         // End of workout
         if (this.remainingTime == 0) {
           this.workoutEnded = true;
           this.showEndAnimation(false);
-        } else if (this.counter >= this.workoutConfig.reps ) {
+        } else if (this.counter >= this.workoutConfig.reps) {
           this.workoutEnded = true;
           this.showEndAnimation(true);
         }
-
       }
     }
   }
+
+  showPositiveFeedback() {
+    const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
+    let cloud = this.add.image(50, 610, "cloud").setOrigin(0, 1);
+    let text = this.add.text(55, 535, 'Estás yendo\n muy bien', { fontSize: '24px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
+    gif.setScale(0.4);
+    cloud.setScale(0.1);
+
+    this.sound.play('welldone');
+    this.posGifShown = true;
+
+    setTimeout(() => {
+      gif.destroy();
+      cloud.destroy();
+      text.destroy();
+    }, 4000);
+  }
+
+  showNegativeFeedback() {
+    const gif = this.add.image(10, 715, this.gifSwitch()).setOrigin(0, 1);
+    let cloud = this.add.image(50, 610, "cloud").setOrigin(0, 1);
+    let text = this.add.text(63, 512, 'Accelera !!!', { fontSize: '23px' }).setOrigin(0, 1).setDepth(1).setColor('#000000');
+    gif.setScale(0.4);
+    cloud.setScale(0.1);
+
+    this.sound.play('faster');
+    this.negGifShown = true;
+
+    setTimeout(() => {
+      gif.destroy();
+      cloud.destroy();
+      text.destroy();
+    }, 4000);
+  }
+
 
 
   updateCounter() {
@@ -487,8 +477,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     this.exp = this.counter;
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     this.registry.set(Constants.REGISTER.COUNTER, this.counter);
-    // Actualiza el registro de la experiencia
-    this.events.emit(Constants.EVENT.UPDATEEXP); // Emite el evento de actualización de la experiencia
+    this.events.emit(Constants.EVENT.UPDATEEXP);
   }
 
 
@@ -502,10 +491,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.showFireworks();
     } else {
       let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
-      gameOverImage.setDisplaySize(this.width, this.height);
+      gameOverImage.setDisplaySize(this.width / 2, this.height / 2);
     }
 
-    // Aumentar el tiempo de espera para asegurarnos de que las animaciones y mensajes se completen
     setTimeout(() => {
       console.log('setTimeout completed, calling stopScene');
       this.stopScene();

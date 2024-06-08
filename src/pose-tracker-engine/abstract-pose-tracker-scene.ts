@@ -95,7 +95,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
     }
 
     // Adjust weights and buffer size accordingly
-    const weights = [0.6, 0.4, 0.2];  // Weights for the buffer of size 2
+    const weights = [0.5, 0.4, 0.3];
     const totalWeight = weights.reduce((a, b) => a + b, 0);
 
     const averagedLandmarks: IPoseLandmark[] = [];
