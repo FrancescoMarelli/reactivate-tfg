@@ -173,32 +173,6 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
     this.enableButtons(this.navButtons);
 
-    // Agregar detección de superposición para los botones con los puntos del cuerpo
-    this.bodyPoints.forEach(point => {
-      this.physics.add.overlap(this.saveButton, point, () => {
-        this.saveButton.animateToFill(false);
-        if (this.saveButton.buttonIsFull() && this.saveButton.isEnabled()) {
-          this.saveButton.emit('down', this.saveButton);
-          this.saveConfig();
-        }
-      }, undefined, this);
-
-      this.physics.add.overlap(this.buttonExitMarker, point, () => {
-        this.buttonExitMarker.animateToFill(false);
-        if (this.buttonExitMarker.buttonIsFull() && this.buttonExitMarker.isEnabled()) {
-          this.buttonExitMarker.emit('down', this.buttonExitMarker);
-          this.goBack();
-        }
-      }, undefined, this);
-      this.physics.add.overlap(this.poseSelectionButton, point, () => {
-        this.poseSelectionButton.animateToFill(false);
-        if (this.poseSelectionButton.buttonIsFull() && this.poseSelectionButton.isEnabled()) {
-          this.poseSelectionButton.emit('down', this.poseSelectionButton);
-          this.togglePoseSelection();
-        }
-      }, undefined, this);
-    });
-
   }
 
   enableButtons(buttons: any[]) {
