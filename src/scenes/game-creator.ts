@@ -78,6 +78,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private counterText: Phaser.GameObjects.Text;
   private detectorExercise;
   private workoutEnded: boolean = false;
+  private animationPlayed: boolean = false;
 
 
   // Factories
@@ -96,6 +97,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   private posGifShown: boolean = false;
   ratio: number;
   negGifShown: boolean = false;
+  stopCounter: number = 0;
 
 
   constructor() {
@@ -346,7 +348,10 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
 
   stopScene() {
-    this.saveData();
+    this.stopCounter++;
+    if(this.stopCounter == 1) {
+      this.saveData();
+    }
     this.sound.stopAll();
     this.scene.stop();
     if (!this.scene.get(Constants.SCENES.Menu))
@@ -399,7 +404,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
       if (!this.posGifShown && actualRatio > this.ratio && this.counter > 0) {
         this.showPositiveFeedback();
-      } else if (!this.negGifShown && this.remainingTime <= timeThreshold && actualRatio < lowerThresholdRatio && this.counter > 0) {
+      } else if (!this.negGifShown && this.remainingTime <= timeThreshold && actualRatio < lowerThresholdRatio) {
         this.showNegativeFeedback();
       }
 
@@ -482,22 +487,25 @@ export default class GameCreator extends AbstractPoseTrackerScene {
 
 
   showEndAnimation(success: boolean) {
-    const message = success ? '¡Ejercicio completado con éxito!' : '¡Ejercicio no completado!';
+    if (!this.animationPlayed) {
+      this.animationPlayed = true;
+      const message = success ? '¡Ejercicio completado con éxito!' : '¡Ejercicio no completado!';
 
-    console.log('showEndAnimation called, success:', success);
+      console.log('showEndAnimation called, success:', success);
 
-    if (success) {
-      this.showMessage(message);
-      this.showFireworks();
-    } else {
-      let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
-      gameOverImage.setDisplaySize(this.width / 2, this.height / 2);
+      if (success) {
+        this.showMessage(message);
+        this.showFireworks();
+      } else {
+        let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
+        gameOverImage.setDisplaySize(this.width / 2, this.height / 2);
+      }
+
+      setTimeout(() => {
+        console.log('setTimeout completed, calling stopScene');
+        this.stopScene();
+      }, 5000); // 5000 ms = 5 segundos
     }
-
-    setTimeout(() => {
-      console.log('setTimeout completed, calling stopScene');
-      this.stopScene();
-    }, 5000); // 5000 ms = 5 segundos
   }
 
   showMessage(message: string) {

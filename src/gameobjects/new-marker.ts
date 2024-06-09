@@ -141,13 +141,13 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
 
     let timerForMarker = 5500;
     if (this.flexibilityGame) timerForMarker = 20000;
-    if (this.agilityGame) timerForMarker = 9000;
+    if (this.agilityGame) timerForMarker = 7000;
     if (currentLevel < 10) {
       timerForMarker = timerForMarker - (currentLevel * 100);
     }
 
     if(this.errorMarker) {
-      timerForMarker = 5000;
+      timerForMarker = 3000;
     }
     // Internal timer
     this.timerEvent = this.scene.time.addEvent({

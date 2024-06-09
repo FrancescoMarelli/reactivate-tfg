@@ -50,11 +50,11 @@ const workoutConfigurations = {
     "Pro": { reps: 60, time: 60 }
   },
   "Agilidad": {
-    "Principiante": { reps: 20, time: 180 },
-    "Esordiente": { reps: 30, time: 180 },
-    "Experto": { reps: 40, time: 180 },
-    "Avanzado": { reps: 50, time: 180 },
-    "Pro": { reps: 60, time: 180 }
+    "Principiante": { reps: 40, time: 180 },
+    "Esordiente": { reps: 50, time: 180 },
+    "Experto": { reps: 60, time: 180 },
+    "Avanzado": { reps: 70, time: 180 },
+    "Pro": { reps: 90, time: 180 }
   },
   "Flexibilidad": {
     "Principiante": { reps: 60, time: 180 },
@@ -64,11 +64,11 @@ const workoutConfigurations = {
     "Pro": { reps: 180, time: 180 }
   },
   "Cardio": {
-    "Principiante": { reps: 20, time: 180 },
-    "Esordiente": { reps: 30, time: 180 },
-    "Experto": { reps: 40, time: 180 },
-    "Avanzado": { reps: 50, time: 180 },
-    "Pro": { reps: 60, time: 180 }
+    "Principiante": { reps: 40, time: 180 },
+    "Esordiente": { reps: 50, time: 180 },
+    "Experto": { reps: 60, time: 180 },
+    "Avanzado": { reps: 70, time: 180 },
+    "Pro": { reps: 90, time: 180 }
   }
 };
 

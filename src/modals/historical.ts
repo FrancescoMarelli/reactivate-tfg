@@ -8,7 +8,7 @@ export default class Historical extends Phaser.GameObjects.Image {
   private mywidth: number;
   private myheight: number;
   private myStats: [];
-  private actualStatGruop = 0;
+  private actualStatGroup = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
     super(scene, x, y, texture);
@@ -39,17 +39,17 @@ export default class Historical extends Phaser.GameObjects.Image {
   }
 
   showHistorical(next?: boolean) {
-    if (next == true && this.actualStatGruop < (this.myStats.length - 3)) {
-      this.actualStatGruop = this.actualStatGruop + 3;
-    } else if (next == false && this.actualStatGruop > 0) {
-      this.actualStatGruop = this.actualStatGruop - 3;
+    if (next == true && this.actualStatGroup < (this.myStats.length - 3)) {
+      this.actualStatGroup = this.actualStatGroup + 3;
+    } else if (next == false && this.actualStatGroup > 0) {
+      this.actualStatGroup = this.actualStatGroup - 3;
     }
     if (this.bodyTxt) {
       this.bodyTxt.destroy();
     }
 
     var content: string[] = [];
-      for (var i = this.actualStatGruop; i < this.myStats.length && (i - this.actualStatGruop) < 3; i++) {
+      for (var i = this.actualStatGroup; i < this.myStats.length && (i - this.actualStatGroup) < 3; i++) {
         // Condicional para agregar diferente contenido dependiendo del tipo de entrenamiento
         if (![Constants.TRAINING.FLEXIONES,
           Constants.TRAINING.SALTOSDETIJERA,
