@@ -125,7 +125,7 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
 
   }
 
-  createAnimation(currentLevel: number): void {
+  createAnimation(currentLevel: number, intensityLevel: number): void {
     if (this.ball){
       this.ball.destroy();
       this.emitter0.manager.destroy();
@@ -139,16 +139,18 @@ export default class NewMarker extends Phaser.Physics.Arcade.Sprite {
     }
     this.ball.setScale(0.08);
 
-    let timerForMarker = 5500;
-    if (this.flexibilityGame) timerForMarker = 20000;
-    if (this.agilityGame) timerForMarker = 7000;
+    let timerForMarker = 4500/intensityLevel;
+    if (this.flexibilityGame) timerForMarker = 20000/intensityLevel;
+    if (this.agilityGame) timerForMarker = 4000/intensityLevel;
     if (currentLevel < 10) {
       timerForMarker = timerForMarker - (currentLevel * 100);
     }
 
     if(this.errorMarker) {
-      timerForMarker = 3000;
+      timerForMarker = 3000/intensityLevel;
     }
+
+
     // Internal timer
     this.timerEvent = this.scene.time.addEvent({
       delay: timerForMarker, callback: () => {

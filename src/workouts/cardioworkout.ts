@@ -115,7 +115,7 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
           if (this.errorMakerProb) {
             this.errorMakerProb = false;
           }
-          marker.createAnimation(this.currentLevel);
+          marker.createAnimation(this.currentLevel, this.intensity);
           this.currentMarkersAlive++;
           this.randomMarker = Math.floor(Math.random() * 14) + 1;
           this.totalTouchableMarkers++;

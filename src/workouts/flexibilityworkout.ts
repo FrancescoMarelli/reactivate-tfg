@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import Constants from '~/constants';
 import Utils from '~/utils';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';
+import NewMarker from '~/gameobjects/new-marker';
 
 const sVi = [2, 8, 14, 20]; // Izquierda vertical
 const sVd = [5, 11, 17, 23]; // Derecha vertical
@@ -61,7 +62,7 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
     return 'Arcade';
   }
 
-  setMarkers(markers: any[]) {
+  setMarkers(markers: NewMarker[]) {
     this.markers = markers;
   }
 
@@ -105,7 +106,7 @@ export default class FlexibilityWorkout implements IGymExercise, IArcadeExercise
           }
           marker.setDirectionAngle(rotation);
           this.prevMarker = marker;
-          marker.createAnimation();
+          marker.createAnimation(this.currentLevel, this.intensity);
           if (this.controlNextMarker < this.nextSequenceDirectionCopy.length - 1) {
             this.controlNextMarker = this.controlNextMarker + 1;
           }

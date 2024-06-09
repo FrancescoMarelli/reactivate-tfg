@@ -96,6 +96,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private poseSelectionButton: any;
   private navButtons: any[] = [];
   private articulationButton: any;
+  private intensity: any;
 
 
 
@@ -363,7 +364,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   saveConfig() {
     const configCopy = {
       difficulty: ConfigScene.difficultyLabels[this.buttons['difficulty'].getIndex()],
-      intensity: this.buttons['intensity'].getIndex().toString(),
+      intensity: this.intensity,
       gameLength: this.getWorkoutConfig().time,
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
       theme: this.themeLabels[this.buttons['theme'].getIndex()],
@@ -414,6 +415,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     const workoutType = this.workoutTypeLabels[this.config.type];
     const intensity = this.intensityLabels[this.config.intensity];
     const intensityConfig = IntensityConfig[intensity];
+    this.intensity = intensityConfig.multiplier;
 
     if (workoutConfigurations[workoutType] && workoutConfigurations[workoutType][difficulty]) {
       const baseConfig = workoutConfigurations[workoutType][difficulty];

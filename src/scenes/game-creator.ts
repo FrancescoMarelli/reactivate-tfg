@@ -122,9 +122,9 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       this.type = gameConfig.type;
       this.theme = gameConfig.theme;
       this.audioSettings = this.theme;
-      this.intensity = gameConfig.intensity;
       this.difficulty = gameConfig.difficulty;
       this.workoutConfig = gameConfig.workoutConfig;
+      this.intensity = gameConfig.intensity;
       this.remainingTime = this.workoutConfig.time;
       this.articulations = this.registry.get('selectedArticulations');
       console.log('Articulaciones seleccionadas:', this.articulations);
@@ -499,6 +499,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       } else {
         let gameOverImage = this.add.image(this.width / 2, this.height / 2, 'gameover');
         gameOverImage.setDisplaySize(this.width / 2, this.height / 2);
+        this.sound.play('gameoveraudio');
       }
 
       setTimeout(() => {

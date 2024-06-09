@@ -99,9 +99,16 @@ export default class Loader extends Phaser.Scene {
     this.load.image('up', 'img/uppushup.png');
     this.load.image('down', 'img/downpushup.png');
 
+    this.load.image('japanGif', 'img/gif/samurai.gif');
+    this.load.image('defaultGif', 'img/gif/default.gif');
+    this.load.image('medievalGif', 'img/gif/elf.gif');
+    this.load.image('futureGif', 'img/gif/robot.gif');
+    this.load.image('cloud', 'img/gif/cloud.png');
+
     this.load.bitmapFont('gothic', 'fonts/bitmap/gothic.png', 'fonts/bitmap/gothic.xml');
 
     // MUSIC, EFFECTS %% VIDEOS
+    this.load.audio('gameoveraudio', 'audio/gameover.mp3');
     this.load.audio('trance', 'audio/trance.mp3');
     this.load.audio('trance2', 'audio/trance2.mp3');
     this.load.audio('trance3', 'audio/trance3.mp3');
@@ -129,11 +136,6 @@ export default class Loader extends Phaser.Scene {
     this.load.audio('welldone', 'audio/welldone.mp3');
     this.load.video('tutorial','img/tutorial.mp4','tutorial',false, true)
 
-    this.load.image('japanGif', 'img/gif/samurai.gif');
-    this.load.image('defaultGif', 'img/gif/default.gif');
-    this.load.image('medievalGif', 'img/gif/elf.gif');
-    this.load.image('futureGif', 'img/gif/robot.gif');
-    this.load.image('cloud', 'img/gif/cloud.png');
   }
 
   /**
