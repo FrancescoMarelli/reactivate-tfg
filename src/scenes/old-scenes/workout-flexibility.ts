@@ -1,22 +1,30 @@
-import Phaser from 'phaser';
-import Constants from '~/constants';
-import CustomButton from '~/gameobjects/custom-button';
-import Marker from '~/gameobjects/marker';
 import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
+import Phaser from 'phaser';
+import Marker from '~/gameobjects/marker';
+import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
+import CustomButton from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
-import Menu from './menu';
+import Menu from '../menu';
 
-export default class WorkoutAgility extends AbstractPoseTrackerScene {
+const sVi = [2, 8, 14, 20]; // Izquierda vertical
+const sVd = [5, 11, 17, 23]; // Derecha vertical
+const s1 = [3, 8, 14, 21];
+const s2 = [4, 11, 17, 22];
+const sHi = [7, 8, 9];
+const sHd = [10, 11, 12];
+const sequences = [sVi, sVd, s1, s2, sHi, sHd];
 
-  private markers: any[] = [];
+
+export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
+  private markers: any[] = [];
+  private triggerAction: boolean = true;
   private exp: number = 0;
   private levelTime: number;
   private remainingTime: number;
   private audioScene: Phaser.Sound.BaseSound;
-  private audioContactError: Phaser.Sound.BaseSound;
   private workoutStarted: boolean = false;
   private silhouetteImage: Phaser.GameObjects.Image;
   private buttonsReady: any[] = [];
@@ -24,30 +32,31 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
   private buttonReadyRight;
   private getReadyLeft: boolean = false;
   private getReadyRight: boolean = false;
+  private randomSequence: number = 3;
   private buttonExitMarker;
-  private currentMarkersAlive: number = 0;
-  private randomMarker: number = 3;
-  private currentLevel: number;
-  private maxMarkers: number = 1; // Se empieza con al menos 1 marcador
-  private multipleMarkerProb = false;
-  private triggerAction: boolean = true;
   private touchingButton: boolean = false;
-  private ball;
-  private particles;
-  private ballEmitter;
-  private ballAppearanceLeft: boolean = true;
-  private ballAppearanceTop: boolean = true;
+  /* multipleMarker y errorMarker son asignadas cada vez que es necesario crear marcadores nuevos teniendo en cuenta la probabilidad en el nivel */
+  private nextSequence: number = 1;
+  private invertDirection = false;
+  private currentMarkersAlive: number = 0;
+  private maxMarkers: number = sequences[3].length; // Se empieza con al menos 1 secuencia
+  private currentLevel: number = 1;
   private width: number;
   private height: number;
   private touchedMarkers: number = 0;
   private untouchedMarkers: number = 0;
   private totalTouchableMarkers: number = 0;
-  private lastIdMarker = 0;
+  private nextSequenceDirectionCopy: number[] = [];
+  private controlNextMarker: number = 0;
+  private prevMarker;
+  private showNextSequence: boolean = true;
+  private lastIdSequence = 0;
+
+
 
   constructor() {
-    super(Constants.SCENES.WorkoutAgilidad);
+    super(Constants.SCENES.WorkoutFlexibilidad);
   }
-
 
   init() {
     this.width = this.cameras.main.width;
@@ -78,7 +87,7 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
     this.silhouetteImage = this.add.image(640, 420, 'silhouette');
     this.silhouetteImage.setScale(0.7, 0.65);
     // body points
-    for (var i = 0; i < 35; i++) {
+    for (var i = 0; i < 24; i++) {
       let point = this.physics.add.sprite(-20, -20, 'point');
       this.add.existing(point);
       point.setAlpha(0);
@@ -87,8 +96,7 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
     /*****************************************/
 
-    this.audioScene = this.sound.add(Constants.AUDIO.TRANCE2, { volume: 0.65, loop: false });
-    this.audioContactError = this.sound.add(Constants.AUDIO.CONTACTERROR, { loop: false });
+    this.audioScene = this.sound.add(Constants.AUDIO.TRANCE3, { volume: 0.40, loop: false });
 
     /************** Get ready markers ******** */
     this.buttonsReady.forEach((button) => {
@@ -132,20 +140,19 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
             }
           });
       }
-
-      if (this.scene.get(Constants.SCENES.Menu))
-        this.scene.remove(Constants.SCENES.Menu);
-
     });
     /***************************************** */
 
     /************** Time control ************** */
     this.levelTime = 1;
-    this.remainingTime = 9 * 60 + 50;
+    this.remainingTime = 7 * 60 + 7;
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     /***************************************** */
 
+    if (this.scene.get(Constants.SCENES.Menu))
+      this.scene.remove(Constants.SCENES.Menu);
   }
+
 
   menuSwitch(button: CustomButton) {
     switch (button.getText()) {
@@ -160,7 +167,6 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
         break;
       default:
         break;
-
     }
     if (this.getReadyLeft && this.getReadyRight) {
       this.startWorkout();
@@ -170,8 +176,6 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
   startWorkout() {
     this.createLayout();
-    this.createContactBall();
-
     this.workoutStarted = true;
     this.silhouetteImage.destroy();
     this.buttonsReady.forEach((button) => {
@@ -184,71 +188,15 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
     this.sound.pauseOnBlur = false;
   }
 
-  createContactBall() {
-    this.particles = this.add.particles('particle-orange');
-    this.ballEmitter = this.particles.createEmitter({
-      speed: 80,
-      scale: { start: 0.6, end: 0 },
-      blendMode: 'ADD',
-      tint: ['0xfff107']
-    });
-
-    this.ball = this.physics.add.image(this.ballAppearanceLeft ? 0 : this.width, this.ballAppearanceTop ? 100 : this.height, 'meteorite');
-    this.ball.setScale(0.15);
-    this.ball.setAlpha(0.75);
-
-    this.ballAppearanceLeft = !this.ballAppearanceLeft;
-    if (Math.random() < 0.5) {
-      this.ballAppearanceTop = !this.ballAppearanceTop;
-    }
-
-    this.ball.setVelocity(100, 200);
-    this.ball.setBounce(1, 1);
-    this.ball.setCollideWorldBounds(true);
-    this.ball.setRotation(360);
-    this.ballEmitter.startFollow(this.ball);
-    this.bodyPoints.forEach((point) => {
-      this.physics.add.overlap(
-        this.ball,
-        point,
-        (_) => {
-          this.bodyContactBall();
-        },
-        undefined,
-        this,
-      );
-    });
-  }
-
-  bodyContactBall() {
-    this.exp = Number(this.registry.get(Constants.REGISTER.EXP));
-    if (Number(this.registry.get(Constants.REGISTER.EXP)) > 0) {
-      this.exp = this.exp - 1;
-    }
-    this.ballEmitter.tint.onChange(0xff0000);
-    this.time.addEvent({
-      delay: 500,
-      callback: () => {
-        this.ballEmitter.tint.onChange(0xfff107);
-      },
-      loop: true
-    })
-    this.registry.set(Constants.REGISTER.EXP, this.exp);
-    this.events.emit(Constants.EVENT.UPDATEEXP);
-    if (!this.audioContactError.isPlaying) {
-      this.audioContactError.play();
-    }
-  }
-
   movePoints(coords: IPoseLandmark[] | undefined) {
     if (this.bodyPoints && coords) {
       for (var i = 0; i < this.bodyPoints.length; i++) {
-        if (i == 34) { // To extend hands points (improve accuracy)
+        if (i + 11 == 23) { // To extend hands points (improve accuracy)
           this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
-        } else if (i == 35) {
+        } else if (i + 11 == 24) {
           this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
         } else {
-          this.bodyPoints[i]?.setPosition(coords[i]?.x * 1280, coords[i]?.y * 720);
+          this.bodyPoints[i]?.setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
         }
       }
     }
@@ -256,9 +204,9 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
   createLayout(): void {
     let width: number = 50;
-    let height: number = 150;
+    let height: number = 160;
 
-    for (var i = 1; i < 26; i++) {
+    for (var i = 1; i < 25; i++) {
       const marker = new Marker({
         scene: this,
         x: width,
@@ -266,9 +214,13 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
         texture: Constants.TRANSPARENTMARKER.ID,
         id: i,
       });
-      marker.setAgilityGame(true);
+      marker.setDefaultBall("triangle", "redTriangle");
       if (i % 6 == 0) {
-        height = height + 170;
+        if (i > 17) {
+          height = height + 140;
+        } else {
+          height = height + 170;
+        }
         width = 50;
       } else {
         if (i % 3 == 0) {
@@ -307,58 +259,70 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
   destroyMarker(marker: any, touched: boolean): void {
     this.currentMarkersAlive--;
+    this.showNextSequence = false;
     this.exp = Number(this.registry.get(Constants.REGISTER.EXP));
-    if (!touched) {
+    if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
       if (Number(this.registry.get(Constants.REGISTER.EXP)) > 0) {
         this.exp = this.exp - 10;
         if (!marker.getErrorMarker() && !touched) this.untouchedMarkers = this.untouchedMarkers + 1;
       }
-    } else if (touched) {
+      this.nextSequenceDirectionCopy = this.nextSequenceDirectionCopy.filter(id => id !== marker.id)
+    } else if (!marker.getErrorMarker() && touched) {
       this.exp = this.exp + 10;
+      this.invertDirection ? this.nextSequenceDirectionCopy.pop() : this.nextSequenceDirectionCopy.shift();
+      if (this.nextSequenceDirectionCopy.length > 0) {
+        this.markers.forEach(marker => {
+          var nextMarker = this.invertDirection ? this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1] : this.nextSequenceDirectionCopy[0];
+          if (marker.id === nextMarker) {
+            marker.setErrorMarker(false);
+          }
+        })
+      }
       if (!marker.getErrorMarker() && touched) this.touchedMarkers = this.touchedMarkers + 1;
     }
-
-    this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
-    while (this.randomMarker === this.lastIdMarker) {
-      this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
-    }
-    this.lastIdMarker = this.randomMarker;
-    if (this.exp >= 100) {
-      this.time.addEvent({
-        delay: 600,                // ms
-        callback: () => {
-          this.ball.destroy();
-          this.ballEmitter.manager.destroy()
-          this.createContactBall();
-        }
-      });
-    }
-
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     this.events.emit(Constants.EVENT.UPDATEEXP);
-
+    // Update variables for next markers
     if (this.currentMarkersAlive == 0) {
-      if (this.multipleMarkerProb) {
-        this.maxMarkers = 2;
-      } else {
-        this.maxMarkers = 1;
-      }
+      this.time.addEvent({
+        delay: 1500,                // ms
+        callback: () => {
+          this.controlNextMarker = 1;
+          this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
+          this.probabilityTypesMarkers(0.5);
+          this.randomSequence = Utils.random(0, sequences.length - 1);
+          while (this.randomSequence === this.lastIdSequence) {
+            this.randomSequence = Utils.random(0, sequences.length - 1);
+          }
+          this.lastIdSequence = this.randomSequence;
+          this.maxMarkers = sequences[this.randomSequence].length;
+          this.showNextSequence = true;
+        },
+      });
     }
+  }
 
+  probabilityTypesMarkers(probInv: number) {
+    let rand = Math.random();
+    rand < probInv ? (this.invertDirection = true) : (this.invertDirection = false);
+    this.nextSequence = Utils.random(0, sequences.length - 1);
   }
 
   saveData() {
     var date: string = Utils.getActualDate();
-    var statsData = new StatsData("agilidad", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
+    var statsData = new StatsData("flexibilidad", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
     Utils.setLocalStorageData(statsData);
   }
 
+  /* ***************************************************************************** */
   update(time: number, delta: number): void {
     if (!this.touchingButton) {
-      this.bodyPoints.forEach((point) => {
-        if (point.body && point.body.touching.none) {
-          this.buttonExitMarker.animateToEmpty(false);
-        }
+      this.buttonsReady.forEach((button) => {
+        this.bodyPoints.forEach((point) => {
+          if (point.body && point.body.touching.none) {
+            button.animateToEmpty(false);
+          }
+        });
       });
     }
     this.touchingButton = false;
@@ -369,14 +333,9 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
       },
       beforePaint: (poseTrackerResults, canvasTexture) => {
         this.movePoints(poseTrackerResults.poseLandmarks ? poseTrackerResults.poseLandmarks : undefined);
-        // This function will be called before refreshing the canvas texture.
-        // Anything you add to the canvas texture will be rendered.
       },
-      afterPaint: (poseTrackerResults) => {
-        // This function will be called after refreshing the canvas texture.
-      },
+      afterPaint: (poseTrackerResults) => { },
     });
-
     /****************************************************************************** */
     if (this.workoutStarted) {
       this.markers.forEach((marker) => {
@@ -384,13 +343,45 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
           // Si tiene animación actualizala.
           marker.update();
         }
-
         /* Lógica para crear los marcadores */
-        if (marker.id == this.randomMarker) {
+        if (sequences[this.randomSequence].includes(marker.id) && this.showNextSequence) {
           if (!marker.getAnimationCreated() && this.triggerAction && this.currentMarkersAlive < this.maxMarkers) {
+            this.nextSequenceDirectionCopy = Array.from(sequences[this.randomSequence]);
+            var rotation = 1.57;
+            var horizontalSequence = sequences[this.randomSequence].length == 3 ? true : false;
+            if (!this.invertDirection && marker.id != this.nextSequenceDirectionCopy[0]) {
+              marker.setErrorMarker(true);
+            } else if (this.invertDirection && marker.id != this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1]) {
+              marker.setErrorMarker(true);
+            }
+            else {
+              marker.setErrorMarker(false);
+              this.controlNextMarker = 1;
+            }
+            // Set rotation in vertical sequences
+            if (!horizontalSequence) {
+              if (!this.invertDirection) {
+                rotation += 3.141;
+              }
+              if (marker.id != this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1]) {
+                rotation += Phaser.Math.Angle.Between(this.markers.find((marker) => marker.id === this.nextSequenceDirectionCopy[this.controlNextMarker]).x, this.markers.find((marker) => marker.id === this.nextSequenceDirectionCopy[this.controlNextMarker]).y, marker.x, marker.y);
+              } else {
+                rotation += Phaser.Math.Angle.Between(marker.x, marker.y, this.prevMarker.x, this.prevMarker.y);
+              }
+            }
+            // Set rotation in invert direction sequences
+            if (!this.invertDirection && horizontalSequence) {
+              rotation = 1.57;
+            } else if (this.invertDirection && horizontalSequence) {
+              rotation = -1.57;
+            }
+            marker.setDirectionAngle(rotation);
+            this.prevMarker = marker;
             marker.createAnimation();
+            if (this.controlNextMarker < this.nextSequenceDirectionCopy.length - 1) {
+              this.controlNextMarker = this.controlNextMarker + 1;
+            }
             this.currentMarkersAlive++;
-            this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
             this.totalTouchableMarkers++;
           }
         }
@@ -404,9 +395,6 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
       if (this.currentMarkersAlive == 0) {
         this.triggerAction = true;
       }
-
-      this.ball.angle += 0.7;
-
 
       // Time Management
       if (this.levelTime != Math.floor(Math.abs(time / 1000))) {
@@ -425,10 +413,10 @@ export default class WorkoutAgility extends AbstractPoseTrackerScene {
 
         // End of workout
         if (this.remainingTime == 0) {
+
           this.stopScene();
         }
       }
     }
   }
-
 }

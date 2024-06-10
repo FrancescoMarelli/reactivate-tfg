@@ -3,12 +3,13 @@ import CustomButton from '~/gameobjects/custom-button';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import Stats from '../modals/stats';
-import WorkoutCardio from './workout-cardio';
+import WorkoutCardio from './old-scenes/workout-cardio';
 import HUD from './hud';
-import WorkoutAgility from './workout-agilidad';
+import WorkoutAgility from './old-scenes/workout-agilidad';
 import Historical from '~/modals/historical';
-import WorkoutFlexibilidad from './workout-flexibility';
-import ConfigScene from '~/scenes/config-scene';
+import WorkoutFlexibilidad from './old-scenes/workout-flexibility';
+import ConfigScene from '~/scenes/config-scenes/config-scene';
+import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 
 export default class Menu extends AbstractPoseTrackerScene {
   constructor() {
@@ -45,7 +46,6 @@ export default class Menu extends AbstractPoseTrackerScene {
   init() {
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
-    //this.initiBodyPoints();
   }
 
   create(): void {
@@ -142,13 +142,16 @@ export default class Menu extends AbstractPoseTrackerScene {
   }
 
   initiBodyPoints() {
+    // Primero, limpiar cualquier punto del cuerpo existente
+    this.bodyPoints.forEach(point => point.destroy());
+    this.bodyPoints = [];
 
     for (var i = 0; i < 22; i++) {
       let point;
-      if (i === 9) {
+      if (i === EPoseLandmark.RightWrist) { //wrists
         point = this.physics.add.sprite(-50, -50, 'leftHand');
         point.setScale(0.35);
-      } else if (i === 10) {
+      } else if (i === EPoseLandmark.LeftWrist) {
         point = this.physics.add.sprite(-50, -50, 'rightHand');
         point.setScale(0.35);
       } else {
@@ -165,7 +168,7 @@ export default class Menu extends AbstractPoseTrackerScene {
       var ipoint = 0;
       this.bodyPoints.forEach((point) => {
         ipoint++;
-        if (ipoint >= 4 && ipoint <= 11)
+        if (ipoint >= 4 && ipoint <= 17)
           this.physics.add.overlap(
             button,
             point,
@@ -351,8 +354,8 @@ export default class Menu extends AbstractPoseTrackerScene {
   movePoints(coords: IPoseLandmark[] | undefined) {
     if (this.bodyPoints && coords) {
       for (var i = 0; i < this.bodyPoints.length; i++) {
-        if (i == 9 || i == 10) {
-          this.bodyPoints[i].setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
+        if (i == EPoseLandmark.LeftWrist || i ==EPoseLandmark.RightWrist) {
+          this.bodyPoints[i].setPosition(coords[i]?.x * 1280, coords[i]?.y * 720);
           //this.bodyPoints[i].rotation = -1.57 - Phaser.Math.Angle.Between(coords[i].x, coords[i].y, coords[i - 4].x, coords[i - 4].y);
         }
       }

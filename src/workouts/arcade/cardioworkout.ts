@@ -74,21 +74,13 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
 
   updateCurrentLevelAndMaxMarkers(): void {
     if (this.currentMarkersAlive === 0) {
-      this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL))
+      this.currentLevel = Number(this.scene.registry.get(Constants.REGISTER.LEVEL));
       this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
-      if (this.multipleMarkerProb && this.currentLevel > 5) {
-        this.maxMarkers = 3;
-      } else if (this.multipleMarkerProb) {
-        this.maxMarkers = 2;
-      } else {
-        this.maxMarkers = 1;
-      }
+      const baseMarkers = this.multipleMarkerProb ? (this.currentLevel > 5 ? 3 : 2) : 1;
+      this.maxMarkers = Math.ceil(baseMarkers * (1 + (this.intensity - 1) * 0.5)); // Ajuste progresivo con la intensidad
     }
   }
-
   probabilityTypesMarkers(probError: number, probMultiple: number) {
-    probError *= this.intensity;
-    probMultiple *= this.intensity;
 
     const rand = Math.random();
     this.errorMakerProb = rand < probError;
@@ -123,7 +115,7 @@ export default class CardioWorkout implements IGymExercise, IArcadeExercise {
           if (this.errorMakerProb) {
             this.errorMakerProb = false;
           }
-          marker.createAnimation(this.currentLevel);
+          marker.createAnimation(this.currentLevel, this.intensity);
           this.currentMarkersAlive++;
           this.randomMarker = Math.floor(Math.random() * 14) + 1;
           this.totalTouchableMarkers++;

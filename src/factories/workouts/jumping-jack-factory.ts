@@ -1,4 +1,4 @@
-import { JumpinJackDetector } from '~/workouts/jumpin-jack-detector';
+import { JumpinJackDetector } from '~/workouts/gym/jumpin-jack-detector';
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 

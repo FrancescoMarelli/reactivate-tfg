@@ -9,8 +9,12 @@ import CustomButton from '~/gameobjects/custom-button';
 import Menu from '~/scenes/menu';
 import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
 import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
-import ArticulationSelectionScene from '~/scenes/articulation-selection-scene';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
+import ArticulationSelectionScene from '~/scenes/config-scenes/articulation-selection-scene';
+import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
+import { Abs } from '@tensorflow/tfjs-core';
+import Loader from '~/scenes/loader';
+
 
 const baseStyle = {
   color: '#FFFFFF',
@@ -50,11 +54,11 @@ const workoutConfigurations = {
     "Pro": { reps: 60, time: 60 }
   },
   "Agilidad": {
-    "Principiante": { reps: 20, time: 180 },
-    "Esordiente": { reps: 30, time: 180 },
-    "Experto": { reps: 40, time: 180 },
-    "Avanzado": { reps: 50, time: 180 },
-    "Pro": { reps: 60, time: 180 }
+    "Principiante": { reps: 40, time: 180 },
+    "Esordiente": { reps: 50, time: 180 },
+    "Experto": { reps: 60, time: 180 },
+    "Avanzado": { reps: 70, time: 180 },
+    "Pro": { reps: 90, time: 180 }
   },
   "Flexibilidad": {
     "Principiante": { reps: 60, time: 180 },
@@ -64,11 +68,11 @@ const workoutConfigurations = {
     "Pro": { reps: 180, time: 180 }
   },
   "Cardio": {
-    "Principiante": { reps: 20, time: 180 },
-    "Esordiente": { reps: 30, time: 180 },
-    "Experto": { reps: 40, time: 180 },
-    "Avanzado": { reps: 50, time: 180 },
-    "Pro": { reps: 60, time: 180 }
+    "Principiante": { reps: 40, time: 180 },
+    "Esordiente": { reps: 50, time: 180 },
+    "Experto": { reps: 60, time: 180 },
+    "Avanzado": { reps: 70, time: 180 },
+    "Pro": { reps: 90, time: 180 }
   }
 };
 
@@ -96,6 +100,10 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private poseSelectionButton: any;
   private navButtons: any[] = [];
   private articulationButton: any;
+  private intensity: any;
+
+  private switchPoseButton;
+
 
 
 
@@ -103,6 +111,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     super({ key: Constants.SCENES.CONFIG });
     this.config = { difficulty: 2, intensity: 1, type: 0, theme: 0, backgroundMusic: 0 };
     this.soundFactory = new BackgroundSoundFactory();
+    this.intensity = IntensityConfig[this.intensityLabels[this.config.intensity]].multiplier;
   }
 
   create() {
@@ -154,6 +163,11 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     }
   }
 
+  private switchModel() {
+    Loader._usingPoseNet = !Loader._usingPoseNet;
+    this.switchPoseButton.setText(Loader._usingPoseNet ? 'Posenet' : 'Mediapipe');
+  }
+
 
   createNavButtons() {
     this.saveButton = new CustomButton(this, 1140, 670, 'button', 'Guardar');
@@ -166,38 +180,18 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     this.poseSelectionButton = new CustomButton(this, 1140, 222, 'out', '🕺', 95, -48);
     this.navButtons.push(this.poseSelectionButton);
 
+    this.switchPoseButton = new CustomButton(this, 400, 670, 'button', 'Mediapipe');
+    this.switchPoseButton.setScale(0.7, 0.75);
+    this.navButtons.push(this.switchPoseButton);
+
+
     this.addClickEventListener(this.saveButton, this.saveConfig.bind(this));
     this.addClickEventListener(this.buttonExitMarker, this.goBack.bind(this));
     this.addClickEventListener(this.poseSelectionButton, this.togglePoseSelection.bind(this));
     this.addClickEventListener(this.articulationButton, this.openArticulationSelectionScene.bind(this));
+    this.addClickEventListener(this.switchPoseButton, this.switchModel.bind(this));
 
     this.enableButtons(this.navButtons);
-
-    // Agregar detección de superposición para los botones con los puntos del cuerpo
-    this.bodyPoints.forEach(point => {
-      this.physics.add.overlap(this.saveButton, point, () => {
-        this.saveButton.animateToFill(false);
-        if (this.saveButton.buttonIsFull() && this.saveButton.isEnabled()) {
-          this.saveButton.emit('down', this.saveButton);
-          this.saveConfig();
-        }
-      }, undefined, this);
-
-      this.physics.add.overlap(this.buttonExitMarker, point, () => {
-        this.buttonExitMarker.animateToFill(false);
-        if (this.buttonExitMarker.buttonIsFull() && this.buttonExitMarker.isEnabled()) {
-          this.buttonExitMarker.emit('down', this.buttonExitMarker);
-          this.goBack();
-        }
-      }, undefined, this);
-      this.physics.add.overlap(this.poseSelectionButton, point, () => {
-        this.poseSelectionButton.animateToFill(false);
-        if (this.poseSelectionButton.buttonIsFull() && this.poseSelectionButton.isEnabled()) {
-          this.poseSelectionButton.emit('down', this.poseSelectionButton);
-          this.togglePoseSelection();
-        }
-      }, undefined, this);
-    });
 
   }
 
@@ -213,10 +207,10 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
     for (let i = 0; i < 22; i++) {
       let point;
-      if (i === 9) {
+      if (i === EPoseLandmark.RightWrist) {
         point = this.physics.add.sprite(-50, -50, 'leftHand');
         point.setScale(0.2);
-      } else if (i === 10) {
+      } else if (i ===  EPoseLandmark.LeftWrist) {
         point = this.physics.add.sprite(-50, -50, 'rightHand');
         point.setScale(0.2);
       } else {
@@ -389,7 +383,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   saveConfig() {
     const configCopy = {
       difficulty: ConfigScene.difficultyLabels[this.buttons['difficulty'].getIndex()],
-      intensity: this.buttons['intensity'].getIndex().toString(),
+      intensity: this.intensity,
       gameLength: this.getWorkoutConfig().time,
       type: this.workoutTypeLabels[this.buttons['type'].getIndex()],
       theme: this.themeLabels[this.buttons['theme'].getIndex()],
@@ -412,6 +406,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   openArticulationSelectionScene() {
+    this.registry.set('usingPoseNet', this.usingPoseNet)
     this.scene.stop();
     if(!this.scene.get(Constants.SCENES.ARTICULATIONMENU )) {
       this.scene.add(Constants.SCENES.ARTICULATIONMENU , ArticulationSelectionScene, false, { x: 400, y: 300});
@@ -440,6 +435,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     const workoutType = this.workoutTypeLabels[this.config.type];
     const intensity = this.intensityLabels[this.config.intensity];
     const intensityConfig = IntensityConfig[intensity];
+    this.intensity = intensityConfig.multiplier;
 
     if (workoutConfigurations[workoutType] && workoutConfigurations[workoutType][difficulty]) {
       const baseConfig = workoutConfigurations[workoutType][difficulty];
@@ -455,8 +451,8 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   movePoints(coords: IPoseLandmark[] | undefined) {
     if (this.bodyPoints && coords) {
       for (let i = 0; i < this.bodyPoints.length; i++) {
-        if (i === 9 || i === 10) {
-          this.bodyPoints[i].setPosition(coords[i + 11]?.x * Constants.CANVASMULTI.WIDTHMULTI, coords[i + 11]?.y * Constants.CANVASMULTI.HEIGHTMULTI);
+        if (i === EPoseLandmark.LeftWrist || i === EPoseLandmark.RightWrist) {
+          this.bodyPoints[i].setPosition(coords[i]?.x * Constants.CANVASMULTI.WIDTHMULTI, coords[i]?.y * Constants.CANVASMULTI.HEIGHTMULTI);
         }
       }
     }

@@ -1,4 +1,4 @@
-import { PushUps } from '~/workouts/push-ups';
+import { PushUps } from '~/workouts/gym/push-ups';
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 

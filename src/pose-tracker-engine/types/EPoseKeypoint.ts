@@ -1,0 +1,19 @@
+export enum EPoseKeypoint {
+  Nose,
+  LeftEye,
+  RightEye,
+  LeftEar,
+  RightEar,
+  LeftShoulder,
+  RightShoulder,
+  LeftElbow,
+  RightElbow,
+  LeftWrist,
+  RightWrist,
+  LeftHip,
+  RightHip,
+  LeftKnee,
+  RightKnee,
+  LeftAnkle,
+  RightAnkle
+}

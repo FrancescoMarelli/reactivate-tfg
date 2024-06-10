@@ -1,12 +1,12 @@
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
-import Marker from '~/gameobjects/marker';
 import Phaser from 'phaser';
 import Constants from '~/constants';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';
+import NewMarker from '~/gameobjects/new-marker';
 
 export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
-  markers: any[] = [];
+  markers: NewMarker[] = [];
   scene: Phaser.Scene;
   intensity: number;
   bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
@@ -58,7 +58,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
     this.theme = theme;
   }
 
-  setMarkers(markers: Marker[]) {
+  setMarkers(markers: NewMarker[]) {
     this.markers = markers;
   }
 
@@ -211,7 +211,7 @@ export default class AgilityWorkout implements IGymExercise, IArcadeExercise {
 
       if (marker.id == this.randomMarker) {
         if (!marker.getAnimationCreated() && this.triggerAction && this.currentMarkersAlive < this.maxMarkers) {
-          marker.createAnimation();
+          marker.createAnimation(this.currentLevel, this.intensity);
           this.currentMarkersAlive++;
           this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
           this.totalTouchableMarkers++;

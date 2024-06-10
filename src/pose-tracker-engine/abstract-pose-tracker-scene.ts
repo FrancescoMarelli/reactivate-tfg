@@ -5,6 +5,8 @@ import { IOnPoseTrackerResultsUpdate } from '~/pose-tracker-engine/types/on-pose
 import { NormalizedLandmark } from '@mediapipe/pose';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
+import ConfigScene from '~/scenes/config-scenes/config-scene';
+import Loader from '~/scenes/loader';
 
 export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   private poseTrackerCanvasTexture!: Phaser.Textures.CanvasTexture;
@@ -14,6 +16,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   private static readonly BUFFER_SIZE = 3;  // Tamaño del buffer reducido para menos retraso
   private count : number = 0;
   private lastUpdateTime: number = 0;
+
 
   protected constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
     super(config);
@@ -36,6 +39,10 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
 
     // Create a texture canvas to draw the camera frames/joints on it later
     this.poseTrackerCanvasTexture = this.textures.createCanvas('camera-frame', this.scale.width, this.scale.height);
+    if(Loader._usingPoseNet) {
+      this.poseTrackerCanvasTexture.context.scale(-1, 1);
+      this.poseTrackerCanvasTexture.context.translate(-this.poseTrackerCanvasTexture.width, 0);
+    }
   }
 
   create(): void {
@@ -93,7 +100,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
     }
 
     // Adjust weights and buffer size accordingly
-    const weights = [0.6, 0.5, 0.4];  // Weights for the buffer of size 2
+    const weights = [0.5, 0.4, 0.3];
     const totalWeight = weights.reduce((a, b) => a + b, 0);
 
     const averagedLandmarks: IPoseLandmark[] = [];
