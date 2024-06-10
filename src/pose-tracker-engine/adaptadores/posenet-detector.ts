@@ -6,19 +6,19 @@ import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-re
 import {
   IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
-import { flipPoseHorizontal } from '@tensorflow-models/posenet/dist/util';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose/pose';
-import { drawKeypoints, drawSkeleton } from '~/pose-tracker-engine/utils';
+import { PoseDetector } from '~/pose-tracker-engine/adaptadores/pose-detector.interface';
 
 
-export default class PosenetDetector {
+export default class PosenetDetector implements PoseDetector {
   private net: posenet.PoseNet | null = null;
   private modelLoaded: Promise<void>;
   private width = 1280;
   private height = 720;
   public scaledKeypoints: posenet.Keypoint[] | null = null; // Nuevo campo para almacenar los keypoints escalados
+  showLandmarks: boolean = false;
 
 
   constructor() {
@@ -27,12 +27,7 @@ export default class PosenetDetector {
   }
 
   private async loadModel() {
-    this.net = await posenet.load({
-      architecture: 'MobileNetV1',
-      outputStride: 16,
-      inputResolution: { width: this.width, height: this.height },
-      multiplier: 0.5
-    });
+    this.net = await posenet.load();
   }
 
   public getPose(): PoseNet | null {
@@ -98,12 +93,12 @@ export default class PosenetDetector {
 
     if (renderElementsSettings.shouldDrawPoseLandmarks && results.poseLandmarks) {
       ctx.save();
-      if(MediapipePoseDetector.showLandmarks) {
-        drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
-        drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });
+        if(MediapipePoseDetector.showLandmarks) {
+          drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
+          drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });
+        }
       }
       ctx.restore();
 
     }
-  }
 }

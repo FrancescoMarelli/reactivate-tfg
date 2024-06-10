@@ -1,10 +1,10 @@
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
-import { AnglesUtils } from '~/workouts/angles-utils';
+import { AnglesUtils } from '~/workouts/utils/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import Phaser from 'phaser';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
 
 export class JumpinJackDetector implements IGymExercise {
 

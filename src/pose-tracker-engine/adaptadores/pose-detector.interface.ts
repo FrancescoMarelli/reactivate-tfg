@@ -10,4 +10,5 @@ export interface PoseDetector {
   onResults: (callback: (results: any) => void) => void;
   shutdown: () => void;
   drawResults(ctx: CanvasRenderingContext2D, results: IPoseTrackerResults, renderElementsSettings?: IPoseTrackerRenderElementsSettings): void;
+  estimatePose(video: HTMLVideoElement): Promise<any>;
 }

@@ -1,6 +1,5 @@
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
-import Marker from '~/gameobjects/marker';
 import Phaser from 'phaser';
 import Constants from '~/constants';
 import { IArcadeExercise } from '~/workouts/arcade-exercice';

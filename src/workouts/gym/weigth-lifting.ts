@@ -1,9 +1,9 @@
 import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 import Constants from '~/constants';
-import { AnglesUtils } from '~/workouts/angles-utils';
+import { AnglesUtils } from '~/workouts/utils/angles-utils';
 import { IGymExercise } from '~/workouts/gym-exercise.interface';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 
 export class WeigthLifting implements IGymExercise {

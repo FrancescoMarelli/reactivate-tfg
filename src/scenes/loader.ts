@@ -7,6 +7,8 @@ export default class Loader extends Phaser.Scene {
   private textLoading: Phaser.GameObjects.Text;
   private width: number;
   private height: number;
+  static _usingPoseNet: boolean = false;
+
 
   constructor() {
     super(Constants.SCENES.LOADER);

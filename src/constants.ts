@@ -9,6 +9,8 @@ const Constants = {
     MARKER_CREATED: 'markerCreated',
     MARKER_COUNT: 'markerCount',
     UNTOUCHED: 'untouched',
+    POSENET: 'poseNet',
+    MEDIAPIPE: 'mediaPipe',
   },
   REGISTER: {
     EXP: 'exp',

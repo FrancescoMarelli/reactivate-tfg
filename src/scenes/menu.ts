@@ -3,12 +3,12 @@ import CustomButton from '~/gameobjects/custom-button';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import Stats from '../modals/stats';
-import WorkoutCardio from './workout-cardio';
+import WorkoutCardio from './old-scenes/workout-cardio';
 import HUD from './hud';
-import WorkoutAgility from './workout-agilidad';
+import WorkoutAgility from './old-scenes/workout-agilidad';
 import Historical from '~/modals/historical';
-import WorkoutFlexibilidad from './workout-flexibility';
-import ConfigScene from '~/scenes/config-scene';
+import WorkoutFlexibilidad from './old-scenes/workout-flexibility';
+import ConfigScene from '~/scenes/config-scenes/config-scene';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 
 export default class Menu extends AbstractPoseTrackerScene {

@@ -3,21 +3,12 @@ import Phaser from 'phaser';
 import Marker from '~/gameobjects/marker';
 import Constants from '~/constants';
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
-import CustomButton from '~/gameobjects/custom-button';
+import CustomButtom from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
-import Menu from './menu';
+import Menu from '../menu';
 
-const sVi = [2, 8, 14, 20]; // Izquierda vertical
-const sVd = [5, 11, 17, 23]; // Derecha vertical
-const s1 = [3, 8, 14, 21];
-const s2 = [4, 11, 17, 22];
-const sHi = [7, 8, 9];
-const sHd = [10, 11, 12];
-const sequences = [sVi, sVd, s1, s2, sHi, sHd];
-
-
-export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
+export default class WorkoutCardio extends AbstractPoseTrackerScene {
   private bodyPoints: Phaser.Physics.Arcade.Sprite[] = [];
   private markers: any[] = [];
   private triggerAction: boolean = true;
@@ -32,30 +23,24 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
   private buttonReadyRight;
   private getReadyLeft: boolean = false;
   private getReadyRight: boolean = false;
-  private randomSequence: number = 3;
+  private randomMarker: number = 3;
   private buttonExitMarker;
   private touchingButton: boolean = false;
   /* multipleMarker y errorMarker son asignadas cada vez que es necesario crear marcadores nuevos teniendo en cuenta la probabilidad en el nivel */
-  private nextSequence: number = 1;
-  private invertDirection = false;
+  private multipleMarkerProb = false;
+  private errorMakerProb = false;
   private currentMarkersAlive: number = 0;
-  private maxMarkers: number = sequences[3].length; // Se empieza con al menos 1 secuencia
+  private maxMarkers: number = 1; // Se empieza con al menos 1 marcador
   private currentLevel: number = 1;
   private width: number;
   private height: number;
   private touchedMarkers: number = 0;
   private untouchedMarkers: number = 0;
   private totalTouchableMarkers: number = 0;
-  private nextSequenceDirectionCopy: number[] = [];
-  private controlNextMarker: number = 0;
-  private prevMarker;
-  private showNextSequence: boolean = true;
-  private lastIdSequence = 0;
-
-
+  private lastIdMarker = 0;
 
   constructor() {
-    super(Constants.SCENES.WorkoutFlexibilidad);
+    super(Constants.SCENES.WorkoutCardio);
   }
 
   init() {
@@ -67,15 +52,15 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
     super.create();
 
     /************** Buttons Init *********/
-    this.buttonExitMarker = new CustomButton(this, 1200, 52, 'out', '[➔', 95, -48);
+    this.buttonExitMarker = new CustomButtom(this, 1200, 52, 'out', '[➔', 95, -48);
     this.buttonExitMarker.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonExitMarker);
 
-    this.buttonReadyLeft = new CustomButton(this, 340, 230, 'getReady', 'I', 95, -48);
+    this.buttonReadyLeft = new CustomButtom(this, 340, 230, 'getReady', 'I', 95, -48);
     this.buttonReadyLeft.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyLeft);
 
-    this.buttonReadyRight = new CustomButton(this, 940, 230, 'getReady', 'D', 95, -48);
+    this.buttonReadyRight = new CustomButtom(this, 940, 230, 'getReady', 'D', 95, -48);
     this.buttonReadyRight.setScale(0.9, 0.85);
     this.buttonsReady.push(this.buttonReadyRight);
 
@@ -96,7 +81,7 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
 
     /*****************************************/
 
-    this.audioScene = this.sound.add(Constants.AUDIO.TRANCE3, { volume: 0.40, loop: false });
+    this.audioScene = this.sound.add(Constants.AUDIO.TRANCE, { volume: 0.65, loop: false });
 
     /************** Get ready markers ******** */
     this.buttonsReady.forEach((button) => {
@@ -145,7 +130,7 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
 
     /************** Time control ************** */
     this.levelTime = 1;
-    this.remainingTime = 7 * 60 + 7;
+    this.remainingTime = 8 * 60;
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     /***************************************** */
 
@@ -154,7 +139,7 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
   }
 
 
-  menuSwitch(button: CustomButton) {
+  menuSwitch(button: CustomButtom) {
     switch (button.getText()) {
       case '[➔':
         this.stopScene();
@@ -191,11 +176,11 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
   movePoints(coords: IPoseLandmark[] | undefined) {
     if (this.bodyPoints && coords) {
       for (var i = 0; i < this.bodyPoints.length; i++) {
-        if (i + 11 == 23) { // To extend hands points (improve accuracy)
+        if (i + 11 == 23){ // To extend hands points (improve accuracy)
           this.bodyPoints[i]?.setPosition(coords[19]?.x * 1280 + 20, coords[19]?.y * 720 - 40);
-        } else if (i + 11 == 24) {
+        }else if (i + 11 == 24){
           this.bodyPoints[i]?.setPosition(coords[20]?.x * 1280 - 20, coords[20]?.y * 720 - 40);
-        } else {
+        }else{
           this.bodyPoints[i]?.setPosition(coords[i + 11]?.x * 1280, coords[i + 11]?.y * 720);
         }
       }
@@ -203,32 +188,49 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
   }
 
   createLayout(): void {
-    let width: number = 50;
-    let height: number = 160;
-
-    for (var i = 1; i < 25; i++) {
+    let width: number = 225;
+    let height: number = 150;
+    let shortRow: boolean = true;
+    let counterRow = 0;
+    let triggerChangeRow: boolean = false;
+    for (var i = 1; i < 15; i++) {
       const marker = new Marker({
         scene: this,
         x: width,
         y: height,
-        texture: Constants.TRANSPARENTMARKER.ID,
+        texture: Constants.MARKER.ID,
         id: i,
       });
-      marker.setDefaultBall("triangle", "redTriangle");
-      if (i % 6 == 0) {
-        if (i > 17) {
-          height = height + 140;
+      counterRow++;
+      if (shortRow) {
+        if (counterRow == 2) {
+          height = height + 125;
+          width = 100;
+          triggerChangeRow = true;
+          counterRow = 0;
         } else {
-          height = height + 170;
-        }
-        width = 50;
-      } else {
-        if (i % 3 == 0) {
-          width = width + 660;
-        } else {
-          width = width + 130; // 50 + 130 * 3 = 440
+          width = width + 830;
         }
       }
+      if (!shortRow) {
+        if (counterRow == 4) {
+          height = height + 125;
+          width = 225;
+          triggerChangeRow = true;
+          counterRow = 0;
+        } else {
+          if (i % 2 == 0) {
+            width = width + 580;
+          } else {
+            width = width + 250;
+          }
+        }
+      }
+      if (triggerChangeRow) {
+        shortRow = !shortRow;
+        triggerChangeRow = false;
+      }
+
 
       this.markers.push(marker);
       this.bodyPoints.forEach((point) => {
@@ -246,6 +248,9 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
         );
       });
     }
+
+
+
   }
 
   stopScene() {
@@ -259,58 +264,48 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
 
   destroyMarker(marker: any, touched: boolean): void {
     this.currentMarkersAlive--;
-    this.showNextSequence = false;
     this.exp = Number(this.registry.get(Constants.REGISTER.EXP));
     if ((marker.getErrorMarker() && touched) || (!marker.getErrorMarker() && !touched)) {
       if (Number(this.registry.get(Constants.REGISTER.EXP)) > 0) {
         this.exp = this.exp - 10;
         if (!marker.getErrorMarker() && !touched) this.untouchedMarkers = this.untouchedMarkers + 1;
       }
-      this.nextSequenceDirectionCopy = this.nextSequenceDirectionCopy.filter(id => id !== marker.id)
-    } else if (!marker.getErrorMarker() && touched) {
+    } else if ((marker.getErrorMarker() && !touched) || (!marker.getErrorMarker() && touched)) {
       this.exp = this.exp + 10;
-      this.invertDirection ? this.nextSequenceDirectionCopy.pop() : this.nextSequenceDirectionCopy.shift();
-      if (this.nextSequenceDirectionCopy.length > 0) {
-        this.markers.forEach(marker => {
-          var nextMarker = this.invertDirection ? this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1] : this.nextSequenceDirectionCopy[0];
-          if (marker.id === nextMarker) {
-            marker.setErrorMarker(false);
-          }
-        })
-      }
       if (!marker.getErrorMarker() && touched) this.touchedMarkers = this.touchedMarkers + 1;
     }
     this.registry.set(Constants.REGISTER.EXP, this.exp);
     this.events.emit(Constants.EVENT.UPDATEEXP);
+
     // Update variables for next markers
-    if (this.currentMarkersAlive == 0) {
-      this.time.addEvent({
-        delay: 1500,                // ms
-        callback: () => {
-          this.controlNextMarker = 1;
-          this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
-          this.probabilityTypesMarkers(0.5);
-          this.randomSequence = Utils.random(0, sequences.length - 1);
-          while (this.randomSequence === this.lastIdSequence) {
-            this.randomSequence = Utils.random(0, sequences.length - 1);
-          }
-          this.lastIdSequence = this.randomSequence;
-          this.maxMarkers = sequences[this.randomSequence].length;
-          this.showNextSequence = true;
-        },
-      });
+    this.randomMarker = Math.floor(Math.random() * (14 - 1 + 1)) + 1;
+    while (this.randomMarker === this.lastIdMarker) {
+      this.randomMarker = Math.floor(Math.random() * (14 - 1 + 1)) + 1;
+    }
+    this.lastIdMarker = this.randomMarker;
+    if (this.currentMarkersAlive === 0) {
+      this.currentLevel = Number(this.registry.get(Constants.REGISTER.LEVEL))
+      this.probabilityTypesMarkers(0.15, this.currentLevel / 10);
+      if (this.multipleMarkerProb && this.currentLevel > 5) {
+        this.maxMarkers = 3;
+      } else if (this.multipleMarkerProb) {
+        this.maxMarkers = 2;
+      } else {
+        this.maxMarkers = 1;
+      }
+
     }
   }
 
-  probabilityTypesMarkers(probInv: number) {
+  probabilityTypesMarkers(probError: number, probMultiple: number) {
     let rand = Math.random();
-    rand < probInv ? (this.invertDirection = true) : (this.invertDirection = false);
-    this.nextSequence = Utils.random(0, sequences.length - 1);
+    rand < probError ? (this.errorMakerProb = true) : (this.errorMakerProb = false);
+    rand < probMultiple ? (this.multipleMarkerProb = true) : (this.multipleMarkerProb = false);
   }
 
   saveData() {
     var date: string = Utils.getActualDate();
-    var statsData = new StatsData("flexibilidad", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
+    var statsData = new StatsData("cardio", date, this.currentLevel, this.touchedMarkers, this.untouchedMarkers, this.totalTouchableMarkers);
     Utils.setLocalStorageData(statsData);
   }
 
@@ -343,45 +338,17 @@ export default class WorkoutFlexibilidad extends AbstractPoseTrackerScene {
           // Si tiene animación actualizala.
           marker.update();
         }
+
         /* Lógica para crear los marcadores */
-        if (sequences[this.randomSequence].includes(marker.id) && this.showNextSequence) {
+        if (marker.id == this.randomMarker) {
           if (!marker.getAnimationCreated() && this.triggerAction && this.currentMarkersAlive < this.maxMarkers) {
-            this.nextSequenceDirectionCopy = Array.from(sequences[this.randomSequence]);
-            var rotation = 1.57;
-            var horizontalSequence = sequences[this.randomSequence].length == 3 ? true : false;
-            if (!this.invertDirection && marker.id != this.nextSequenceDirectionCopy[0]) {
-              marker.setErrorMarker(true);
-            } else if (this.invertDirection && marker.id != this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1]) {
-              marker.setErrorMarker(true);
+            marker.setErrorMarker(this.errorMakerProb);
+            if (this.errorMakerProb) {
+              this.errorMakerProb = false;
             }
-            else {
-              marker.setErrorMarker(false);
-              this.controlNextMarker = 1;
-            }
-            // Set rotation in vertical sequences
-            if (!horizontalSequence) {
-              if (!this.invertDirection) {
-                rotation += 3.141;
-              }
-              if (marker.id != this.nextSequenceDirectionCopy[this.nextSequenceDirectionCopy.length - 1]) {
-                rotation += Phaser.Math.Angle.Between(this.markers.find((marker) => marker.id === this.nextSequenceDirectionCopy[this.controlNextMarker]).x, this.markers.find((marker) => marker.id === this.nextSequenceDirectionCopy[this.controlNextMarker]).y, marker.x, marker.y);
-              } else {
-                rotation += Phaser.Math.Angle.Between(marker.x, marker.y, this.prevMarker.x, this.prevMarker.y);
-              }
-            }
-            // Set rotation in invert direction sequences
-            if (!this.invertDirection && horizontalSequence) {
-              rotation = 1.57;
-            } else if (this.invertDirection && horizontalSequence) {
-              rotation = -1.57;
-            }
-            marker.setDirectionAngle(rotation);
-            this.prevMarker = marker;
             marker.createAnimation();
-            if (this.controlNextMarker < this.nextSequenceDirectionCopy.length - 1) {
-              this.controlNextMarker = this.controlNextMarker + 1;
-            }
             this.currentMarkersAlive++;
+            this.randomMarker = Math.floor(Math.random() * (24 - 1 + 1)) + 1;
             this.totalTouchableMarkers++;
           }
         }

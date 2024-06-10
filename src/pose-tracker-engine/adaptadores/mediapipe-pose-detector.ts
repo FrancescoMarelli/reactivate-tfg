@@ -4,11 +4,11 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_
 import {
   IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
-import { PoseDetector } from '~/pose-tracker-engine/types/adaptadores/pose-detector.interface';
+import { PoseDetector } from '~/pose-tracker-engine/adaptadores/pose-detector.interface';
 
 export class MediapipePoseDetector implements PoseDetector {
   private pose: Pose;
-  public static showLandmarks: boolean = false;
+  showLandmarks: boolean = false;
 
   constructor() {
     this.pose = new Pose({
@@ -17,7 +17,7 @@ export class MediapipePoseDetector implements PoseDetector {
   }
 
   setOptions(options: any): void {
-    this.pose.setOptions(options);
+      this.pose.setOptions(options);
   }
   getPose(): Pose {
      return this.pose;
@@ -60,5 +60,10 @@ export class MediapipePoseDetector implements PoseDetector {
     document.querySelector('body > script[src$="pose_solution_packed_assets_loader.js"]')?.remove();
     document.querySelector('body > script[src$="pose_solution_wasm_bin.js"]')?.remove();
   }
+
+  estimatePose(video: HTMLVideoElement): Promise<any> {
+    // @ts-ignore
+  }
+
 
 }

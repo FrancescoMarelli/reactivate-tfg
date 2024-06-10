@@ -1,10 +1,5 @@
 import { IPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.interface';
 import { getAdjacentKeyPoints, Keypoint, Pose } from '@tensorflow-models/posenet';
-import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-results.interface';
-import {
-  IPoseTrackerRenderElementsSettings
-} from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
-import { POSE_CONNECTIONS } from '@mediapipe/pose/pose';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
 
 

@@ -5,7 +5,7 @@ import CustomButton from '~/gameobjects/custom-button';
 import StatsData from '~/statsData';
 import Utils from '~/utils';
 import Menu from './menu';
-import { MovePoints } from '~/workouts/move-points';
+import { MovePoints } from '~/workouts/utils/move-points';
 import { IMovementFactory } from '~/factories/interfaces/movement-factory.interface';
 import { BackgroundSoundFactory } from '~/factories/sound/background-sound-factory';
 import { ISoundFactory } from '~/factories/interfaces/sound-factory.interface';
@@ -17,7 +17,7 @@ import { WeightLiftinFactory } from '~/factories/workouts/weight-liftin-factory'
 import { JumpingJackFactory } from '~/factories/workouts/jumping-jack-factory';
 import { CardioFactory } from '~/factories/workouts/cardio-factory';
 import { ILayoutFactory } from '~/factories/interfaces/layout-factory.interface';
-import { MediapipePoseDetector } from '~/pose-tracker-engine/types/adaptadores/mediapipe-pose-detector';
+import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
 import { IArcadeFactory } from '~/factories/interfaces/arcade-factory.interface';
 import { AgilidadFactory } from '~/factories/workouts/agilidad-factory';
 import { FlexibilidadFactory } from '~/factories/workouts/flexibilidad-factory';

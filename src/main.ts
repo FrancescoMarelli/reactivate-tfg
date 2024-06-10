@@ -1,13 +1,15 @@
 import Phaser from 'phaser';
 import MainMenu from './scenes/menu';
-import WorkoutAgility from '~/scenes/workout-agilidad';
+import WorkoutAgility from '~/scenes/old-scenes/workout-agilidad';
 import Loader from './scenes/loader';
 import HUD from './scenes/hud';
-import WorkoutCardio from './scenes/workout-cardio';
+import WorkoutCardio from './scenes/old-scenes/workout-cardio';
+import GameCreator from '~/scenes/game-creator';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js').then((r) => console.info('Service worker registered!'));
 }
+
 
 const game = new Phaser.Game({
   type: Phaser.AUTO, // Will pick WEBGL if available; CANVAS, otherwise
