@@ -111,6 +111,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     super({ key: Constants.SCENES.CONFIG });
     this.config = { difficulty: 2, intensity: 1, type: 0, theme: 0, backgroundMusic: 0 };
     this.soundFactory = new BackgroundSoundFactory();
+    this.intensity = IntensityConfig[this.intensityLabels[this.config.intensity]].multiplier;
   }
 
   create() {

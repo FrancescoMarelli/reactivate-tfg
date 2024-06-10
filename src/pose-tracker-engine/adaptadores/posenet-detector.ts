@@ -41,7 +41,7 @@ export default class PosenetDetector implements PoseDetector {
         video.setAttribute('width', this.width.toString());
         video.setAttribute('height', this.height.toString());
         let pose = await this.net.estimateSinglePose(video, {
-          flipHorizontal: false
+          flipHorizontal: true
         });
 
       if (pose) {
@@ -93,6 +93,8 @@ export default class PosenetDetector implements PoseDetector {
 
     if (renderElementsSettings.shouldDrawPoseLandmarks && results.poseLandmarks) {
       ctx.save();
+      ctx.scale(-1, 1);  // Flip the canvas horizontally
+      ctx.translate(-ctx.canvas.width, 0);  // Adjust the origin
         if(MediapipePoseDetector.showLandmarks) {
           drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#c4c4c4', lineWidth: 4 });
           drawLandmarks(ctx, results.poseLandmarks, { color: '#0051ff', lineWidth: 2 });

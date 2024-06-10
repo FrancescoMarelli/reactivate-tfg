@@ -69,8 +69,8 @@ export class WeigthLifting implements IGymExercise {
 
     if(MediapipePoseDetector.showLandmarks) {
       this.leftAngleText.setText(` ${angleLeftArm?.toFixed(0)}`);
-      this.leftAngleText.setPosition(leftArmPixel.x, leftArmPixel.y);
       this.rightAngleText.setText(`${angleRightArm?.toFixed(0)}`)
+      this.leftAngleText.setPosition(leftArmPixel.x, leftArmPixel.y);
       this.rightAngleText.setPosition(rightArmPixel.x, rightArmPixel.y);
     } else {
       this.clearTexts();

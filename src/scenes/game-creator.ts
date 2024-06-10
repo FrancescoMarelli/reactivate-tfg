@@ -30,6 +30,7 @@ import NewMarker from '~/gameobjects/new-marker';
 import { IThemeFactory } from '~/factories/interfaces/theme-factory.interface';
 import ThemeFactory from '~/factories/theme-factory';
 import { EPoseLandmark } from '~/pose-tracker-engine/types/pose-landmark.enum';
+import Loader from '~/scenes/loader';
 
 
 export default class GameCreator extends AbstractPoseTrackerScene {
@@ -354,6 +355,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     }
     this.sound.stopAll();
     this.scene.stop();
+    Loader._usingPoseNet = false;
     if (!this.scene.get(Constants.SCENES.Menu))
       this.scene.add(Constants.SCENES.Menu, Menu, false, { x: 400, y: 300 });
     this.scene.start(Constants.SCENES.Menu);

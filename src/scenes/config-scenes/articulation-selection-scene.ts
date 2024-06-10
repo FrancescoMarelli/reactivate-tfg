@@ -7,13 +7,11 @@ import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracke
 import Loader from '~/scenes/loader';
 
 export default class ArticulationSelectionScene extends Phaser.Scene {
-  private selectedIndicesPoseNet: Set<number> = new Set();
+  private selectedIndices: Set<number> = new Set();
   // Extract only the string labels from the enum
   private articulationLabels: string[] = Object.values(EPoseLandmark).filter(value => typeof value === 'string') as string[];
   private confirmButton;
   private cancelButton;
-  private switchPoseButton;
-  private usingPoseNet = true;
   private posenetArticulations = ['Nose', 'LeftEye', 'RightEye', 'LeftEar', 'RightEar', 'LeftShoulder', 'RightShoulder', 'LeftElbow', 'RightElbow', 'LeftWrist', 'RightWrist', 'LeftHip', 'RightHip', 'LeftKnee', 'RightKnee', 'LeftAnkle', 'RightAnkle']; // Articulaciones que PoseNet puede detectar
   private mediapipeArticulations = Object.values(EPoseLandmark).filter(value => typeof value === 'string') as string[];
   private articulationTexts: Phaser.GameObjects.Text[] = [];
@@ -99,6 +97,16 @@ export default class ArticulationSelectionScene extends Phaser.Scene {
       this.scene.add(Constants.SCENES.CONFIG, ConfigScene, false, { x: 400, y: 300, sound: false});
     }
     this.scene.start(Constants.SCENES.CONFIG);
+  }
+
+  private toggleOption(index: number, optionText: Phaser.GameObjects.Text) {
+    if (this.selectedIndices.has(index)) {
+      this.selectedIndices.delete(index);
+      optionText.setColor('#FFFFFF');
+    } else {
+      this.selectedIndices.add(index);
+      optionText.setColor('#00FF00');
+    }
   }
 
   getSpanishLabel(label: string): string {
