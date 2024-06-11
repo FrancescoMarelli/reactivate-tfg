@@ -93,8 +93,8 @@ export class JumpinJackDetector implements IGymExercise {
 
     // Check if coordinates exist before calculating angles
     if (leftShoulder && leftHip && leftWrist && rightShoulder && rightHip  && rightWrist && leftKnee && rightKnee
-    && leftShoulder.visibility > 0.5 && leftHip.visibility > 0.5 && leftWrist.visibility > 0.5 &&
-      rightShoulder.visibility > 0.5 && rightHip.visibility > 0.5 && rightWrist.visibility > 0.5 && leftKnee.visibility > 0.5 && rightKnee.visibility > 0.5) {
+    && leftShoulder.visibility > 0.5 && leftHip.visibility > 0.5 && leftWrist.visibility > 0.2 &&
+      rightShoulder.visibility > 0.5 && rightHip.visibility > 0.5 && rightWrist.visibility > 0.2 && leftKnee.visibility > 0.5 && rightKnee.visibility > 0.5) {
 
 
       if (angleLeftArm <= this.topMinAngle && angleRightArm <= this.topMinAngle  && angleLeftLeg >= this.botMinRange[0] && angleLeftLeg <= this.botMinRange[1]
