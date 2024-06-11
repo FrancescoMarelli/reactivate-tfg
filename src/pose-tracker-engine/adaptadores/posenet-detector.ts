@@ -104,9 +104,6 @@ export default class PosenetDetector implements PoseDetector {
 
     }
 
-  close(): void {
-  }
-
   onResults(callback: (results: any) => void): void {
   }
 

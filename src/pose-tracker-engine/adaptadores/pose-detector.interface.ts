@@ -6,7 +6,6 @@ import { IPoseTrackerResults } from '~/pose-tracker-engine/types/pose-tracker-re
 export interface PoseDetector {
   getPose(): any;
   setOptions: (options: any) => void;
-  close: () => void;
   onResults: (callback: (results: any) => void) => void;
   shutdown: () => void;
   drawResults(ctx: CanvasRenderingContext2D, results: IPoseTrackerResults, renderElementsSettings?: IPoseTrackerRenderElementsSettings): void;

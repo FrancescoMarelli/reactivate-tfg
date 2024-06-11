@@ -40,12 +40,14 @@ export default class PoseTracker {
     } else {
      this.initMediapipe(videoEl, onResults, settings);
     }
+    if(this.camera)
     this.camera.start(settings.width, settings.height);
   }
 
   initPoseNet(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrackerResults) => void): void {
     this.pose = new PosenetDetector();
     this.camera = new Camera(
+      // @ts-ignore
       videoEl,
       async (): Promise<void> => {
         if (videoEl && !this.isDetectingPose) {
@@ -67,6 +69,7 @@ initMediapipe(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrack
     this.pose.setOptions(settings);
     this.pose.onResults(onResults);
     this.camera = new Camera(
+      // @ts-ignore
       videoEl,
       async (): Promise<void> => {
         await this.pose.getPose()?.send({ image: videoEl });
@@ -80,7 +83,6 @@ initMediapipe(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrack
     this.pose.shutdown();
     this.camera?.stop();
     this.camera = null;
-    //this.pose.close();
     // @ts-ignore
     this.pose = null;
   }

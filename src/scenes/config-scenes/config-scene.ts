@@ -179,8 +179,11 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
 
     this.poseSelectionButton = new CustomButton(this, 1140, 222, 'out', '🕺', 95, -48);
     this.navButtons.push(this.poseSelectionButton);
+    let poseButtonText = 'Mediapipe';
+    if(Loader._usingPoseNet)
+      poseButtonText = 'Posenet';
 
-    this.switchPoseButton = new CustomButton(this, 400, 670, 'button', 'Mediapipe');
+    this.switchPoseButton = new CustomButton(this, 400, 670, 'button', poseButtonText);
     this.switchPoseButton.setScale(0.7, 0.75);
     this.navButtons.push(this.switchPoseButton);
 

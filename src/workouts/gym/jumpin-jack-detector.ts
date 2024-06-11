@@ -74,6 +74,7 @@ export class JumpinJackDetector implements IGymExercise {
     const angleLeftLeg = AnglesUtils.calculateAngle(leftShoulder,leftHip, leftKnee);
     const angleRightLeg = AnglesUtils.calculateAngle(rightShoulder, rightHip, rightKnee);
 
+
     if (MediapipePoseDetector.showLandmarks) {
       this.leftLegAngleText.setText(` ${angleLeftLeg?.toFixed(0)}`);
       this.leftLegAngleText.setPosition(leftLegPixel.x, leftLegPixel.y);

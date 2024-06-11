@@ -89,7 +89,6 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       this.poseTrackerCanvasTexture.refresh();
       onPoseTrackerResultsUpdate?.afterPaint(smoothedResults);
     }
-
     // Set it to undefined to not draw anything again until new pose tracker results are obtained
     this.poseTrackerResults = undefined;
   }
@@ -99,40 +98,95 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       return this.poseTrackerResults as IPoseTrackerResults;
     }
 
-    // Adjust weights and buffer size accordingly
-    const weights = [0.5, 0.4, 0.3];
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
-
+    const weights = [0.2, 0.2, 0.2];
     const averagedLandmarks: IPoseLandmark[] = [];
-    for (let i = 0; i < Object.keys(EPoseLandmark).length / 2; i++) {
-      let weightedSumX = 0;
-      let weightedSumY = 0;
-      let weightedSumZ = 0;
-      let weightedSumVisibility = 0;
+    const numLandmarks = Object.keys(EPoseLandmark).length / 2;
 
+    // Loop over each landmark
+    for (let i = 0; i < numLandmarks; i++) {
+      let sumX = 0, sumY = 0, sumZ = 0;
+      let count = 0;
+
+      //1. Calcular media de cada landmark de cada coordenada
       for (let j = 0; j < this.poseBuffer.length; j++) {
         const result = this.poseBuffer[j];
         if (result.poseLandmarks) {
           const landmark = result.poseLandmarks[i];
           if (landmark) {
-            const weight = weights[j];
-            weightedSumX += landmark.x * weight;
-            weightedSumY += landmark.y * weight;
-            weightedSumZ += landmark.z * weight;
-            weightedSumVisibility += (landmark.visibility ?? 0) * weight;
+            sumX += landmark.x;
+            sumY += landmark.y;
+            sumZ += landmark.z;
+            count++;
           }
         }
       }
 
-      averagedLandmarks[i] = {
-        x: weightedSumX / totalWeight,
-        y: weightedSumY / totalWeight,
-        z: weightedSumZ / totalWeight,
-        visibility: weightedSumVisibility / totalWeight,  // Ensure visibility is a number
-      };
+      // Salta si no hay landmark
+      if (count === 0) continue;
 
+      // Calcular media de cada coordenada
+      const meanX = sumX / count;
+      const meanY = sumY / count;
+      const meanZ = sumZ / count;
+
+      let varianceX = 0, varianceY = 0, varianceZ = 0;
+
+      // 2. Calcula varianza de cada coordenada
+      for (let j = 0; j < this.poseBuffer.length; j++) {
+        const result = this.poseBuffer[j];
+        if (result.poseLandmarks) {
+          const landmark = result.poseLandmarks[i];
+          if (landmark) {
+            varianceX += Math.pow(landmark.x - meanX, 2);
+            varianceY += Math.pow(landmark.y - meanY, 2);
+            varianceZ += Math.pow(landmark.z - meanZ, 2);
+          }
+        }
+      }
+
+      // Calcular desviación estándar de cada coordenada
+      const stdDevX = Math.sqrt(varianceX / count);
+      const stdDevY = Math.sqrt(varianceY / count);
+      const stdDevZ = Math.sqrt(varianceZ / count);
+
+      let weightedSumX = 0, weightedSumY = 0, weightedSumZ = 0, weightedSumVisibility = 0;
+      let validWeightsSum = 0;
+
+      // 3. Calcula la media ponderada de cada coordenada de cada landmark considerando la visibilidad
+      for (let j = 0; j < this.poseBuffer.length; j++) {
+        const result = this.poseBuffer[j];
+        if (result.poseLandmarks) {
+          const landmark = result.poseLandmarks[i];
+          if (landmark) {
+            let weight = weights[j];
+            // Desminuir Peso si no tiene score
+            if (landmark.visibility < 0.2) {
+              weight *= landmark.visibility;
+            }
+            // Si el landmark está dentro de 2 desviaciones estándar de la media, considerarlo válido
+            if (Math.abs(landmark.x - meanX) <= 4 * stdDevX &&
+              Math.abs(landmark.y - meanY) <= 4 * stdDevY &&
+              Math.abs(landmark.z - meanZ) <= 4 * stdDevZ) {
+              weightedSumX += landmark.x * weight;
+              weightedSumY += landmark.y * weight;
+              weightedSumZ += landmark.z * weight;
+              weightedSumVisibility += (landmark.visibility ?? 0) * weight;
+              validWeightsSum += weight;
+            }
+          }
+        }
+      }
+
+      //Calcula media final
+      averagedLandmarks[i] = {
+        x: weightedSumX / validWeightsSum,
+        y: weightedSumY / validWeightsSum,
+        z: weightedSumZ / validWeightsSum,
+        visibility: weightedSumVisibility / validWeightsSum,
+      };
     }
 
+    // Return the smoothed results
     return {
       ...this.poseBuffer[this.poseBuffer.length - 1],
       poseLandmarks: averagedLandmarks.map(this.convertToIPoseLandmark),
@@ -147,4 +201,5 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       visibility: normalizedLandmark.visibility || 0
     };
   }
+
 }

@@ -27,10 +27,6 @@ export class MediapipePoseDetector implements PoseDetector {
     this.pose.onResults(callback);
   }
 
-  close(): void {
-  }
-
-
   drawResults(
     ctx: CanvasRenderingContext2D,
     results: IPoseTrackerResults,
