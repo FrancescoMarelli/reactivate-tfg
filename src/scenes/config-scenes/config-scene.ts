@@ -237,8 +237,15 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
       this.overlapMenuButtons();
       this.setParamButtonsMouseInteractions();
     } else {
-      // do nothing
+      this.destroyBodyPoints();
     }
+  }
+
+  destroyBodyPoints() {
+    this.bodyPoints.forEach(point => {
+      point.destroy();
+    });
+    this.bodyPoints = [];
   }
 
   overlapParamsButtons(button: CustomButtonWithControls): CustomButtonWithControls {
@@ -331,6 +338,20 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
         }
       }, undefined, this);
     });
+
+    this.add.existing(this.switchPoseButton);
+    this.physics.world.enable(this.switchPoseButton);
+    this.switchPoseButton.body.setAllowGravity(false);
+    this.bodyPoints.forEach(point => {
+      this.physics.add.overlap(this.switchPoseButton, point, () => {
+        this.switchPoseButton.animateToFill(false);
+        this.touchingButton = true;
+        if (this.switchPoseButton.buttonIsFull() && this.switchPoseButton.isEnabled()) {
+          this.switchPoseButton.emit('down', this.switchPoseButton);
+          this.switchModel();
+        }
+      }, undefined, this);
+    });
   }
 
 
@@ -406,7 +427,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   }
 
   openArticulationSelectionScene() {
-    this.registry.set('usingPoseNet', this.usingPoseNet)
+    this.registry.set('usingPoseNet', Loader._usingPoseNet);
     this.scene.stop();
     if(!this.scene.get(Constants.SCENES.ARTICULATIONMENU )) {
       this.scene.add(Constants.SCENES.ARTICULATIONMENU , ArticulationSelectionScene, false, { x: 400, y: 300});

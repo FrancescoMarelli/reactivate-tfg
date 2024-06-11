@@ -8,7 +8,7 @@ import { PoseDetector } from '~/pose-tracker-engine/adaptadores/pose-detector.in
 
 export class MediapipePoseDetector implements PoseDetector {
   private pose: Pose;
-  showLandmarks: boolean = false;
+  static showLandmarks: boolean = false;
 
   constructor() {
     this.pose = new Pose({
@@ -61,6 +61,7 @@ export class MediapipePoseDetector implements PoseDetector {
     document.querySelector('body > script[src$="pose_solution_wasm_bin.js"]')?.remove();
   }
 
+  // @ts-ignore
   estimatePose(video: HTMLVideoElement): Promise<any> {
     // @ts-ignore
   }

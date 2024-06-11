@@ -7,9 +7,9 @@ import {
   IPoseTrackerRenderElementsSettings,
 } from '~/pose-tracker-engine/types/pose-tracker-dender-elements-settings.interface';
 import { MediapipePoseDetector } from '~/pose-tracker-engine/adaptadores/mediapipe-pose-detector';
+import { PoseDetector } from '~/pose-tracker-engine/adaptadores/pose-detector.interface';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose/pose';
-import { PoseDetector } from '~/pose-tracker-engine/adaptadores/pose-detector.interface';
 
 
 export default class PosenetDetector implements PoseDetector {
@@ -103,4 +103,13 @@ export default class PosenetDetector implements PoseDetector {
       ctx.restore();
 
     }
+
+  close(): void {
+  }
+
+  onResults(callback: (results: any) => void): void {
+  }
+
+  setOptions(options: any): void {
+  }
 }
