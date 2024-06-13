@@ -59,7 +59,6 @@ export class MediapipePoseDetector implements PoseDetector {
 
   // @ts-ignore
   estimatePose(video: HTMLVideoElement): Promise<any> {
-    // @ts-ignore
   }
 
 

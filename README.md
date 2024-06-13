@@ -8,6 +8,12 @@ That npm script will also install the @mediapipe/pose library into the _public/v
 
 Also, check the _scripts/install-pose-runtimes.sh_ script for advanced options.
 
+```bash
+npm install && npm run install-pose-runtimes
+```
+that npm script will also install the @tensorflow-models/pose-detection library into the _public/vendor/@tensorflow-models/_ directory and will make a link named _pose-detection_ to the installed version. 
+
+
 ### Start development server:
 
 ```bash
@@ -22,10 +28,14 @@ npm start
     │   ├── assets/  # Add here all the assets related to your application
     │   ├── vendor/  # All the external scripts that shouldn't be compiled; mostly to hold the @mediapipe/pose WASM runtimes
     │   ├── index.html  # The base HTML file
-    ├── src/  # All the TypeScript files that comprise your application
+    ├──src/  # All the TypeScript files that comprise your application
+    │   ├── factories/  # Factories to create objects
+    │   ├── gameobjects/  # Custom game objects
+    │   ├── modals/  # stats and historical data modals
     │   ├── pose-tracker-engine/  # Directory holding all the @mediapipe/pose wrappers and utilities made for the application    
     │   ├── scenes/  # All the scenes of the application
     │   ├── types/  # Global interfaces, enums, types, etc
+    |   ├── workouts/  # Specific workout logic
     │   ├── main.ts  # The main TS file that will be executed when the application runs
     ├── package.json  # The file with the build script and the dependencies
 ```
@@ -36,7 +46,7 @@ maps (if development environment).
 
 ## Pose Tracker
 
-The _Pose Tracker_ is the set of custom wrappers and utilities that ease using the @mediapipe/pose JavaScript library.
+The _Pose Tracker_ is the set of custom wrappers and utilities that ease using the @mediapipe/pose  or @tensorflow/posenet JavaScript library.
 
 It's made of the next files:
 

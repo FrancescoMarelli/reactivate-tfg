@@ -46,35 +46,37 @@ export default class PoseTracker {
 
   initPoseNet(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrackerResults) => void): void {
     this.pose = new PosenetDetector();
-    this.camera = new Camera(
-      // @ts-ignore
-      videoEl,
-      async (): Promise<void> => {
-        if (videoEl && !this.isDetectingPose) {
-          this.isDetectingPose = true;
-          const pose = await this.pose.estimatePose(videoEl);
-          if (pose) {
-            const landmarks = mapKeypointsToLandmarks(pose);
-            const results: IPoseTrackerResults = { image: videoEl, poseLandmarks: landmarks };
-            onResults(results);
+    if(videoEl) {
+      this.camera = new Camera(
+        videoEl,
+        async (): Promise<void> => {
+          if (videoEl && !this.isDetectingPose) {
+            this.isDetectingPose = true;
+            const pose = await this.pose.estimatePose(videoEl);
+            if (pose) {
+              const landmarks = mapKeypointsToLandmarks(pose);
+              const results: IPoseTrackerResults = { image: videoEl, poseLandmarks: landmarks };
+              onResults(results);
+            }
+            this.isDetectingPose = false;
           }
-          this.isDetectingPose = false;
-        }
-      },
-    );
+        },
+      );
+    }
   }
 
 initMediapipe(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrackerResults) => void,  settings: IPoseSettings & ISize ): void {
     this.pose = new MediapipePoseDetector();
     this.pose.setOptions(settings);
     this.pose.onResults(onResults);
-    this.camera = new Camera(
-      // @ts-ignore
-      videoEl,
-      async (): Promise<void> => {
-        await this.pose.getPose()?.send({ image: videoEl });
-      },
-    );
+    if(videoEl) {
+      this.camera = new Camera(
+        videoEl,
+        async (): Promise<void> => {
+          await this.pose.getPose()?.send({ image: videoEl });
+        },
+      );
+    }
   }
 
 
@@ -83,8 +85,6 @@ initMediapipe(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrack
     this.pose.shutdown();
     this.camera?.stop();
     this.camera = null;
-    // @ts-ignore
-    this.pose = null;
   }
 
   public drawResults(

@@ -125,7 +125,7 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
     darkenOverlay.setAlpha(0.7);
 
     // creación de botones de configuración
-    this.buttons['difficulty'] = this.createConfigControl(710, 100, 'button', 'Difficultad', 'difficulty', ConfigScene.difficultyLabels);
+    this.buttons['difficulty'] = this.createConfigControl(710, 100, 'button', 'Dificultad', 'difficulty', ConfigScene.difficultyLabels);
     this.buttons['intensity'] = this.createConfigControl(710, 250, 'button', 'Intensidad', 'intensity', this.intensityLabels);
     this.buttons['type'] = this.createConfigControl(710, 400, 'button', 'Entrenamiento', 'type', this.workoutTypeLabels);
     this.buttons['theme'] = this.createConfigControl(710, 550, 'button', 'Tema', 'theme', this.themeLabels);

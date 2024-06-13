@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import CustomButton from '~/gameobjects/custom-button';
+import { config } from '../../esbuild.config';
 
 export default class CustomButtonWithControls extends CustomButton {
   plusButton: Phaser.GameObjects.Rectangle;
@@ -45,17 +46,17 @@ export default class CustomButtonWithControls extends CustomButton {
     this.add([this.plusButton, this.minusButton, plusButtonText, minusButtonText]);
     this.scene.physics.world.enable([this.plusButton, this.minusButton]);
 
-    this.plusButton.on('pointerdown', () => this.changeValue(1));
-    this.minusButton.on('pointerdown', () => this.changeValue(-1));
-    plusButtonText.on('pointerdown', () => this.changeValue(1));
-    minusButtonText.on('pointerdown', () => this.changeValue(-1))
+    this.plusButton.on(Phaser.Input.Events.POINTER_DOWN, () => this.changeValue(1));
+    this.minusButton.on(Phaser.Input.Events.POINTER_DOWN, () => this.changeValue(-1));
+    plusButtonText.on(Phaser.Input.Events.POINTER_DOWN, () => this.changeValue(1));
+    minusButtonText.on(Phaser.Input.Events.POINTER_DOWN, () => this.changeValue(-1))
 
 
     this.buttonText = scene.add.text(0, 0, values[this.currentIndex], {
       fontFamily: 'Russo One',
       fontSize: '40px',
       color: '#FFFFFF'
-    }).setOrigin(0.5);
+    })?.setOrigin(0.5);
     this.add(this.buttonText);
     this.setScale(1.2, 1.2)
   }

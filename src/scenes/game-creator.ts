@@ -96,7 +96,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
   markerFactory: IMarkerFactory;
   background: Phaser.GameObjects.Image;
   private posGifShown: boolean = false;
-  ratio: number;
+  expectedPerformance: number;
   negGifShown: boolean = false;
   stopCounter: number = 0;
 
@@ -135,7 +135,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
         this.registry.set('selectedArticulations', this.articulations);
       }
 
-      this.ratio = this.workoutConfig.reps / this.remainingTime;
+      this.expectedPerformance = this.workoutConfig.reps / this.remainingTime;
 
       this.randomMarker = 3;
       this.counter = 0;
@@ -400,13 +400,14 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     });
 
     if (this.workoutStarted) {
-      let actualRatio = this.counter / (this.workoutConfig.time - this.remainingTime);
-      let lowerThresholdRatio = 0.4 * this.ratio;
-      let timeThreshold = 0.7 * this.workoutConfig.time;
+      // Rendimiento actual tiempo total - tiempo restante porque el contador se actualiza cada segundo
+      let onGoingPerformance = this.counter / (this.workoutConfig.time - this.remainingTime);
+      let lowerThresholdRatio = 0.4 * this.expectedPerformance; // 40% del rendimiento esperado (margen)
+      let timeThreshold = 0.7 * this.workoutConfig.time; // 70% del tiempo total
 
-      if (!this.posGifShown && actualRatio > this.ratio && this.counter > 0) {
+      if (!this.posGifShown && onGoingPerformance > this.expectedPerformance && this.counter > 0) {
         this.showPositiveFeedback();
-      } else if (!this.negGifShown && this.remainingTime <= timeThreshold && actualRatio < lowerThresholdRatio) {
+      } else if (!this.negGifShown && this.remainingTime <= timeThreshold && onGoingPerformance < lowerThresholdRatio) {
         this.showNegativeFeedback();
       }
 

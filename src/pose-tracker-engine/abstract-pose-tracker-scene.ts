@@ -98,7 +98,6 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       return this.poseTrackerResults as IPoseTrackerResults;
     }
 
-    // Adjust weights and buffer size accordingly
     const weights = [0.5, 0.4, 0.3];
     const totalWeight = weights.reduce((a, b) => a + b, 0);
 
@@ -109,6 +108,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       let weightedSumZ = 0;
       let weightedSumVisibility = 0;
 
+      // Iterrar sobre los resultados en el buffer y calcular el promedio ponderado
       for (let j = 0; j < this.poseBuffer.length; j++) {
         const result = this.poseBuffer[j];
         if (result.poseLandmarks) {
@@ -123,11 +123,12 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
         }
       }
 
+      // Calcular  el promedio ponderado
       averagedLandmarks[i] = {
         x: weightedSumX / totalWeight,
         y: weightedSumY / totalWeight,
         z: weightedSumZ / totalWeight,
-        visibility: weightedSumVisibility / totalWeight,  // Ensure visibility is a number
+        visibility: weightedSumVisibility / totalWeight,
       };
 
     }
@@ -138,6 +139,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
     };
   }
 
+  // Normalizo para visibilidad
   convertToIPoseLandmark(normalizedLandmark: NormalizedLandmark): IPoseLandmark {
     return {
       x: normalizedLandmark.x,

@@ -2,9 +2,9 @@
 
 function usage() {
   if [ -n "$1" ]; then echo -e "Error: $1\n" 1>&2; fi
-  echo "Installs a version of TensorFlow.js and PoseNet runtime easily without having to update the application paths manually"
+  echo "Installs a version of the @mediapipe/pose runtime easily without having to update the application paths manually"
   echo "Usage: $(basename "$0") [--latest|-v,--version <version>]"
-  echo "  --latest              Install the latest version of TensorFlow.js and PoseNet"
+  echo "  --latest              Install the latest version of the @mediapipe/pose library"
   echo "  -v, --version         Install a specific version"
   echo "  -h, --help            This help"
   echo ""
@@ -16,7 +16,12 @@ if [ $# -lt 1 ]; then usage "At least one argument is required."; fi
 
 if [ -x "$(command -v apt-get)" ]; then
   # We are in a debian-based linux, so install the required dependencies without complaining
-  apt-get update && apt-get install -y curl
+  apt-get update && apt-get install -y jq curl
+fi
+
+if ! [ -x "$(command -v jq)" ]; then
+  echo 'Error: jq is required to run this program.' >&2
+  exit 1
 fi
 
 if ! [ -x "$(command -v curl)" ]; then
@@ -25,50 +30,25 @@ if ! [ -x "$(command -v curl)" ]; then
 fi
 
 while [ $# -gt 0 ]; do case $1 in
-  --latest)
-    tf_version=$(curl -s "https://data.jsdelivr.com/v1/package/npm/@tensorflow/tfjs" | grep -oP '(?<="version":")[^"]+' | head -n1)
-    posenet_version=$(curl -s "https://data.jsdelivr.com/v1/package/npm/@tensorflow-models/posenet" | grep -oP '(?<="version":")[^"]+' | head -n1)
-    shift;;
-  -v|--version)
-    tf_version="$2"
-    posenet_version="$2"
-    shift;shift;;
+  --latest) version=$(curl -s "https://data.jsdelivr.com/v1/package/npm/@mediapipe/pose" | jq -r ".tags.latest");shift;shift;;
+  -v|--version) version="$2";shift;shift;;
   -h|--help) usage;shift;shift;;
   *) usage "Unknown parameter passed: $1";shift;shift;;
 esac; done
 
-# Install TensorFlow.js
-if [ $(curl -s https://data.jsdelivr.com/v1/package/resolve/npm/@tensorflow/tfjs@${tf_version} | grep -oP '(?<="version":")[^"]+' | head -n1) != "$tf_version" ]; then
-  echo "TensorFlow.js version $tf_version doesn't exist"
+if [ $(curl -s https://data.jsdelivr.com/v1/package/resolve/npm/@mediapipe/pose@${version} | jq -r ".version") != "$version" ]; then
+  echo "Version $version doesn't exist"
   exit 1
 fi
 
-mkdir -p "public/vendor/@tensorflow/tfjs@${tf_version}"
-pushd public/vendor/@tensorflow > /dev/null
+mkdir -p "public/vendor/@mediapipe/pose@${version}"
+pushd public/vendor/@mediapipe > /dev/null
 
-tf_files=("tf-core.es2017.js" "tf-backend-webgl.es2017.js")
-for tf_file in "${tf_files[@]}"; do
-  curl -s https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@${tf_version}/dist/${tf_file} -o "tfjs@${tf_version}/$tf_file"
-  echo "Downloaded @tensorflow/tfjs-core@${tf_version}/dist/${tf_file}"
+files=("pose_solution_packed_assets_loader.js" "pose_solution_packed_assets.data" "pose_solution_wasm_bin.js" "pose_solution_wasm_bin.wasm" "pose_web.binarypb" "pose_solution_simd_wasm_bin.js"  "pose_solution_simd_wasm_bin.wasm")
+for file in "${files[@]}"; do
+  curl -s https://cdn.jsdelivr.net/npm/@mediapipe/pose@${version}/${file} -o "pose@${version}/$file"
+  echo "Downloaded @mediapipe/pose@${version}/${file}"
 done
-rm -f tfjs && ln -sv "tfjs@${tf_version}" tfjs
-
-popd > /dev/null
-
-# Install PoseNet
-if [ $(curl -s https://data.jsdelivr.com/v1/package/resolve/npm/@tensorflow-models/posenet@${posenet_version} | grep -oP '(?<="version":")[^"]+' | head -n1) != "$posenet_version" ]; then
-  echo "PoseNet version $posenet_version doesn't exist"
-  exit 1
-fi
-
-mkdir -p "public/vendor/@tensorflow-models/posenet@${posenet_version}"
-pushd public/vendor/@tensorflow-models > /dev/null
-
-posenet_files=("posenet.min.js" "posenet.min.js.map")
-for posenet_file in "${posenet_files[@]}"; do
-  curl -s https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet@${posenet_version}/${posenet_file} -o "posenet@${posenet_version}/$posenet_file"
-  echo "Downloaded @tensorflow-models/posenet@${posenet_version}/${posenet_file}"
-done
-rm -f posenet && ln -sv "posenet@${posenet_version}" posenet
+rm -f pose && ln -sv "pose@${version}" pose
 
 popd > /dev/null

@@ -22,23 +22,23 @@ export default class CustomButton extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     this.upImage = scene.add.image(0, 0, upTexture);
-    this.barWidth = barWidth || 333;
-    this.initField = initField || -166.7;
+    this.barWidth = barWidth ? barWidth : 333;
+    this.initField = initField ? initField : -166.7;
     this.overImage = new Phaser.GameObjects.Rectangle(scene, this.initField, 0, 0, 95, 0x34495e);
+
+    // @ts-ignore
     this.buttomText = scene.add
-      .text(0,
-        0,
-        // @ts-ignore
-        inputText,
-        { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
-      .setOrigin(0.5);
+        .text(0,
+          0,
+          // @ts-ignore
+          inputText,
+          { fontFamily: 'Russo One', fontSize: '51px', color: '#FFFFFF', fontStyle: 'normal' })
+        .setOrigin(0.5);
 
     this.add(this.upImage);
     this.add(this.overImage);
     this.add(this.buttomText);
-
-    this.setSize(this.upImage.width, this.upImage.height);
-
+    this.setSize(this.upImage?.width, this.upImage?.height);
   }
 
   animateToFill(mouseAction: boolean): void {

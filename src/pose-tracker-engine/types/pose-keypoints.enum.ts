@@ -1,4 +1,4 @@
-export enum EPoseKeypoint {
+export enum PoseKeypointsEnum {
   Nose,
   LeftEye,
   RightEye,
