@@ -115,7 +115,7 @@ export default class HUD extends Phaser.Scene {
 
 
       const gameConfig = this.registry.get('game-config');
-      if (gameConfig.type === Constants.TRAINING.FLEXIONES || gameConfig.type === Constants.TRAINING.SALTOSDETIJERA || gameConfig.type === Constants.TRAINING.PESOS) {
+      if (gameConfig.type === Constants.TRAINING.FLEXIONES || gameConfig.type === Constants.TRAINING.SALTOSDETIJERA || gameConfig.type === Constants.TRAINING.PESAS) {
         workoutGameConfig.events.on(Constants.EVENT.UPDATE_HALF, this.updateHalf, this);
         workoutGameConfig.events.on(Constants.EVENT.FULL, this.updateFull, this);
         workoutGameConfig.events.on(Constants.EVENT.COUNTER, this.updateCounter, this);

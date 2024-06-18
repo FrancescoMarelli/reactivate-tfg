@@ -68,7 +68,7 @@ export default class Stats extends Phaser.GameObjects.Image {
     if (myMaxStat) {
       if (![Constants.TRAINING.FLEXIONES,
         Constants.TRAINING.SALTOSDETIJERA,
-        Constants.TRAINING.PESOS].includes(myMaxStat["_workout"])) {
+        Constants.TRAINING.PESAS].includes(myMaxStat["_workout"])) {
         var content = [
           "Tipo de entrenamiento: " + myMaxStat["_workout"],
           "Fecha del entrenamiento: " + myMaxStat["_date"],

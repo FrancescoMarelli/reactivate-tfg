@@ -170,7 +170,7 @@ export default class GameCreator extends AbstractPoseTrackerScene {
       case Constants.TRAINING.FLEXIONES:
         this.movementFactory = new PushUpsFactory();
         break;
-      case Constants.TRAINING.PESOS:
+      case Constants.TRAINING.PESAS:
         this.movementFactory = new WeightLiftinFactory();
         break;
       case Constants.TRAINING.SALTOSDETIJERA:

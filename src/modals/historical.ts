@@ -53,7 +53,7 @@ export default class Historical extends Phaser.GameObjects.Image {
         // Condicional para agregar diferente contenido dependiendo del tipo de entrenamiento
         if (![Constants.TRAINING.FLEXIONES,
           Constants.TRAINING.SALTOSDETIJERA,
-          Constants.TRAINING.PESOS].includes(this.myStats[i]["_workout"])) {
+          Constants.TRAINING.PESAS].includes(this.myStats[i]["_workout"])) {
           content.push(
             "Tipo de entrenamiento: " + this.myStats[i]["_workout"],
             "Fecha del entrenamiento: " + this.myStats[i]["_date"],

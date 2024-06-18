@@ -29,4 +29,19 @@ bs.watch('public/{index.html,assets/**/*}', (event, file) => {
 
 bs.init({
   server: 'public',
+  host: '0.0.0.0',
+  port: 3000,
+  open: false,
+});
+
+// Script de producción
+
+await build({
+  ...config,
+  define: { 'process.env.NODE_ENV': '"production"' },
+  sourcemap: false,
+  minify: true,
+}).catch((err) => {
+  console.error(err);
+  process.exit(1);
 });

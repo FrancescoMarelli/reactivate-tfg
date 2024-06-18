@@ -43,7 +43,7 @@ const Constants = {
     FLEXIBILIDAD: 'Flexibilidad',
     FLEXIONES: 'Flexiones',
     SALTOSDETIJERA: 'Saltos de tijera',
-    PESOS: 'Pesos',
+    PESAS: 'Pesas',
   },
   MARKER: {
     ID: 'marker',

@@ -34,42 +34,42 @@ interface GameConfig {
 const workoutConfigurations = {
   "Flexiones": {
     "Principiante": { reps: 7, time: 60 },
-    "Esordiente": { reps: 10, time: 60 },
+    "Novato": { reps: 10, time: 60 },
     "Experto": { reps: 12, time: 60 },
     "Avanzado": { reps: 15, time: 60 },
     "Pro": { reps: 20, time: 60 }
   },
   "Saltos de tijera": {
     "Principiante": { reps: 20, time: 60 },
-    "Esordiente": { reps: 25, time: 60 },
+    "Novato": { reps: 25, time: 60 },
     "Experto": { reps: 30, time: 60 },
     "Avanzado": { reps: 35, time: 60 },
     "Pro": { reps: 40, time: 60 }
   },
-  "Pesos": {
+  "Pesas": {
     "Principiante": { reps: 20, time: 60 },
-    "Esordiente": { reps: 30, time: 60 },
+    "Novato": { reps: 30, time: 60 },
     "Experto": { reps: 40, time: 60 },
     "Avanzado": { reps: 50, time: 60 },
     "Pro": { reps: 60, time: 60 }
   },
   "Agilidad": {
     "Principiante": { reps: 40, time: 180 },
-    "Esordiente": { reps: 50, time: 180 },
+    "Novato": { reps: 50, time: 180 },
     "Experto": { reps: 60, time: 180 },
     "Avanzado": { reps: 70, time: 180 },
     "Pro": { reps: 90, time: 180 }
   },
   "Flexibilidad": {
     "Principiante": { reps: 60, time: 180 },
-    "Esordiente": { reps: 100, time: 180 },
+    "Novato": { reps: 100, time: 180 },
     "Experto": { reps: 120, time: 180 },
     "Avanzado": { reps: 150, time: 180 },
     "Pro": { reps: 180, time: 180 }
   },
   "Cardio": {
     "Principiante": { reps: 40, time: 180 },
-    "Esordiente": { reps: 50, time: 180 },
+    "Novato": { reps: 50, time: 180 },
     "Experto": { reps: 60, time: 180 },
     "Avanzado": { reps: 70, time: 180 },
     "Pro": { reps: 90, time: 180 }
@@ -87,8 +87,8 @@ export default class ConfigScene extends AbstractPoseTrackerScene {
   private bodyPoints: any[] = [];
   private buttons: any[] = [];
   private textLabels: { [key: string]: Phaser.GameObjects.Text } = {};
-  public static readonly difficultyLabels = ["Principiante", "Esordiente", "Experto", "Avanzado", "Pro"];
-  private workoutTypeLabels = ["Flexiones", "Saltos de tijera", "Pesos", "Flexibilidad", "Agilidad", "Cardio"];
+  public static readonly difficultyLabels = ["Principiante", "Novato", "Experto", "Avanzado", "Pro"];
+  private workoutTypeLabels = ["Flexiones", "Saltos de tijera", "Pesas", "Flexibilidad", "Agilidad", "Cardio"];
   private themeLabels = ["Default", "Medieval", "Japon", "Futuro"];
   private intensityLabels = ["Tranquilo", "Normal", "Intenso"];
   private selectArticulationsButton: Phaser.GameObjects.Text;
