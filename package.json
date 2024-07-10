@@ -9,8 +9,7 @@
     "start": "node esbuild.dev.js",
     "build": "node esbuild.prod.js",
     "install-pose-runtimes": "bash scripts/install-pose-runtimes.sh --version 0.2.1617147663",
-    "install-tf-runtimes": "bash scripts/install-tf-runtimes.sh --latest"
-  },
+   },
   "dependencies": {
     "@mediapipe/drawing_utils": "^0.2.1617146986",
     "@mediapipe/pose": "0.2.1617147663",
