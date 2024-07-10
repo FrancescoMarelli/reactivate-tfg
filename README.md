@@ -8,18 +8,14 @@ $ npm install --legacy-peer-deps @tensorflow/tfjs-converter
 $ npm install --legacy-peer-deps
 
 ```
-that npm commands will also install the @tensorflow-models/pose-detection library into the _public/vendor/@tensorflow-models/_ directory and will make a link named _pose-detection_ to the installed version.
-
+that npm commands will  install the @tensorflow-models/pose-detection library into the but also tfjs-converter and webgl dependencies, needed to run the @tensorflow-models/pose-detection library. 
 
 ```bash
 npm run install-pose-runtimes
 ```
 
 That npm script will also install the @mediapipe/pose library into the _public/vendor/@mediapipe/_ directory and will make a link named _pose_ to the installed version. The version installed can be changed in the npm script contained in the _package.json_ file; the selected version should match the one used in the _dependencies_ section of the file for the _@mediapipe/pose_ entry.
-After the installation of the dependencies and the pose runtimes, you can start the project with:
-```bash
-npm start
-```
+
 ### Start development server:
 
 ```bash
