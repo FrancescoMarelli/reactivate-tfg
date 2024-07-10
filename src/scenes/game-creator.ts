@@ -400,10 +400,10 @@ export default class GameCreator extends AbstractPoseTrackerScene {
     });
 
     if (this.workoutStarted) {
-      // Rendimiento actual tiempo total - tiempo restante porque el contador se actualiza cada segundo
+      // Rendimiento actual  se resta tiempo total - tiempo restante porque el contador se actualiza cada segundo
       let onGoingPerformance = this.counter / (this.workoutConfig.time - this.remainingTime);
       let lowerThresholdRatio = 0.4 * this.expectedPerformance; // 40% del rendimiento esperado (margen)
-      let timeThreshold = 0.7 * this.workoutConfig.time; // 70% del tiempo total
+      let timeThreshold = 0.7 * this.workoutConfig.time; // 70% del tiempo total para que supere ese umbral
 
       if (!this.posGifShown && onGoingPerformance > this.expectedPerformance && this.counter > 0) {
         this.showPositiveFeedback();

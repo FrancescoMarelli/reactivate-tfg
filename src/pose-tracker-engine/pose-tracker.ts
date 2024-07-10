@@ -65,7 +65,9 @@ export default class PoseTracker {
     }
   }
 
-initMediapipe(videoEl: HTMLVideoElement | null,  onResults: (results: IPoseTrackerResults) => void,  settings: IPoseSettings & ISize ): void {
+initMediapipe(videoEl: HTMLVideoElement | null,
+              onResults: (results: IPoseTrackerResults) => void,
+              settings: IPoseSettings & ISize ): void {
     this.pose = new MediapipePoseDetector();
     this.pose.setOptions(settings);
     this.pose.onResults(onResults);

@@ -36,7 +36,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       (results: IPoseTrackerResults) => (this.poseTrackerResults = results),
     );
 
-    // Create a texture canvas to draw the camera frames/joints on it later
+    // Creación de una textura canvas para dibujar los frames articulares de la cámara
     this.poseTrackerCanvasTexture = this.textures.createCanvas('camera-frame', this.scale.width, this.scale.height);
     if(Loader._usingPoseNet) {
       this.poseTrackerCanvasTexture.context.scale(-1, 1);
@@ -45,10 +45,10 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Add the texture to the scene for render
+    // Añade textura de renderizado
     this.add.image(0, 0, this.poseTrackerCanvasTexture).setOrigin(0, 0);
 
-    // Clean resources/free camera acquisition when exit from the scene
+    // Liberar recursos de camara
     this.events.once('shutdown', () => {
       this.textures.remove('camera-frame');
       this.poseTracker.shutdown();
@@ -89,7 +89,7 @@ export default abstract class AbstractPoseTrackerScene extends Phaser.Scene {
       onPoseTrackerResultsUpdate?.afterPaint(smoothedResults);
     }
 
-    // Set it to undefined to not draw anything again until new pose tracker results are obtained
+    //  no asigna nada hasta que  no se obtienen nuevos resultados de pose tracker
     this.poseTrackerResults = undefined;
   }
 
