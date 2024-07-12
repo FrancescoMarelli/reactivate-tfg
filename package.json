@@ -8,7 +8,7 @@
     "check": "tsc --noEmit --project tsconfig.json",
     "start": "node esbuild.dev.js",
     "build": "node esbuild.prod.js",
-    "install-pose-runtimes": "bash scripts/install-pose-runtimes.sh --version 0.2.1617147663",
+    "install-pose-runtimes": "bash scripts/install-pose-runtimes.sh --version 0.2.1617147663"
    },
   "dependencies": {
     "@mediapipe/drawing_utils": "^0.2.1617146986",

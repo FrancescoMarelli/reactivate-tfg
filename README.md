@@ -1,5 +1,5 @@
 ### Installation
-
+To run the application you need to have installed Node.js and npm.  Also you need to install the modules of pose tracking engines:
 ```bash
 $ npm install --legacy-peer-deps @tensorflow/tfjs @tensorflow-models/posenet
 
@@ -46,68 +46,15 @@ TypeScript files are intended to be in the `src/` folder. `main.ts` is the entry
 referenced by `index.html`; that file will be copied to the `public/` directory on every build along with its source
 maps (if development environment).
 
-## Pose Tracker
-
-The _Pose Tracker_ is the set of custom wrappers and utilities that ease using the @mediapipe/pose  or @tensorflow/posenet JavaScript library.
-
-It's made of the next files:
-
-- `pose-tracker.ts`: allows to instantiate an object of the pose tracker that will listen for tracking results (i.e. new
-  frame/joints detected) and invoke a custom user-callback when they are available.
-- `camera.ts`: a simple wrapper for the _navigator.mediaDevices_ browser object that will intercept new webcam frames
-  and invoke to a custom user-callback function.
-- `abstract-pose-tracker-scene.ts`: an already configured and ready-to-use Phaser scene to be extended by other scenes
-  where you want to have pose tracker capabilities.
-
-In brief, you should be extending the **AbstractPoseTrackerScene** class in a new one, and populating it overriding the
-inherited method like this:
-
-```typescript
-import AbstractPoseTrackerScene from '~/pose-tracker-engine/abstract-pose-tracker-scene';
-
-export default class SampleScene extends AbstractPoseTrackerScene {
-    constructor() {
-        super('sample-scene');
-    }
-
-    preload(): void {
-        super.preload();
-    }
-
-    create(): void {
-        super.create();
-    }
-
-    update(time: number, delta: number): void {
-        super.update(time, delta, {
-            renderElementsSettings: {
-                shouldDrawFrame: true, // Set it to true/false whether you want to render the camera frame in the canvas texture
-                shouldDrawPoseLandmarks: true, // Set it to true/false whether you want to render the pose landmarks (joints) along with their connections in the canvas texture
-            },
-            beforePaint: (poseTrackerResults, canvasTexture) => {
-                // This function will be called before refreshing the canvas texture.
-                // Anything you add here to the canvas texture will be rendered.
-            },
-            afterPaint: (poseTrackerResults) => {
-                // This function will be called after refreshing the canvas texture.
-            },
-        });
-
-        // Here you can do any other update related to the game.
-        // PoseTrackerResults are only available in the previous callbacks, though.
-    }
-}
-```
 
 ## Technological stack
 
 The technological stack includes:
 
 - **phaser** as development framework.
-- **@mediapipe/pose** for all the skeleton tracking stuff.
+- **@mediapipe/pose** and **@tensorflow/posenet** for all the skeleton tracking stuff.
 - **typescript** for not going mad without types.
 - **esbuild** for bundling/transpile TypeScript files to JavaScript.
 - **browsersync** for reloading the dev server on every file changes.
 - **prettier** to format source files homogeneously.
 - **eslint** to check/fix errors in the code.
-- **husky** for running the previous processes on every commit.
